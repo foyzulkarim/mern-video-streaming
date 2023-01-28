@@ -38,7 +38,7 @@ const StyledContent = styled("div")(({ theme }) => ({
 /**
  *  Create a MUI form to save below video properties: 
     title, description, visibility, 
-    thumbnailUrl, tags, language, recordingDate, 
+    thumbnailUrl, language, recordingDate, 
     category,
  */
 
@@ -47,7 +47,6 @@ const validationSchema = yup.object({
   description: yup.string().required("Description is required"),
   visibility: yup.string().required("Visibility is required"),
   thumbnailUrl: yup.string().required("Thumbnail URL is required"),
-  tags: yup.string().required("Tags are required"),
   language: yup.string().required("Language is required"),
   recordingDate: yup.date().required("Recording date is required"),
   category: yup.string().required("Category is required"),
@@ -60,14 +59,13 @@ export default function VideoUploadPage() {
       description: "desc",
       visibility: "public",
       thumbnailUrl: "test",
-      tags: "hello",
       language: "Bangla",
       recordingDate: new Date(),
       category: "Education",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
+      console.log(values.recordingDate);
     },
   });
 
@@ -141,35 +139,6 @@ export default function VideoUploadPage() {
                     formik.touched.thumbnailUrl && formik.errors.thumbnailUrl
                   }
                 />
-                <Autocomplete
-                  multiple
-                  id="tags-filled"
-                  options={[]}
-                  defaultValue={[]}
-                  freeSolo
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        variant="outlined"
-                        label={option}
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      id="tags"
-                      name="tags"
-                      variant="filled"
-                      label="Tags"
-                      placeholder="Favorites"
-                      onChange={formik.handleChange}
-                      error={formik.touched.tags && Boolean(formik.errors.tags)}
-                      helperText={formik.touched.tags && formik.errors.tags}
-                    />
-                  )}
-                />
                 <FormControl fullWidth>
                   <InputLabel id="language-select-label">Language</InputLabel>
                   <Select
@@ -195,13 +164,11 @@ export default function VideoUploadPage() {
                     value={formik.values.recordingDate}
                     inputFormat="DD/MM/YYYY"
                     onChange={(newValue) => {
-                      // setValue(newValue);
                       formik.setFieldValue("recordingDate", newValue);
                     }}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
-                {/** Category is a dropdown with the options ["Education", "Technology", "Travel", "Others"] */}
                 <FormControl fullWidth>
                   <InputLabel id="category-select-label">Category</InputLabel>
                   <Select
@@ -230,6 +197,7 @@ export default function VideoUploadPage() {
               </Stack>
             </form>
           </StyledContent>
+          <p>{JSON.stringify(formik.values)}</p>
         </Container>
       </>
     </>

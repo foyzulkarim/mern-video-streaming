@@ -1,11 +1,11 @@
 const { name } = require("./model");
 
-const VIDEO_VISIBILITIES = ["PUBLIC", "PRIVATE", "UNLISTED"];
+const VIDEO_VISIBILITIES = ["Public", "Private", "Unlisted"];
 
 /**
  *  Video properties: 
     title, description, videoLink, fileName, visibility, 
-    thumbnailUrl, playlistId, tags, language, recordingDate, 
+    thumbnailUrl, playlistId, language, recordingDate, 
     category, viewsCount, likesCount, dislikesCount, 
  */
 const updateSchema = async (db) => {
@@ -41,13 +41,6 @@ const updateSchema = async (db) => {
         playlistId: {
           bsonType: "objectId",
           description: "must be an objectId and is required",
-        },
-        tags: {
-          bsonType: "array",
-          description: "must be an array and is required",
-          items: {
-            bsonType: "string",
-          },
         },
         language: {
           bsonType: "string",
