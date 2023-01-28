@@ -98,7 +98,7 @@ const setupRoutes = (app) => {
     dest: "uploads/videos",
     fileFilter: fileFilter,
     limits: { fileSize: 50000000 },
-    storage: storage,
+    // storage: storage,
   }).single("video");
 
   const uploadProcessor = (req, res, next) => {
@@ -114,7 +114,7 @@ const setupRoutes = (app) => {
     });
   };
 
-  app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
+  app.post(`${BASE_URL}/upload`, upload, async (req, res) => {
     try {
       console.log("POST upload", JSON.stringify(req.body));
       const payload = { ...req.body };
