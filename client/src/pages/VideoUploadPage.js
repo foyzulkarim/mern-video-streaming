@@ -1,7 +1,15 @@
 import { Helmet } from "react-helmet-async";
 // @mui
 import { styled } from "@mui/material/styles";
-import { Container, Stack, TextField, FormControl } from "@mui/material";
+import {
+  Container,
+  Stack,
+  TextField,
+  FormControl,
+  Typography,
+  Chip,
+  Autocomplete,
+} from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -22,11 +30,13 @@ const StyledRoot = styled("div")(({ theme }) => ({
 }));
 
 const StyledContent = styled("div")(({ theme }) => ({
-  maxWidth: 480,
+  maxWidth: 600,
   margin: "auto",
   minHeight: "100vh",
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "left",
+  alignContent: "left",
+  alignItems: "left",
   flexDirection: "column",
   padding: theme.spacing(12, 0),
 }));
@@ -53,21 +63,15 @@ export default function VideoUploadPage() {
         <title> Video upload</title>
       </Helmet>
 
-      <StyledRoot>
-        <Logo
-          sx={{
-            position: "fixed",
-            top: { xs: 16, sm: 24, md: 40 },
-            left: { xs: 16, sm: 24, md: 40 },
-          }}
-        />
-
-        <Container maxWidth="sm">
+      <>
+        <Container>
           <StyledContent>
+            <Typography variant="h4" sx={{ mb: 5 }}>
+              Upload video
+            </Typography>
             <Stack spacing={3}>
               <TextField name="title" label="Video title" />
               <TextField name="description" label="Video description" />
-              <TextField name="fileName" label="File name" />
               {/* visibility should be a select field with options: public, private, unlisted */}
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
@@ -85,11 +89,64 @@ export default function VideoUploadPage() {
                   <MenuItem value={"unlisted"}>Unlisted</MenuItem>
                 </Select>
               </FormControl>
-              <TextField name="thumbnailUrl" label="Thumbnail URL" />
-              <TextField name="playlistId" label="Playlist ID" />
-              <TextField name="tags" label="Tags" />
-              <TextField name="language" label="Language" />
-              <TextField name="recordingDate" label="Recording date" />
+              <TextField
+                name="thumbnailUrl"
+                label="Thumbnail URL"
+                placeholder="Paste the image URL (temporary fix for now)"
+              />
+              <Autocomplete
+                multiple
+                id="tags-filled"
+                options={[]}
+                defaultValue={[]}
+                freeSolo
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      label={option}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="filled"
+                    label="freeSolo"
+                    placeholder="Favorites"
+                  />
+                )}
+              />
+              {/* <TextField name="language" label="Language" /> */}
+              {/** Language should be a select control and having options ["English", "Bangla", "Spanish", "Hindi", "Urdu"] */}
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Language</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={"English"}
+                  label="Language"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={"English"}>English</MenuItem>
+                  <MenuItem value={"Bangla"}>Bangla</MenuItem>
+                  <MenuItem value={"Spanish"}>Spanish</MenuItem>
+                  <MenuItem value={"Hindi"}>Hindi</MenuItem>
+                  <MenuItem value={"Urdu"}>Urdu</MenuItem>
+                </Select>
+              </FormControl>
+              {/* recordingDate should be a date picker */}
+              <TextField
+                id="date"
+                label="Recording date"
+                type="date"
+                defaultValue={"10/10/2021"}
+                sx={{ width: 220 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
               <TextField name="category" label="Category" />
               <TextField name="viewsCount" label="Views count" />
               <TextField name="likesCount" label="Likes count" />
@@ -108,7 +165,7 @@ export default function VideoUploadPage() {
             <Stack spacing={3}></Stack>
           </StyledContent>
         </Container>
-      </StyledRoot>
+      </>
     </>
   );
 }
