@@ -90,7 +90,7 @@ const setupRoutes = (app) => {
       cb(null, true);
     } else {
       console.log("file type not supported", file);
-      cb(null, false);
+      cb(new multer.MulterError("File type not supported"), false);
     }
   };
 
@@ -104,8 +104,9 @@ const setupRoutes = (app) => {
   const uploadProcessor = (req, res, next) => {
     upload(req, res, (err) => {
       if (err) {
-        console.error(err);
+        //console.error(err);
         res.status(400).json({ status: "error", message: err });
+        return;
       } else {
         console.log("upload success", req.file);
         // res.status(200).json({ status: "success", message: "upload success" });
