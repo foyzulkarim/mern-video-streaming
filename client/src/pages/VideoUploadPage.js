@@ -9,25 +9,19 @@ import {
   Typography,
   Chip,
   Autocomplete,
+  Button,
 } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-
 import { LoadingButton } from "@mui/lab";
-// hooks
-import useResponsive from "../hooks/useResponsive";
-// components
-import Logo from "../components/logo";
-// sections
 
-// ----------------------------------------------------------------------
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-const StyledRoot = styled("div")(({ theme }) => ({
-  [theme.breakpoints.up("md")]: {
-    display: "flex",
-  },
-}));
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 const StyledContent = styled("div")(({ theme }) => ({
   maxWidth: 600,
@@ -43,19 +37,39 @@ const StyledContent = styled("div")(({ theme }) => ({
 
 /**
  *  Create a MUI form to save below video properties: 
-    title, description, videoLink, fileName, visibility, 
-    thumbnailUrl, playlistId, tags, language, recordingDate, 
-    category, viewsCount, likesCount, dislikesCount, 
+    title, description, visibility, 
+    thumbnailUrl, tags, language, recordingDate, 
+    category,
  */
 
-export default function VideoUploadPage() {
-  const handleClick = () => {
-    console.log("clicked");
-  };
+const validationSchema = yup.object({
+  title: yup.string().required("Title is required"),
+  description: yup.string().required("Description is required"),
+  visibility: yup.string().required("Visibility is required"),
+  thumbnailUrl: yup.string().required("Thumbnail URL is required"),
+  tags: yup.string().required("Tags are required"),
+  language: yup.string().required("Language is required"),
+  recordingDate: yup.date().required("Recording date is required"),
+  category: yup.string().required("Category is required"),
+});
 
-  const handleChange = (event) => {
-    console.log("changed", event.target.value);
-  };
+export default function VideoUploadPage() {
+  const formik = useFormik({
+    initialValues: {
+      title: "title1",
+      description: "desc",
+      visibility: "public",
+      thumbnailUrl: "test",
+      tags: "hello",
+      language: "Bangla",
+      recordingDate: new Date(),
+      category: "Education",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
 
   return (
     <>
@@ -69,100 +83,152 @@ export default function VideoUploadPage() {
             <Typography variant="h4" sx={{ mb: 5 }}>
               Upload video
             </Typography>
-            <Stack spacing={3}>
-              <TextField name="title" label="Video title" />
-              <TextField name="description" label="Video description" />
-              {/* visibility should be a select field with options: public, private, unlisted */}
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Visibility
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={"public"}
-                  label="Visibility"
-                  onChange={handleChange}
-                >
-                  <MenuItem value={"public"}>Public</MenuItem>
-                  <MenuItem value={"private"}>Private</MenuItem>
-                  <MenuItem value={"unlisted"}>Unlisted</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                name="thumbnailUrl"
-                label="Thumbnail URL"
-                placeholder="Paste the image URL (temporary fix for now)"
-              />
-              <Autocomplete
-                multiple
-                id="tags-filled"
-                options={[]}
-                defaultValue={[]}
-                freeSolo
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      variant="outlined"
-                      label={option}
-                      {...getTagProps({ index })}
+            <form onSubmit={formik.handleSubmit}>
+              <Stack spacing={3}>
+                <TextField
+                  id="title"
+                  name="title"
+                  label="Video title"
+                  value={formik.values.title}
+                  onChange={formik.handleChange}
+                  error={formik.touched.title && Boolean(formik.errors.title)}
+                  helperText={formik.touched.title && formik.errors.title}
+                />
+                <TextField
+                  id="description"
+                  name="description"
+                  label="Video description"
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.description &&
+                    Boolean(formik.errors.description)
+                  }
+                  helperText={
+                    formik.touched.description && formik.errors.description
+                  }
+                />
+                <FormControl fullWidth>
+                  <InputLabel id="visibility-select-label">
+                    Visibility
+                  </InputLabel>
+                  <Select
+                    labelId="visibility-select-label"
+                    id="visibility-simple-select"
+                    name="visibility"
+                    label="Visibility"
+                    value={formik.values.visibility}
+                    onChange={formik.handleChange}
+                    error={Boolean(formik.errors.visibility)}
+                    helperText={formik.errors.visibility}
+                  >
+                    <MenuItem value={"public"}>Public</MenuItem>
+                    <MenuItem value={"private"}>Private</MenuItem>
+                    <MenuItem value={"unlisted"}>Unlisted</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  id="thumbnailUrl"
+                  name="thumbnailUrl"
+                  label="Thumbnail URL"
+                  value={formik.values.thumbnailUrl}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.thumbnailUrl &&
+                    Boolean(formik.errors.thumbnailUrl)
+                  }
+                  helperText={
+                    formik.touched.thumbnailUrl && formik.errors.thumbnailUrl
+                  }
+                />
+                <Autocomplete
+                  multiple
+                  id="tags-filled"
+                  options={[]}
+                  defaultValue={[]}
+                  freeSolo
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        variant="outlined"
+                        label={option}
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      id="tags"
+                      name="tags"
+                      variant="filled"
+                      label="Tags"
+                      placeholder="Favorites"
+                      onChange={formik.handleChange}
+                      error={formik.touched.tags && Boolean(formik.errors.tags)}
+                      helperText={formik.touched.tags && formik.errors.tags}
                     />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="filled"
-                    label="freeSolo"
-                    placeholder="Favorites"
-                  />
-                )}
-              />
-              {/* <TextField name="language" label="Language" /> */}
-              {/** Language should be a select control and having options ["English", "Bangla", "Spanish", "Hindi", "Urdu"] */}
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Language</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={"English"}
-                  label="Language"
-                  onChange={handleChange}
-                >
-                  <MenuItem value={"English"}>English</MenuItem>
-                  <MenuItem value={"Bangla"}>Bangla</MenuItem>
-                  <MenuItem value={"Spanish"}>Spanish</MenuItem>
-                  <MenuItem value={"Hindi"}>Hindi</MenuItem>
-                  <MenuItem value={"Urdu"}>Urdu</MenuItem>
-                </Select>
-              </FormControl>
-              {/* recordingDate should be a date picker */}
-              <TextField
-                id="date"
-                label="Recording date"
-                type="date"
-                defaultValue={"10/10/2021"}
-                sx={{ width: 220 }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-              <TextField name="category" label="Category" />
-              <TextField name="viewsCount" label="Views count" />
-              <TextField name="likesCount" label="Likes count" />
-              <TextField name="dislikesCount" label="Dislikes count" />
-              <LoadingButton
-                //fullWidth
-                size="large"
-                type="submit"
-                variant="contained"
-                onClick={handleClick}
-              >
-                Login
-              </LoadingButton>
-            </Stack>
+                  )}
+                />
+                <FormControl fullWidth>
+                  <InputLabel id="language-select-label">Language</InputLabel>
+                  <Select
+                    labelId="language-select-label"
+                    id="language-simple-select"
+                    label="Language"
+                    value={formik.values.language}
+                    onChange={formik.handleChange}
+                    error={Boolean(formik.errors.language)}
+                    helperText={formik.errors.language}
+                  >
+                    <MenuItem value={"English"}>English</MenuItem>
+                    <MenuItem value={"Bangla"}>Bangla</MenuItem>
+                    <MenuItem value={"Spanish"}>Spanish</MenuItem>
+                    <MenuItem value={"Hindi"}>Hindi</MenuItem>
+                    <MenuItem value={"Urdu"}>Urdu</MenuItem>
+                  </Select>
+                </FormControl>
 
-            <Stack spacing={3}></Stack>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Basic example"
+                    value={formik.values.recordingDate}
+                    inputFormat="DD/MM/YYYY"
+                    onChange={(newValue) => {
+                      // setValue(newValue);
+                      formik.setFieldValue("recordingDate", newValue);
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+                {/** Category is a dropdown with the options ["Education", "Technology", "Travel", "Others"] */}
+                <FormControl fullWidth>
+                  <InputLabel id="category-select-label">Category</InputLabel>
+                  <Select
+                    labelId="category-select-label"
+                    id="category-simple-select"
+                    value={formik.values.category}
+                    label="Category"
+                    onChange={formik.handleChange}
+                    error={Boolean(formik.errors.category)}
+                    helperText={formik.errors.category}
+                  >
+                    <MenuItem value={"Education"}>Education</MenuItem>
+                    <MenuItem value={"Technology"}>Technology</MenuItem>
+                    <MenuItem value={"Travel"}>Travel</MenuItem>
+                    <MenuItem value={"Others"}>Others</MenuItem>
+                  </Select>
+                </FormControl>
+                <LoadingButton
+                  //fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                >
+                  Login
+                </LoadingButton>
+              </Stack>
+            </form>
           </StyledContent>
         </Container>
       </>
