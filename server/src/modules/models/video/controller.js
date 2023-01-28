@@ -90,7 +90,7 @@ const setupRoutes = (app) => {
       cb(null, true);
     } else {
       console.log("file type not supported", file);
-      cb(null, false);
+      cb(new multer.MulterError("File type not supported"), false);
     }
   };
 
@@ -98,23 +98,29 @@ const setupRoutes = (app) => {
     dest: "uploads/videos",
     fileFilter: fileFilter,
     limits: { fileSize: 50000000 },
-    // storage: storage,
+    storage: storage,
   }).single("video");
 
   const uploadProcessor = (req, res, next) => {
-    upload(req, res, (err) => {
-      if (err) {
-        console.error(err);
+    console.log("uploadProcessor.started", req.body);
+    upload(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        console.log("multer error");
         res.status(400).json({ status: "error", message: err });
-      } else {
-        console.log("upload success", req.file);
-        // res.status(200).json({ status: "success", message: "upload success" });
-        next();
+        return;
+      } else if (err) {
+        // An unknown error occurred when uploading.
+        console.log("uploadProcessor.error");
+        res.status(400).json({ status: "error", message: err });
+        return;
       }
+
+      next();
     });
   };
 
-  app.post(`${BASE_URL}/upload`, upload, async (req, res) => {
+  app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
     try {
       console.log("POST upload", JSON.stringify(req.body));
       const payload = { ...req.body };
@@ -125,14 +131,6 @@ const setupRoutes = (app) => {
       console.error(error);
       res.send(error);
     }
-  });
-
-  app.use(() => (err, req, res, next) => {
-    console.log("error handler", err);
-    if (err instanceof multer.MulterError) {
-      return res.status(418).send(err.code);
-    }
-    next();
   });
 };
 
