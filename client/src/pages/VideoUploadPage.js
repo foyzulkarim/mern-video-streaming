@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 // @mui
 import { styled } from "@mui/material/styles";
@@ -8,6 +9,8 @@ import {
   FormControl,
   Typography,
   Button,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -21,13 +24,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
+import axios from "axios";
+
 const StyledContent = styled("div")(({ theme }) => ({
   maxWidth: 600,
   margin: "auto",
   minHeight: "100vh",
   display: "flex",
-  justifyContent: "left",
-  alignContent: "left",
+  justifyContent: "center",
+  alignContent: "center",
   alignItems: "left",
   flexDirection: "column",
   padding: theme.spacing(12, 0),
@@ -51,7 +56,41 @@ const validationSchema = yup.object({
 });
 
 export default function VideoUploadPage() {
+  const [uploadResponse, setUploadResponse] = useState(null);
+  const [alertType, setAlertType] = useState("success");
+
+  // axios post the values to the backend
+  const postToServer = async (values) => {
+    const { title } = values;
+    const videoFile = values.videoFile;
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("video", videoFile);
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/api/videos/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Accept: "*/*",
+          },
+        }
+      );
+      setAlertType("success");
+      setUploadResponse(response.data.message);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+      setAlertType("error");
+      setUploadResponse(error.response.data.error.message);
+    }
+  };
+
   const formik = useFormik({
+    initialErrors: {
+      videoFile: "Video file is required",
+    },
     initialValues: {
       title: "title1",
       description: "desc",
@@ -60,11 +99,33 @@ export default function VideoUploadPage() {
       language: "Bangla",
       recordingDate: new Date(),
       category: "Education",
+      videoFile: null,
     },
     validationSchema: validationSchema,
-    onSubmit: (values, helpers) => {
-      console.log(values, helpers);
+    onSubmit: async (values) => {
+      await postToServer(values);
     },
+    validate: (values) => {
+      const errors = {};
+      if (!values.videoFile) {
+        errors.videoFile = "Video file is required";
+      }
+      // check videoFile size
+      if (values.videoFile?.size > 52428000) {
+        errors.videoFile = "Video file size should be less than 50MB";
+      }
+
+      // check videoFile type, must be video/mp4 or video/x-matroska
+      if (
+        values.videoFile?.type !== "video/mp4" &&
+        values.videoFile?.type !== "video/x-matroska"
+      ) {
+        errors.videoFile = "Video file type should be .mp4 or .mkv";
+      }
+
+      return errors;
+    },
+    validateOnMount: false,
   });
 
   return (
@@ -85,15 +146,13 @@ export default function VideoUploadPage() {
                   <input
                     style={{ display: "none" }}
                     name="video"
-                    accept="video/*"
+                    accept="video/mp4,video/x-matroska"
                     id="video"
                     type="file"
-                    onChange={(e) =>
-                      formik.setFieldValue(
-                        "videoFile",
-                        e.currentTarget.files[0]
-                      )
-                    }
+                    onChange={(e) => {
+                      const file = e.currentTarget.files[0];
+                      formik.setFieldValue("videoFile", file);
+                    }}
                   />
                   <Button
                     color="secondary"
@@ -104,7 +163,11 @@ export default function VideoUploadPage() {
                   </Button>
                 </label>
                 {/* video file name display here */}
-                <TextField value={formik.values.videoFile?.name} />
+                <TextField
+                  value={formik.values.videoFile?.name}
+                  error={Boolean(formik.errors?.videoFile)}
+                  helperText={formik.errors?.videoFile}
+                />
                 <TextField
                   id="title"
                   name="title"
@@ -212,13 +275,32 @@ export default function VideoUploadPage() {
                   size="large"
                   type="submit"
                   variant="contained"
+                  disabled={formik.isSubmitting || !formik.isValid}
                 >
-                  Login
+                  Upload
                 </LoadingButton>
               </Stack>
             </form>
+            <Stack>
+              <Snackbar
+                open={uploadResponse}
+                autoHideDuration={5000}
+                onClose={() => {
+                  setUploadResponse(null);
+                }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+              >
+                <Alert
+                  onClose={() => {
+                    setUploadResponse(null);
+                  }}
+                  severity={alertType}
+                >
+                  {uploadResponse}
+                </Alert>
+              </Snackbar>
+            </Stack>
           </StyledContent>
-          <p>{JSON.stringify(formik.values)}</p>
         </Container>
       </>
     </>
