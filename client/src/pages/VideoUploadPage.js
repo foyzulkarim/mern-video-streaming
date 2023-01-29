@@ -7,8 +7,6 @@ import {
   TextField,
   FormControl,
   Typography,
-  Chip,
-  Autocomplete,
   Button,
 } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
@@ -64,8 +62,8 @@ export default function VideoUploadPage() {
       category: "Education",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values.recordingDate);
+    onSubmit: (values, helpers) => {
+      console.log(values, helpers);
     },
   });
 
@@ -83,6 +81,30 @@ export default function VideoUploadPage() {
             </Typography>
             <form onSubmit={formik.handleSubmit}>
               <Stack spacing={3}>
+                <label htmlFor="video">
+                  <input
+                    style={{ display: "none" }}
+                    name="video"
+                    accept="video/*"
+                    id="video"
+                    type="file"
+                    onChange={(e) =>
+                      formik.setFieldValue(
+                        "videoFile",
+                        e.currentTarget.files[0]
+                      )
+                    }
+                  />
+                  <Button
+                    color="secondary"
+                    variant="contained"
+                    component="span"
+                  >
+                    Upload video
+                  </Button>
+                </label>
+                {/* video file name display here */}
+                <TextField value={formik.values.videoFile?.name} />
                 <TextField
                   id="title"
                   name="title"
@@ -157,7 +179,6 @@ export default function VideoUploadPage() {
                     <MenuItem value={"Urdu"}>Urdu</MenuItem>
                   </Select>
                 </FormControl>
-
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label="Basic example"
