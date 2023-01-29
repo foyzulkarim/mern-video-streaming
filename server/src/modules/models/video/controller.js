@@ -3,6 +3,8 @@ const { insert, search, getById, update, deleteById } = require("./service");
 const { validate } = require("./request");
 const { name } = require("./model");
 
+const { addQueueItem } = require("../../queues/queue");
+
 const BASE_URL = `/api/${name}`;
 
 const setupRoutes = (app) => {
@@ -120,6 +122,7 @@ const setupRoutes = (app) => {
       console.log("POST upload", JSON.stringify(req.body));
       const payload = { ...req.body };
       console.log("user given metadata", "title", payload.title);
+      await addQueueItem({ ...payload, ...req.file });
       res
         .status(200)
         .json({ status: "success", message: "Upload success", ...req.file });
@@ -128,14 +131,6 @@ const setupRoutes = (app) => {
       console.error(error);
       res.send(error);
     }
-  });
-
-  app.use(() => (err, req, res, next) => {
-    console.log("error handler", err);
-    if (err instanceof multer.MulterError) {
-      return res.status(418).send(err.code);
-    }
-    next();
   });
 };
 
