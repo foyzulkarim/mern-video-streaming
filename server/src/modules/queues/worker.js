@@ -31,6 +31,7 @@ Object.values(QUEUES).map((queueName) => {
     queueName,
     async (job) => {
       console.log("i am the worker!", job.data);
+      return { ...job.data, completed: true };
     },
     { connection: redisConnection }
   );
