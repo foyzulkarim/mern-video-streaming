@@ -1,16 +1,20 @@
 const { Queue } = require("bullmq");
-
-const queueName = "video";
+const { QUEUES } = require("./common");
 const redisConnection = { host: "localhost", port: 6379 };
-const myQueue = new Queue(queueName, { connection: redisConnection });
 
-async function addJobs() {
-  await myQueue.add("myJobName", { foo: "bar", date: new Date() });
-  await myQueue.add("myJobName", { qux: "baz", date: new Date() });
-}
+const queues = Object.values(QUEUES).map((queueName) => {
+  return {
+    name: queueName,
+    queueObj: new Queue(queueName, { connection: redisConnection }),
+  };
+});
 
-const addQueueItem = async (item) => {
-  await myQueue.add("video.uploaded", item, {
+const addQueueItem = async (queueName, item) => {
+  const queue = queues.find((q) => q.name === queueName);
+  if (!queue) {
+    throw new Error(`queue ${queueName} not found`);
+  }
+  await queue.queueObj.add(queueName, item, {
     removeOnComplete: true,
     removeOnFail: false,
   });
