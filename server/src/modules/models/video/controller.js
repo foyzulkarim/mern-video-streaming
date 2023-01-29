@@ -105,7 +105,7 @@ const setupRoutes = (app) => {
     upload(req, res, (err) => {
       if (err) {
         //console.error(err);
-        res.status(400).json({ status: "error", message: err });
+        res.status(400).json({ status: "error", error: err });
         return;
       } else {
         console.log("upload success", req.file);
@@ -120,7 +120,9 @@ const setupRoutes = (app) => {
       console.log("POST upload", JSON.stringify(req.body));
       const payload = { ...req.body };
       console.log("user given metadata", "title", payload.title);
-      res.send(req.file);
+      res
+        .status(200)
+        .json({ status: "success", message: "Upload success", ...req.file });
       return;
     } catch (error) {
       console.error(error);
