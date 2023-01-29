@@ -125,7 +125,6 @@ export default function VideoUploadPage() {
 
       return errors;
     },
-    validateOnMount: false,
   });
 
   return (
@@ -146,7 +145,7 @@ export default function VideoUploadPage() {
                   <input
                     style={{ display: "none" }}
                     name="video"
-                    accept="video/mp4,video/x-matroska"
+                    accept="video/*"
                     id="video"
                     type="file"
                     onChange={(e) => {
