@@ -1,9 +1,10 @@
 const { Worker, QueueEvents } = require("bullmq");
-const { QUEUES } = require("./common");
+const { QUEUE_EVENTS, QUEUE_EVENT_HANDLERS } = require("./common");
+const { addQueueItem } = require("./queue");
 
 const redisConnection = { host: "localhost", port: 6379 };
 
-Object.values(QUEUES).map((queueName) => {
+Object.values(QUEUE_EVENTS).map((queueName) => {
   const queueEvents = new QueueEvents(queueName, {
     connection: redisConnection,
   });
@@ -20,7 +21,7 @@ Object.values(QUEUES).map((queueName) => {
   });
 
   queueEvents.on("completed", ({ jobId, returnvalue }) => {
-    console.log(`${jobId} has completed and returned ${returnvalue}`);
+    console.log(`${jobId} has completed and returned`, returnvalue.next);
   });
 
   queueEvents.on("failed", ({ jobId, failedReason }) => {
@@ -30,8 +31,17 @@ Object.values(QUEUES).map((queueName) => {
   const worker = new Worker(
     queueName,
     async (job) => {
-      console.log("i am the worker!", job.data);
-      return { ...job.data, completed: true };
+      console.log("i am queue:", queueName);
+      const handler = QUEUE_EVENT_HANDLERS[queueName];
+      if (handler) {
+        const handledResponse = await handler(job);
+        console.log("handledResponse", handledResponse.next);
+        if (handledResponse.next) {
+          await addQueueItem(handledResponse.next, handledResponse);
+        }
+        return handledResponse;
+      }
+      throw new Error("No handler found for queue: " + queueName);
     },
     { connection: redisConnection }
   );

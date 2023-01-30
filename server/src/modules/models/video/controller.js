@@ -2,7 +2,7 @@ const multer = require("multer");
 const { insert, search, getById, update, deleteById } = require("./service");
 const { validate } = require("./request");
 const { name } = require("./model");
-const { QUEUES } = require("../../queues/common");
+const { QUEUE_EVENTS } = require("../../queues/common");
 
 const { addQueueItem } = require("../../queues/queue");
 
@@ -123,7 +123,10 @@ const setupRoutes = (app) => {
       console.log("POST upload", JSON.stringify(req.body));
       const payload = { ...req.body };
       console.log("user given metadata", "title", payload.title);
-      await addQueueItem(QUEUES.VIDEO_UPLOADED, { ...payload, ...req.file });
+      await addQueueItem(QUEUE_EVENTS.VIDEO_UPLOADED, {
+        ...payload,
+        ...req.file,
+      });
       res
         .status(200)
         .json({ status: "success", message: "Upload success", ...req.file });

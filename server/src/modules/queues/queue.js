@@ -1,8 +1,8 @@
 const { Queue } = require("bullmq");
-const { QUEUES } = require("./common");
+const { QUEUE_EVENTS } = require("./common");
 const redisConnection = { host: "localhost", port: 6379 };
 
-const queues = Object.values(QUEUES).map((queueName) => {
+const queues = Object.values(QUEUE_EVENTS).map((queueName) => {
   return {
     name: queueName,
     queueObj: new Queue(queueName, { connection: redisConnection }),
