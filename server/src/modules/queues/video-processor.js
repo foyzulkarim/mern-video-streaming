@@ -2,10 +2,6 @@
 
 const ffmpeg = require("fluent-ffmpeg");
 const path = require("path");
-const { promisify } = require("util");
-const { exec } = require("child_process");
-
-const execAsync = promisify(exec);
 
 const execute = async (filePath, outputFolder) => {
   const fileName = path.basename(filePath);
