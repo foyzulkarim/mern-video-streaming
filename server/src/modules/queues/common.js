@@ -1,12 +1,4 @@
-/** queue names: 
-video.uploaded
-video.processing
-video.processed
-video.hls-converting
-video.hls.converted
-video.watermarking
-video.watermarked
-*/
+const { execute } = require("./video-processor");
 
 const QUEUE_EVENTS = {
   VIDEO_UPLOADED: "video.uploaded",
@@ -26,7 +18,9 @@ const uploadedHandler = async (job) => {
 };
 
 const processingHandler = async (job) => {
-  console.log("i am the processing handler!", job.data.title);
+  console.log("i am the processing handler!", job.data.path);
+  const processed = await execute(`./${job.data.path}`, `./uploads/processed`);
+  console.log("processed", processed);
   return { ...job.data, completed: true, next: QUEUE_EVENTS.VIDEO_PROCESSED };
 };
 
