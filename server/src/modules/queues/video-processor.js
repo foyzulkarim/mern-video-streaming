@@ -2,8 +2,10 @@
 
 const ffmpeg = require("fluent-ffmpeg");
 const path = require("path");
+const { QUEUE_EVENTS } = require("./constants");
+const { addQueueItem } = require("./queue");
 
-const execute = async (filePath, outputFolder) => {
+const execute = async (filePath, outputFolder, jobData) => {
   const fileName = path.basename(filePath);
   const fileExt = path.extname(filePath);
   const fileNameWithoutExt = path.basename(filePath, fileExt);
@@ -20,6 +22,7 @@ const execute = async (filePath, outputFolder) => {
     })
     .on("end", function () {
       console.log("Finished processing");
+      addQueueItem(QUEUE_EVENTS.VIDEO_PROCESSED, { ...jobData });
     })
     .on("error", function (err) {
       console.log("An error occurred: " + err.message);

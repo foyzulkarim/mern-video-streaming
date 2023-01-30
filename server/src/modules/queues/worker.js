@@ -1,6 +1,6 @@
 const { Worker, QueueEvents } = require("bullmq");
-const { QUEUE_EVENTS, QUEUE_EVENT_HANDLERS } = require("./common");
-const { addQueueItem } = require("./queue");
+const { QUEUE_EVENTS } = require("./constants");
+const { QUEUE_EVENT_HANDLERS } = require("./handlers");
 
 const redisConnection = { host: "localhost", port: 6379 };
 
@@ -21,7 +21,7 @@ Object.values(QUEUE_EVENTS).map((queueName) => {
   });
 
   queueEvents.on("completed", ({ jobId, returnvalue }) => {
-    console.log(`${jobId} has completed and returned`, returnvalue.next);
+    console.log(`${jobId} has completed and returned.next`, returnvalue.next);
   });
 
   queueEvents.on("failed", ({ jobId, failedReason }) => {
@@ -35,10 +35,7 @@ Object.values(QUEUE_EVENTS).map((queueName) => {
       const handler = QUEUE_EVENT_HANDLERS[queueName];
       if (handler) {
         const handledResponse = await handler(job);
-        console.log("handledResponse", handledResponse.next);
-        if (handledResponse.next) {
-          await addQueueItem(handledResponse.next, handledResponse);
-        }
+        console.log("handledResponse.next", handledResponse.next);
         return handledResponse;
       }
       throw new Error("No handler found for queue: " + queueName);

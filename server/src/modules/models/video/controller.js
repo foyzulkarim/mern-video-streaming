@@ -2,7 +2,7 @@ const multer = require("multer");
 const { insert, search, getById, update, deleteById } = require("./service");
 const { validate } = require("./request");
 const { name } = require("./model");
-const { QUEUE_EVENTS } = require("../../queues/common");
+const { QUEUE_EVENTS } = require("../../queues/constants");
 
 const { addQueueItem } = require("../../queues/queue");
 

@@ -1,25 +1,23 @@
+const { QUEUE_EVENTS } = require("./constants");
 const { execute } = require("./video-processor");
-
-const QUEUE_EVENTS = {
-  VIDEO_UPLOADED: "video.uploaded",
-  VIDEO_PROCESSING: "video.processing",
-  VIDEO_PROCESSED: "video.processed",
-  VIDEO_HLS_CONVERTING: "video.hls-converting",
-  VIDEO_HLS_CONVERTED: "video.hls.converted",
-  VIDEO_WATERMARKING: "video.watermarking",
-  VIDEO_WATERMARKED: "video.watermarked",
-};
-
-/** Each of the queue will have different queue handler function */
+const { addQueueItem } = require("./queue");
 
 const uploadedHandler = async (job) => {
   console.log("i am the uploaded handler!", job.data.title);
-  return { ...job.data, completed: true, next: QUEUE_EVENTS.VIDEO_PROCESSING };
+  await addQueueItem(QUEUE_EVENTS.VIDEO_PROCESSING, {
+    ...job.data,
+    completed: true,
+  });
+  return { added: true, next: QUEUE_EVENTS.VIDEO_PROCESSING };
 };
 
 const processingHandler = async (job) => {
   console.log("i am the processing handler!", job.data.path);
-  const processed = await execute(`./${job.data.path}`, `./uploads/processed`);
+  const processed = await execute(`./${job.data.path}`, `./uploads/processed`, {
+    ...job.data,
+    completed: true,
+    next: QUEUE_EVENTS.VIDEO_PROCESSED,
+  });
   console.log("processed", processed);
   return { ...job.data, completed: true, next: QUEUE_EVENTS.VIDEO_PROCESSED };
 };
@@ -73,4 +71,6 @@ const QUEUE_EVENT_HANDLERS = {
   [QUEUE_EVENTS.VIDEO_WATERMARKED]: watermarkedHandler,
 };
 
-module.exports = { QUEUE_EVENTS, QUEUE_EVENT_HANDLERS };
+module.exports = {
+  QUEUE_EVENT_HANDLERS,
+};
