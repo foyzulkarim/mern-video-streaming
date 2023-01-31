@@ -1,5 +1,5 @@
 const { QUEUE_EVENTS } = require("./constants");
-const { execute } = require("./video-processor");
+const { processRawFileToMp4, processMp4ToHls } = require("./video-processor");
 const { addQueueItem } = require("./queue");
 
 const uploadedHandler = async (job) => {
@@ -13,17 +13,25 @@ const uploadedHandler = async (job) => {
 
 const processingHandler = async (job) => {
   console.log("i am the processing handler!", job.data.path);
-  const processed = await execute(`./${job.data.path}`, `./uploads/processed`, {
-    ...job.data,
-    completed: true,
-    next: QUEUE_EVENTS.VIDEO_PROCESSED,
-  });
+  const processed = await processRawFileToMp4(
+    `./${job.data.path}`,
+    `./uploads/processed`,
+    {
+      ...job.data,
+      completed: true,
+      next: QUEUE_EVENTS.VIDEO_PROCESSED,
+    }
+  );
   console.log("processed", processed);
   return { ...job.data, completed: true, next: QUEUE_EVENTS.VIDEO_PROCESSED };
 };
 
 const processedHandler = async (job) => {
-  console.log("i am the processed handler!", job.data.fieldname);
+  console.log("i am the processed handler!", job.data.path);
+  await addQueueItem(QUEUE_EVENTS.VIDEO_HLS_CONVERTING, {
+    ...job.data,
+    completed: true,
+  });
   return {
     ...job.data,
     completed: true,
@@ -32,7 +40,17 @@ const processedHandler = async (job) => {
 };
 
 const hlsConvertingHandler = async (job) => {
-  console.log("i am the hls converting handler!", job.data.mimetype);
+  console.log("i am the hls converting handler!", job.data.path);
+  const hlsConverted = await processMp4ToHls(
+    `./${job.data.path}`,
+    `./uploads/hls`,
+    {
+      ...job.data,
+      completed: true,
+      next: QUEUE_EVENTS.VIDEO_HLS_CONVERTED,
+    }
+  );
+  console.log("hlsConverted", hlsConverted);
   return {
     ...job.data,
     completed: true,

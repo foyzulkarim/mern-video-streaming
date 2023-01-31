@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/server.js",
-    "queue": "nodemon ./src/queue.js"
+    "queue": "nodemon ./src/queue.js",
+    "video-server": "nodemon ./src/video-server.js"
   },
   "keywords": [],
   "author": "",
