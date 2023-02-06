@@ -37,6 +37,11 @@ const navConfig = [
     icon: icon("ic_blog"),
   },
   {
+    title: "Video player",
+    path: "/dashboard/video-player",
+    icon: icon("ic_blog"),
+  },
+  {
     title: "login",
     path: "/login",
     icon: icon("ic_lock"),
