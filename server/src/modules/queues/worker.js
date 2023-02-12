@@ -1,28 +1,28 @@
 const { Worker, QueueEvents } = require("bullmq");
-const { QUEUE_EVENTS } = require("./constants");
+const { VIDEO_QUEUE_EVENTS } = require("./constants");
 const { QUEUE_EVENT_HANDLERS } = require("./handlers");
 
 const redisConnection = { host: "localhost", port: 6379 };
 
-Object.values(QUEUE_EVENTS).map((queueName) => {
+const listenQueueEvent = (queueName) => {
   const queueEvents = new QueueEvents(queueName, {
     connection: redisConnection,
   });
 
-  queueEvents.on("waiting", ({ jobId }) => {
-    console.log(`A job with ID ${jobId} is waiting`);
-  });
+  // queueEvents.on("waiting", ({ jobId }) => {
+  //   console.log(`A job with ID ${jobId} is waiting`);
+  // });
 
-  queueEvents.on("active", ({ jobId, prev, ...others }) => {
-    console.log(
-      `Job ${jobId} is now active; previous status was ${prev}`,
-      others
-    );
-  });
+  // queueEvents.on("active", ({ jobId, prev, ...others }) => {
+  //   console.log(
+  //     `Job ${jobId} is now active; previous status was ${prev}`,
+  //     others
+  //   );
+  // });
 
-  queueEvents.on("completed", ({ jobId, returnvalue }) => {
-    console.log(`${jobId} has completed and returned.next`, returnvalue.next);
-  });
+  // queueEvents.on("completed", ({ jobId, returnvalue }) => {
+  //   console.log(`${jobId} has completed and returned.next`);
+  // });
 
   queueEvents.on("failed", ({ jobId, failedReason }) => {
     console.log(`${jobId} has failed with reason ${failedReason}`);
@@ -31,12 +31,9 @@ Object.values(QUEUE_EVENTS).map((queueName) => {
   const worker = new Worker(
     queueName,
     async (job) => {
-      console.log("i am queue:", queueName);
       const handler = QUEUE_EVENT_HANDLERS[queueName];
       if (handler) {
-        const handledResponse = await handler(job);
-        console.log("handledResponse.next", handledResponse.next);
-        return handledResponse;
+        return await handler(job);
       }
       throw new Error("No handler found for queue: " + queueName);
     },
@@ -52,4 +49,12 @@ Object.values(QUEUE_EVENTS).map((queueName) => {
   });
 
   console.log(queueName, " worker started", new Date().toTimeString());
-});
+};
+
+const setupAllQueueEvents = () => {
+  Object.values(VIDEO_QUEUE_EVENTS).map((queueName) =>
+    listenQueueEvent(queueName)
+  );
+};
+
+module.exports = { setupAllQueueEvents, listenQueueEvent };

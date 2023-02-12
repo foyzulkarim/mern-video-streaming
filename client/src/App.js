@@ -8,35 +8,16 @@ import ThemeProvider from "./theme";
 import ScrollToTop from "./components/scroll-to-top";
 import { StyledChart } from "./components/chart";
 
-import { io } from "socket.io-client";
-
-// ----------------------------------------------------------------------
-
-const socket = io("http://localhost:4000");
+import { useSocket } from "./contexts/SocketContext";
 
 export default function App() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
+  const socket = useSocket();
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("connected", socket);
-      setIsConnected(true);
-    });
-
-    socket.on("disconnect", () => {
-      setIsConnected(false);
-    });
-
     socket.on("hello", (msg, time) => {
       console.log("hello", msg, time);
     });
-
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("pong");
-    };
-  }, []);
+  }, [socket]);
 
   return (
     <ThemeProvider>
