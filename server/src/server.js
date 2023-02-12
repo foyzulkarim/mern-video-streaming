@@ -16,7 +16,7 @@ const setup = async (db) => {
 
   eventEmitter.on(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED, (data) => {
     console.log("NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED Event handler", data);
-    io.emit("hello", "world", data);
+    io.emit("hello", data);
   });
 };
 
