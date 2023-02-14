@@ -8,14 +8,16 @@ Hello people, welcome the repository. This is an real world project that aimed t
 
 ## Technology used here
 
--   -> JavaScript
--   -> Node.js
--   -> Express.js
--   -> MongoDB
--   -> React
--   -> Socket.io
--   -> ffmpeg
--   -> multer
+-   JavaScript -> As programming language
+-   Node.js -> As javascript runtime
+-   Express.js -> For handling request and response
+-   MongoDB -> For storing persist data
+-   React -> As UI library
+-   MUI -> As component library
+-   Socket.io -> For implementing websocket
+-   ffmpeg -> For video processing
+-   multer -> For uploading video in server
+-   Redis -> For implementing pub/sub messaging system
 
 ## Installation and run the projects
 
@@ -24,6 +26,7 @@ Hello people, welcome the repository. This is an real world project that aimed t
 ```sh
 $ cd server
 $ npm install
+$ docker compose up & # for starting mongo and redis
 $ npm start
 ```
 
