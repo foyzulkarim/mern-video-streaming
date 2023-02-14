@@ -1,6 +1,6 @@
 # MERN Video Streaming
 
-Hello people, welcome the repository. This is an real world project that aimed to users stream videos. Also this is part of [`Learn MERN in Bangla Like a pro`](https://youtube.com/playlist?list=PLEYpvDF6qy8ZUE9IyhYWrxt5zEyeXzwxq) playlist.
+Hello people, welcome to the repository. This is a real-world project that allows users to stream videos. It is also part of the [`Learn MERN in Bangla Like a pro`](https://youtube.com/playlist?list=PLEYpvDF6qy8ZUE9IyhYWrxt5zEyeXzwxq) playlist and you can learn and contribute to this repository.
 
 ## Architecture diagram
 
@@ -21,6 +21,9 @@ Hello people, welcome the repository. This is an real world project that aimed t
 
 ## Installation and run the projects
 
+-   To run this project, you need to install the following software:
+    -  Node.js [`download link`](https://nodejs.org/en/download/)
+    -  Docker [`installation instruction`](https://docs.docker.com/engine/install/)
 -   Install server side project and start server
 
 ```sh
