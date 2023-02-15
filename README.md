@@ -1,6 +1,12 @@
 # MERN Video Streaming
 
-Hello people, welcome to the repository. This is a real-world project that allows users to stream videos. It is also part of the [`Learn MERN in Bangla Like a pro`](https://youtube.com/playlist?list=PLEYpvDF6qy8ZUE9IyhYWrxt5zEyeXzwxq) playlist and you can learn and contribute to this repository.
+Hello people, welcome to the repository. This is a real-world project that allows users to stream, upload, manage videos. It is also part of the [`Learn MERN in Bangla Like a pro`](https://youtube.com/playlist?list=PLEYpvDF6qy8ZUE9IyhYWrxt5zEyeXzwxq) playlist and you can learn and contribute to this repository.
+
+## Key features
+
+- Upload videos on server
+- Process video mp4 to hls
+- Realtime notification of processed video
 
 ## Architecture diagram
 
@@ -8,23 +14,24 @@ Hello people, welcome to the repository. This is a real-world project that allow
 
 ## Technology used here
 
--   JavaScript -> As programming language
--   Node.js -> As javascript runtime
--   Express.js -> For handling request and response
--   MongoDB -> For storing persist data
--   React -> As UI library
--   MUI -> As component library
--   Socket.io -> For implementing websocket
--   ffmpeg -> For video processing
--   multer -> For uploading video in server
--   Redis -> For implementing pub/sub messaging system
+- Programming language: `JavaScript`
+- JavaScript runtime: `Node.js`
+- Framework for handling HTTP requests and responses: `Express.js`
+- Database: `MongoDB`
+- UI library: `React`
+- Component library: `MUI`
+- Websocket implementation: `Socket.io`
+- Video processing: `ffmpeg`
+- File uploading: `multer`
+- Pub/sub messaging system: `Redis`
 
 ## Installation and run the projects
 
--   To run this project, you need to install the following software:
+-   To run this project, you need to install the following softwares first:
     -  Node.js [`download link`](https://nodejs.org/en/download/)
     -  Docker [`installation instruction`](https://docs.docker.com/engine/install/)
--   Install server side project and start server
+    -  Docker Compose [`installation instruction`](https://docs.docker.com/compose/install/)
+-   Start server side project development server
 
 ```sh
 $ cd server
@@ -33,7 +40,7 @@ $ docker compose up & # for starting mongo and redis
 $ npm start
 ```
 
--   Install client side project and start client
+-   Start client side project development server
 
 ```sh
 $ npm i -g yarn
