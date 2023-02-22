@@ -1,5 +1,7 @@
 # MERN Video Streaming Project
 
+> I am writing a full in-depth explanation in my medium.com page. Please visit [Build a MERN based video hosting and sharing system](https://medium.com/@foyzulkarim/mern-based-video-hosting-and-sharing-system-part-0-setup-server-and-client-project-skeleton-948622f869da) to understand the whole architecture and step by step instructions. 
+
 ## Overview
 
 MERN Video Streaming is a cutting-edge, open-source platform for video
