@@ -2,10 +2,19 @@
 
 ## Overview
 
-This is a MERN-based video streaming project with a backend composed of three
-separate services that communicate via messages through Redis. The project
-includes an API server, a video conversion service, and an HTTP server that serves HLS video files. The client-side is built with create-react-app and MUI
-library, and uses socket.io-client and React Context.
+MERN Video Streaming is a cutting-edge, open-source platform for video
+streaming, offering a comprehensive, full-stack solution utilizing the latest
+MERN stack technologies. With MERN Video Streaming, users can easily upload,
+manage, and stream videos on demand, providing a seamless experience. This
+project features a video processing capability that provides real-time
+notifications upon completion.
+
+The backend is comprised of three services, utilizing Redis messaging for
+communication. These include an API server, a video conversion service, and an
+HTTP server serving HLS video files. On the client side, the project uses
+create-react-app and MUI library, along with socket.io-client and React Context.
+
+## Architecture
 
 ### Backend Services
 
@@ -26,11 +35,33 @@ service is not exposed to any HTTP port.
 
 The HTTP server is a plain and simple server that serves HLS video files.
 
-### Client App
+### Frontend app
 
 The client app is based on create-react-app and MUI library. It uses
 socket.io-client and React Context to communicate with the API server and
 display the video content.
+
+## Prerequisites
+
+To get started with MERN Video Streaming, you will need to have the following
+software installed on your local machine:
+
+- [Node.js](https://nodejs.org/en/)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+### Built with Open-Source Technologies
+
+MERN Video Streaming has been built with the following open-source technologies:
+
+- [MongoDB](https://www.mongodb.com/) - A document-based database used to store
+  user and video data
+- [Express](https://expressjs.com/) - A Node.js web application framework used
+  for the server-side of the application
+- [React](https://reactjs.org/) - A JavaScript library for building user
+  interfaces used for the client-side of the application
+- [Node.js](https://nodejs.org/en/) - A JavaScript runtime environment used to
+  run the server-side code
 
 ## Installation
 
@@ -55,7 +86,7 @@ npm install
 
 ```bash
 cd client
-yarn 
+yarn
 ```
 
 ### 3. Start the database and Redis using docker-compose
@@ -69,6 +100,7 @@ docker-compose up -d
 #### 4.1 Start the server
 
 This will start all the three backend services.
+
 ```bash
 cd server
 npm run dev
@@ -85,9 +117,21 @@ yarn start
 
 You can now access the application at http://localhost:3000.
 
+## Contributing to MERN Video Streaming
+
+MERN Video Streaming is an open-source project and we welcome contributions from
+the community. If you would like to contribute to the project, please refer to
+the `CONTRIBUTING.md` file for guidelines.
+
+## License
+
+MERN Video Streaming is licensed under the MIT License. Please see the `LICENSE`
+file for more information.
+
 ## Note
 
-Before running the above commands, make sure that you have Docker and
-Node.js installed on your machine.
+Before running the above commands, make sure that you have Docker and Node.js
+installed on your machine.
 
-This readme file is not finished yet. I will update it as I go along with the project. Thanks.
+This readme file is not finished yet. I will update it as I go along with the
+project. Thanks.
