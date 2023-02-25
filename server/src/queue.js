@@ -1,3 +1,4 @@
-const { setupAllQueueEvents } = require("./modules/queues/worker");
+const { setupAllQueueEvents } = require('./modules/queues/worker');
 
-setupAllQueueEvents();
+const status = setupAllQueueEvents();
+console.log('setupAllQueueEvents: ', status);

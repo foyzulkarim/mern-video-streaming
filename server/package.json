@@ -5,9 +5,12 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./src/server.js",
-    "queue": "nodemon ./src/queue.js",
-    "video-server": "nodemon ./src/video-server.js"
+    "web-server": "nodemon ./src/server.js",
+    "video-processor": "nodemon ./src/queue.js",
+    "video-server": "nodemon ./src/video-server.js",
+    "db": "docker-compose up -d",
+    "server": "concurrently \"npm run web-server\" \"npm run video-processor\" \"npm run video-server\"",
+    "start": "npm run db && npm run server"
   },
   "keywords": [],
   "author": "",
@@ -36,5 +39,8 @@
     "prettier": "^2.8.3",
     "socket.io": "^4.6.0",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
   }
 }

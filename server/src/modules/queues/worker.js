@@ -1,8 +1,8 @@
-const { Worker, QueueEvents } = require("bullmq");
-const { VIDEO_QUEUE_EVENTS } = require("./constants");
-const { QUEUE_EVENT_HANDLERS } = require("./handlers");
+const { Worker, QueueEvents } = require('bullmq');
+const { VIDEO_QUEUE_EVENTS } = require('./constants');
+const { QUEUE_EVENT_HANDLERS } = require('./handlers');
 
-const redisConnection = { host: "localhost", port: 6379 };
+const redisConnection = { host: 'localhost', port: 6379 };
 
 const listenQueueEvent = (queueName) => {
   const queueEvents = new QueueEvents(queueName, {
@@ -24,7 +24,7 @@ const listenQueueEvent = (queueName) => {
   //   console.log(`${jobId} has completed and returned.next`);
   // });
 
-  queueEvents.on("failed", ({ jobId, failedReason }) => {
+  queueEvents.on('failed', ({ jobId, failedReason }) => {
     console.log(`${jobId} has failed with reason ${failedReason}`);
   });
 
@@ -35,26 +35,27 @@ const listenQueueEvent = (queueName) => {
       if (handler) {
         return await handler(job);
       }
-      throw new Error("No handler found for queue: " + queueName);
+      throw new Error('No handler found for queue: ' + queueName);
     },
     { connection: redisConnection }
   );
 
-  worker.on("completed", (job) => {
+  worker.on('completed', (job) => {
     console.log(`${job.id} has completed!`);
   });
 
-  worker.on("failed", (job, err) => {
+  worker.on('failed', (job, err) => {
     console.log(`${job.id} has failed with ${err.message}`);
   });
 
-  console.log(queueName, " worker started", new Date().toTimeString());
+  console.log(queueName, ' worker started', new Date().toTimeString());
 };
 
 const setupAllQueueEvents = () => {
   Object.values(VIDEO_QUEUE_EVENTS).map((queueName) =>
     listenQueueEvent(queueName)
   );
+  return true;
 };
 
 module.exports = { setupAllQueueEvents, listenQueueEvent };

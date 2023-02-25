@@ -1,13 +1,13 @@
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const port = 4001;
-const publicDirectory = "./uploads/hls";
+const publicDirectory = './uploads/hls';
 
 const requestHandler = (req, res) => {
   const filePath = path.join(publicDirectory, req.url);
-  console.log("filePath", filePath);
+  console.log('filePath', filePath);
   fs.exists(filePath, (exists) => {
     if (!exists) {
       res.statusCode = 404;
@@ -21,9 +21,9 @@ const requestHandler = (req, res) => {
         res.end(`Error reading file: ${err}`);
         return;
       }
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
-      res.setHeader("Access-Control-Max-Age", 2592000); // 30 days
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+      res.setHeader('Access-Control-Max-Age', 2592000); // 30 days
       res.end(data);
     });
   });
@@ -37,5 +37,5 @@ server.listen(port, (err) => {
     return;
   }
 
-  console.log(`Server started on port ${port}`);
+  console.log(`Video server started on port ${port}`);
 });
