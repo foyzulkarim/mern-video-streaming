@@ -1,0 +1,36 @@
+uploadedBy: User
+Video:
+thumbnailUrl
+duration
+title
+viewCount
+publishedAt
+description
+comments: [Comment]
+
+videoHlsUrl
+videoProcessedUrl
+
+tags: [string]
+
+comment: 
+	text
+	commentedBy: User
+	likeCount
+	unlikeCount
+	isLoved
+	replies: 
+		text
+		commentedBy
+	
+
+
+createdAt
+updatedAt
+
+
+
+User:
+	profilePictureUrl
+	name
+	
