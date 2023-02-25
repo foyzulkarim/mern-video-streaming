@@ -1,6 +1,8 @@
 # MERN Video Streaming Project
 
-> I am writing a full in-depth explanation in my medium.com page. Please visit [Build a MERN based video hosting and sharing system](https://medium.com/@foyzulkarim/mern-based-video-hosting-and-sharing-system-part-0-setup-server-and-client-project-skeleton-948622f869da) to understand the whole architecture and step by step instructions. 
+> I am writing a full in-depth explanation in my medium.com page. Please visit
+> [Build a MERN based video hosting and sharing system](https://medium.com/@foyzulkarim/mern-based-video-hosting-and-sharing-system-part-0-setup-server-and-client-project-skeleton-948622f869da)
+> to understand the whole architecture and step by step instructions.
 
 ## Overview
 
@@ -19,7 +21,6 @@ create-react-app and MUI library, along with socket.io-client and React Context.
 ## Architecture
 
 ![image](https://user-images.githubusercontent.com/497812/220627727-04a26928-71df-4c9b-9637-92289a2beee2.png)
-
 
 ### Backend Services
 
@@ -94,21 +95,26 @@ cd client
 yarn
 ```
 
-### 3. Start the database and Redis using docker-compose
+### 3. Start the database and Redis
+
+If you want to run the database separately, you can use the following command:
 
 ```bash
 docker-compose up -d
 ```
 
+Otherwise the updated `npm run start` script will start the database and web
+servers altogether.
+
 ### 4. Start the application
 
 #### 4.1 Start the server
 
-This will start all the three backend services.
+This will start all the backend services and database together.
 
 ```bash
 cd server
-npm run dev
+npm run start
 ```
 
 #### 4.2 Start the client
