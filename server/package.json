@@ -8,15 +8,20 @@
     "web-server": "nodemon ./src/server.js",
     "video-processor": "nodemon ./src/queue.js",
     "video-server": "nodemon ./src/video-server.js",
-    "db": "docker-compose up -d",
+    "db": "docker-compose up",
     "server": "concurrently \"npm run web-server\" \"npm run video-processor\" \"npm run video-server\"",
-    "start": "npm run db && npm run server"
+    "start": "npm run server",
+    "kill-web-server": "sudo lsof -PiTCP -sTCP:LISTEN | grep 4000 | awk '{print $2}' | xargs kill -9",
+    "kill-video-processor": "sudo lsof -PiTCP -sTCP:LISTEN | grep 4001 | awk '{print $2}' | xargs kill -9",
+    "kill-servers": "npm run kill-web-server && npm run kill-video-processor",
+    "kill-db": "docker-compose down",
+    "kill-all": "npm run kill-servers && npm run kill-docker",
+    "restart-servers": "npm run kill-servers && npm run server"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@faker-js/faker": "^7.6.0",
     "bcrypt": "^5.1.0",
     "bullmq": "^3.5.11",
     "compression": "^1.7.4",
@@ -41,6 +46,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "concurrently": "^7.6.0"
   }
 }

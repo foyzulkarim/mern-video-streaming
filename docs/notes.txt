@@ -1,0 +1,56 @@
+Video:
+	uploadedBy: User
+	thumbnailUrl: URL string
+	duration: number
+	title: string
+	viewCount: number
+	publishedAt: Date
+	description: string
+	comments: [Comment]
+	createdAt: Date
+	updatedAt: Date
+	videoHlsUrl: string
+	videoProcessedUrl: string
+	tags: [string]
+
+Comment: 
+	text: string
+	commentedBy: User
+	likeCount: number
+	unlikeCount: number
+	isLoved: boolean
+	replies: 
+		text : string
+		commentedBy: User
+	createdAt
+	updatedAt
+
+User:
+	profilePictureUrl
+	name
+	createdAt
+	updatedAt
+
+	
+
+
+plan - replace the current product card with video card:
+
+add a fixed thumbnail to the video for now
+replace the `new` with the `duration`
+title is title
+color code will be 'publishedAt' and we will show `x days` or `x hours` or `x minutes` or `x seconds` ago
+not showing description in the card
+behind the product image, we will set the video thumbnail when the user clicks on the video thumbnail, we will show the video in a video player page (we will create a new page for this)
+uploadedBy will be the user's name
+product image will be thumbnailUrl
+
+
+
+Find used port in macos
+`sudo lsof -PiTCP -sTCP:LISTEN`
+kill the process
+kill -9 1234 (1234 is the process id)
+
+Q. Create a small script which will get the processid of the listened port and kill the process. I will send the port as the parameter.
+A. `sudo lsof -PiTCP -sTCP:LISTEN | grep 3000 | awk '{print $2}' | xargs kill -9`
