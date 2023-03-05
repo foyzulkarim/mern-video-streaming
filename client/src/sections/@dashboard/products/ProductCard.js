@@ -24,15 +24,21 @@ ShopProductCard.propTypes = {
   product: PropTypes.object,
 };
 
-export default function ShopProductCard({ product }) {
-  const { name, cover, price, colors, status, priceSale } = product;
+export default function ShopProductCard({ video }) {
+  const {
+    title: name,
+    thumbnailUrl: cover,
+    viewCount: price,
+    duration: status,
+    publishedAt,
+  } = video;
 
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
         {status && (
           <Label
-            variant="filled"
+            variant='filled'
             color={(status === 'sale' && 'error') || 'info'}
             sx={{
               zIndex: 9,
@@ -49,28 +55,22 @@ export default function ShopProductCard({ product }) {
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Link color="inherit" underline="hover">
-          <Typography variant="subtitle2" noWrap>
+        <Link color='inherit' underline='hover'>
+          <Typography variant='subtitle2' noWrap>
             {name}
           </Typography>
         </Link>
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={colors} />
-          <Typography variant="subtitle1">
-            <Typography
-              component="span"
-              variant="body1"
-              sx={{
-                color: 'text.disabled',
-                textDecoration: 'line-through',
-              }}
-            >
-              {priceSale && fCurrency(priceSale)}
-            </Typography>
-            &nbsp;
-            {fCurrency(price)}
+        <Stack
+          direction='row'
+          alignItems='center'
+          justifyContent='space-between'
+        >
+          {/* <ColorPreview colors={colors} /> */}
+          <Typography variant='subtitle1'>
+            {publishedAt.toLocaleDateString()}
           </Typography>
+          <Typography variant='subtitle1'>{price} views</Typography>
         </Stack>
       </Stack>
     </Card>
