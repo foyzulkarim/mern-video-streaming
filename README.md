@@ -29,7 +29,7 @@ create-react-app and MUI library, along with socket.io-client and React Context.
 The API server is an Expressjs app that uses Joi, Multer, BullMQ, Socket.io, and
 MongoDB driver. The server communicates with Redis to process and store data,
 and uses MongoDB as the primary database. The database and Redis are spun up via
-the docker-compose command.
+the `docker-compose` command.
 
 #### Video Conversion Service
 
@@ -43,18 +43,17 @@ The HTTP server is a plain and simple server that serves HLS video files.
 
 ### Frontend app
 
-The client app is based on create-react-app and MUI library. It uses
-socket.io-client and React Context to communicate with the API server and
+The client app is based on `create-react-app` and MUI library. It uses
+`socket.io-client` and React Context to communicate with the API server and
 display the video content.
 
 ## Prerequisites
 
-To get started with MERN Video Streaming, you will need to have the following
-software installed on your local machine:
+Before running the application, you need to have the following installed on your machine:
 
-- [Node.js](https://nodejs.org/en/)
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- Docker and docker-compose (if you want to run the database separately)
 
 ### Built with Open-Source Technologies
 
@@ -73,29 +72,29 @@ MERN Video Streaming has been built with the following open-source technologies:
 
 To run the project locally, follow these steps:
 
-### 1. Clone the repository
+1. Clone the repository
 
 ```bash
-git clone git@github.com:foyzulkarim/mern-video-streaming.git
+git clone https://github.com/foyzulkarim/mern-video-streaming.git
 ```
 
-### 2. Install dependencies using npm
+2. Install dependencies using npm
 
-#### 2.1 Server dependencies
+- Server dependencies
 
 ```bash
 cd server
 npm install
 ```
 
-#### 2.2 Client dependencies
+- Client dependencies
 
 ```bash
 cd client
-yarn
+npm install
 ```
 
-### 3. Start the database and Redis
+3. Start the database and Redis
 
 If you want to run the database separately, you can use the following command:
 
@@ -103,30 +102,26 @@ If you want to run the database separately, you can use the following command:
 docker-compose up -d
 ```
 
-Otherwise the updated `npm run start` script will start the database and web
-servers altogether.
+Otherwise, the updated `npm run start` script will start the database and web servers altogether.
 
-### 4. Start the application
+4. Start the application
 
-#### 4.1 Start the server
-
-This will start all the backend services and database together.
+- Start the server
+  This will start all the backend services and database together.
 
 ```bash
 cd server
-npm run start
+npm start
 ```
 
-#### 4.2 Start the client
+- start the client
 
 ```bash
 cd client
-yarn start
+npm start
 ```
 
-### 5. Usage
-
-You can now access the application at http://localhost:3000.
+Now you can access the application at `http://localhost:3000`.
 
 ## Contributing to MERN Video Streaming
 
