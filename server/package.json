@@ -15,7 +15,7 @@
     "kill-video-processor": "sudo lsof -PiTCP -sTCP:LISTEN | grep 4001 | awk '{print $2}' | xargs kill -9",
     "kill-servers": "npm run kill-web-server && npm run kill-video-processor",
     "kill-db": "docker-compose down",
-    "kill-all": "npm run kill-servers && npm run kill-docker",
+    "kill-all": "npm run kill-servers && npm run kill-db",
     "restart-servers": "npm run kill-servers && npm run server"
   },
   "keywords": [],
