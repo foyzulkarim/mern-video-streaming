@@ -97,9 +97,11 @@ yarn
 
 ### 3. Start the database and Redis
 
-If you want to run the database separately, you can use the following command:
+Navigate to the `server` directory and then run `docker-compose up` command like
+below. It will spin up the databases as daemon mode.
 
 ```bash
+cd server
 docker-compose up -d
 ```
 
