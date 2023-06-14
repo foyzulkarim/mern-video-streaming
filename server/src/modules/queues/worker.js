@@ -51,10 +51,13 @@ const listenQueueEvent = (queueName) => {
   console.log(queueName, ' worker started', new Date().toTimeString());
 };
 
-const setupAllQueueEvents = () => {
+const setupAllQueueEvents = (db) => {
   Object.values(VIDEO_QUEUE_EVENTS).map((queueName) =>
     listenQueueEvent(queueName)
   );
+
+  const { setup: setupVideoHandler } = require('../models/video/handler');
+  setupVideoHandler();
   return true;
 };
 
