@@ -24,6 +24,13 @@ const setup = () => {
         });
         return;
       }
+      if (eventName === VIDEO_QUEUE_EVENTS.VIDEO_THUMBNAIL_GENERATED) {
+        await updateHistory(data.id, {
+          history: { status: eventName, createdAt: new Date() },
+          thumbnailPath: data.path,
+        });
+        return;
+      }
 
       await updateHistory(data.id, {
         history: { status: eventName, createdAt: new Date() },
