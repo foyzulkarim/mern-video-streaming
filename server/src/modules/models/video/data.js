@@ -71,6 +71,9 @@ const getFakeVideosData = () => {
       videoHlsUrl: faker.image.imageUrl(),
       videoProcessedUrl: faker.image.imageUrl(),
       tags: [faker.random.word(), faker.random.word(), faker.random.word()],
+      viewCount: new Date().getTime(),
+      duration: '2:30',
+      publishedAt: new Date(),
     });
   }
   return videos;

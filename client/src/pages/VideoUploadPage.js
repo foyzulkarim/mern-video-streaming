@@ -65,6 +65,7 @@ export default function VideoUploadPage() {
     const videoFile = values.videoFile;
     const formData = new FormData();
     formData.append('title', title);
+    formData.append('visibility', 'Public');
     formData.append('video', videoFile);
     try {
       const response = await axios.post(

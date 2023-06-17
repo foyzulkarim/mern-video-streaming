@@ -67,9 +67,7 @@ export default function ShopProductCard({ video }) {
           justifyContent='space-between'
         >
           {/* <ColorPreview colors={colors} /> */}
-          <Typography variant='subtitle1'>
-            {publishedAt.toLocaleDateString()}
-          </Typography>
+          <Typography variant='subtitle1'>{publishedAt}</Typography>
           <Typography variant='subtitle1'>{price} views</Typography>
         </Stack>
       </Stack>

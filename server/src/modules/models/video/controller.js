@@ -4,7 +4,6 @@ const { insert, search, getById, update, deleteById } = require('./service');
 const { validate } = require('./request');
 const { name } = require('./model');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
-
 const { addQueueItem } = require('../../queues/queue');
 
 const { getFakeVideosData } = require('./data');
@@ -129,15 +128,28 @@ const setupRoutes = (app) => {
   app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
     try {
       console.log('POST upload', JSON.stringify(req.body));
-      const payload = { ...req.body };
-      console.log('user given metadata', 'title', payload.title);
+      const dbPayload = {
+        ...req.body,
+        fileName: req.file.filename,
+        originalName: req.file.originalname,
+        recordingDate: new Date(),
+        videoLink: req.file.path,
+      };
+      console.log('dbPayload', dbPayload);
+      // TODO: save the file info and get the id from the database
+      const result = await insert(dbPayload);
+      console.log('result', result);
       await addQueueItem(QUEUE_EVENTS.VIDEO_UPLOADED, {
-        ...payload,
+        id: result.insertedId.toString(),
+        ...req.body,
         ...req.file,
       });
-      res
-        .status(200)
-        .json({ status: 'success', message: 'Upload success', ...req.file });
+      res.status(200).json({
+        status: 'success',
+        message: 'Upload success',
+        ...req.file,
+        ...result,
+      });
       return;
     } catch (error) {
       console.error(error);
@@ -146,4 +158,8 @@ const setupRoutes = (app) => {
   });
 };
 
-module.exports = { setupRoutes };
+const setup = (app) => {
+  setupRoutes(app);
+};
+
+module.exports = { setup };

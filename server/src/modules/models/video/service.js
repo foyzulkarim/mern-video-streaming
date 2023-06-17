@@ -1,5 +1,5 @@
-const { ObjectId } = require("mongodb");
-const { Video, name } = require("./model");
+const { ObjectId } = require('mongodb');
+const { Video, name } = require('./model');
 
 // TODO: add logging
 
@@ -12,12 +12,12 @@ const insert = async (document) => {
       console.log(
         JSON.stringify(
           error.errInfo.details.schemaRulesNotSatisfied.find(
-            (x) => x.operatorName == "properties"
+            (x) => x.operatorName == 'properties'
           ).propertiesNotSatisfied
         )
       );
       const errors = error.errInfo.details.schemaRulesNotSatisfied.find(
-        (x) => x.operatorName == "properties"
+        (x) => x.operatorName == 'properties'
       ).propertiesNotSatisfied;
       const reasons = errors.map((e) => {
         return {
@@ -64,6 +64,19 @@ const update = async (id, document) => {
   }
 };
 
+const updateHistory = async (id, { history, ...rest }) => {
+  try {
+    const updatedDoc = await Video.updateOne(
+      { _id: new ObjectId(id) },
+      { $push: { history }, $set: { ...rest } }
+    );
+    return updatedDoc;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
+
 const deleteById = async (id) => {
   try {
     const deleted = await Video.deleteOne({
@@ -81,5 +94,6 @@ module.exports = {
   search,
   getById,
   update,
+  updateHistory,
   deleteById,
 };

@@ -1,6 +1,8 @@
-const { Queue } = require("bullmq");
-const { ALL_EVENTS: QUEUE_EVENTS } = require("./constants");
-const redisConnection = { host: "localhost", port: 6379 };
+const { Queue } = require('bullmq');
+const { ALL_EVENTS: QUEUE_EVENTS } = require('./constants');
+const eventEmitter = require('../../event-manager').getInstance();
+
+const redisConnection = { host: 'localhost', port: 6379 };
 
 const queues = Object.values(QUEUE_EVENTS).map((queueName) => {
   return {
@@ -10,10 +12,14 @@ const queues = Object.values(QUEUE_EVENTS).map((queueName) => {
 });
 
 const addQueueItem = async (queueName, item) => {
+  console.log('addQueueItem', queueName, item);
   const queue = queues.find((q) => q.name === queueName);
   if (!queue) {
     throw new Error(`queue ${queueName} not found`);
   }
+
+  // TODO: update history : { status: queueName, createdAt: now }
+  eventEmitter.emit(`${queueName}`, item);
   await queue.queueObj.add(queueName, item, {
     removeOnComplete: true,
     removeOnFail: false,

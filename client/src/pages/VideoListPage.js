@@ -1,5 +1,8 @@
 import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import axios from 'axios';
+
 // @mui
 import { Container, Stack, Typography } from '@mui/material';
 // components
@@ -16,6 +19,20 @@ import VIDEOS from '../_mock/videos';
 
 export default function ProductsPage() {
   const [openFilter, setOpenFilter] = useState(false);
+  const [videos, setVideos] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const response = await axios.post(
+        'http://localhost:4000/api/videos/search',
+        {}
+      );
+      console.log('getData', response.data);
+      setVideos(response.data);
+    };
+
+    getData();
+  }, []);
 
   const handleOpenFilter = () => {
     setOpenFilter(true);
@@ -53,7 +70,7 @@ export default function ProductsPage() {
           </Stack>
         </Stack>
 
-        <ProductList products={VIDEOS} />
+        <ProductList products={videos} />
         <ProductCartWidget />
       </Container>
     </>
