@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, useParams } from 'react-router-dom';
 import { Helmet } from "react-helmet-async";
 // @mui
 import { styled } from "@mui/material/styles";
@@ -60,6 +61,11 @@ const validationSchema = yup.object({
 export default function VideoUploadPage() {
   const [uploadResponse, setUploadResponse] = useState(null);
   const [alertType, setAlertType] = useState("success");
+  const { id } = useParams();
+
+  useEffect(() => {
+    console.log("id", id);
+  }, [id]);
 
   // axios post the values to the backend
   const postToServer = async (values) => {
