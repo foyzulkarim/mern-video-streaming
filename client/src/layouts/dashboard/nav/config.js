@@ -38,7 +38,7 @@ const navConfig = [
   },
   {
     title: 'Video upload',
-    path: '/dashboard/video-upload',
+    path: '/video-upload',
     icon: icon('ic_blog'),
   },
   {
