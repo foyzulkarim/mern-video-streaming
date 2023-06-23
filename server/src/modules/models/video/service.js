@@ -41,10 +41,10 @@ const search = async (searchObject) => {
 
 const getById = async (id) => {
   try {
-    const Video = await Video.findOne({
+    const video = await Video.findOne({
       _id: new ObjectId(id),
     });
-    return Video;
+    return video;
   } catch (error) {
     console.error(error);
     return error;

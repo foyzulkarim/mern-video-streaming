@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 // @mui
-import { Box, Card, Link, Typography, Stack } from '@mui/material';
+import { Box, Card,  Typography, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
+
+import { Link } from "react-router-dom";
+
 // utils
 import { fCurrency } from '../../../utils/formatNumber';
 // components
@@ -31,10 +34,15 @@ export default function ShopProductCard({ video }) {
     viewCount: price,
     duration: status,
     publishedAt,
+    _id: id,
   } = video;
 
+  const onClickHandler = () => {
+    console.log('clicked', video);
+  };
+
   return (
-    <Card>
+    <Card onClick={onClickHandler}>
       <Box sx={{ pt: '100%', position: 'relative' }}>
         {status && (
           <Label
@@ -55,7 +63,7 @@ export default function ShopProductCard({ video }) {
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Link color='inherit' underline='hover'>
+        <Link to={id} color='inherit' underline='hover'>
           <Typography variant='subtitle2' noWrap>
             {name}
           </Typography>

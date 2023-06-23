@@ -18,16 +18,16 @@ import DashboardAppPage from './pages/DashboardAppPage';
 export default function Router() {
   const routes = useRoutes([
     {
-      path: '/dashboard',
+      path: '/',
       element: <DashboardLayout />,
       children: [
-        { element: <Navigate to='/dashboard/app' />, index: true },
-        { path: 'app', element: <DashboardAppPage /> },
+        { element: <Navigate to='/dashboard' />, index: true },
+        { path: 'dashboard', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'video-upload', element: <VideoUploadPage /> },
-        { path: 'video-player', element: <VideoPlayerPage /> },
+        { path: 'videos/:id', element: <VideoPlayerPage /> },
         { path: 'videos', element: <VideoListPage /> },
       ],
     },
