@@ -103,6 +103,8 @@ below. It will spin up the databases as daemon mode.
 ```bash
 cd server
 docker-compose up -d
+or
+npm run db
 ```
 
 Otherwise the updated `npm run start` script will start the database and web
