@@ -95,7 +95,7 @@ const setupRoutes = (app) => {
   });
 
   const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'video/mp4' || file.mimetype === 'video/x-matroska') {
+    if (file.mimetype === 'video/mp4' || file.mimetype === 'video/webm') {
       console.log('file type supported', file);
       cb(null, true);
     } else {
