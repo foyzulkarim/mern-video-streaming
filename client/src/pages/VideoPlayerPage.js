@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useParams } from "react-router-dom";
+import { Routes, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 // @mui
 import { styled } from "@mui/material/styles";
-import { Typography, Divider, Card, Box } from "@mui/material";
+import { palette } from "@mui/system";
+import {
+    Typography,
+    Divider,
+    Card,
+    Box,
+    CardActions,
+    CardContent,
+    Button,
+} from "@mui/material";
 
 import ReactPlayer from "react-player";
 
@@ -23,8 +32,54 @@ const StyledContent = styled("div")(({ theme }) => ({
 
 export default function VideoUploadPage() {
     const [url, setUrl] = useState("");
-    const [data, setData] = useState("");
+    const [data, setData] = useState({
+        title: "",
+        description: "",
+        visibility: "Public",
+        thumbnailUrl: "",
+        language: "Bangla",
+        recordingDate: "",
+        category: "Education",
+        videoFile: null,
+    });
     const { id } = useParams();
+    const navigate = useNavigate();
+    const navigateToContacts = () => {
+        // 👇️ navigate to /contacts
+        navigate("/videos");
+    };
+
+    const card = (
+        <React.Fragment>
+            <CardContent>
+                <Typography variant="h6" component="div">
+                    Category: {data?.category}
+                </Typography>
+                <Typography sx={{ fontSize: 16 }} color="text.secondary">
+                    Description: {data?.description}
+                </Typography>
+
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    Visibility: {data?.visibility}
+                </Typography>
+                {/* <Typography variant="body2">
+                    well meaning and kindly.
+                    <br />
+                    {'"a benevolent smile"'}
+                </Typography> */}
+            </CardContent>
+            <CardActions>
+                <Button
+                    size="small"
+                    onClick={() => {
+                        navigateToContacts();
+                    }}
+                >
+                    Back to Video list page
+                </Button>
+            </CardActions>
+        </React.Fragment>
+    );
 
     useEffect(() => {
         console.log("id", id);
@@ -48,69 +103,48 @@ export default function VideoUploadPage() {
 
     return (
         <>
-            {/* <Helmet>
-                <title> Video upload</title>
-            </Helmet>
-
-            <>
-                <Container>
-                    <StyledContent>
-                        <Typography variant="h4" sx={{ mb: 5 }}>
-                            Upload video
-                        </Typography>
-                        <Stack>
-                            <ReactPlayer
-                                url={url}
-                                controls
-                                playing={false}
-                                width="100%"
-                                height="100%"
-                                config={{
-                                    file: {
-                                        attributes: {
-                                            controlsList: "nodownload",
-                                        },
-                                    },
-                                }}
-                            />
-                        </Stack>
-                    </StyledContent>
-                </Container>
-            </> */}
-
-            {/* <Stack> */}
             <Helmet>
                 <title> Video upload</title>
             </Helmet>
-            <StyledContent>
-                <Typography variant="h4" sx={{ mb: 5 }}>
-                    {data?.title || "Upload video"}
-                </Typography>
+            <Box
+                sx={{
+                    bgcolor: "#eceff1",
+                    boxShadow: 1,
+                    borderRadius: 2,
+                    p: 2,
+                    minWidth: 300,
+                }}
+            >
+                <StyledContent>
+                    <Typography variant="h4" sx={{ mb: 5 }}>
+                        {data?.title || "Upload video"}
+                    </Typography>
 
-                <ReactPlayer
-                    url={url}
-                    controls
-                    playing={false}
-                    width="100%"
-                    height="100%"
-                    config={{
-                        file: {
-                            attributes: { controlsList: "nodownload" },
-                        },
-                    }}
-                />
-                <Box
+                    <ReactPlayer
+                        url={url}
+                        controls
+                        playing={false}
+                        width="100%"
+                        height="100%"
+                        config={{
+                            file: {
+                                attributes: { controlsList: "nodownload" },
+                            },
+                        }}
+                    />
+                    {/* <Box
                     sx={{
-                        bgcolor: "#457dbc",
+                        bgcolor: "#fff7d6",
                         boxShadow: 1,
                         borderRadius: 2,
                         p: 2,
                         minWidth: 300,
                     }}
-                >
-                    {"description "}
-                </Box>
-            </StyledContent>
+                > */}
+                    <Card variant="outlined">{card}</Card>
+                    {/* </Box> */}
+                </StyledContent>
+            </Box>
         </>
     );
 }
