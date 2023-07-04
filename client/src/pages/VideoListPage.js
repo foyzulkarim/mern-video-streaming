@@ -12,8 +12,7 @@ import {
   ProductCartWidget,
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
-// mock
-import VIDEOS from '../_mock/videos';
+import { API_SERVER } from '../constants';
 
 // ----------------------------------------------------------------------
 
@@ -23,10 +22,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.post(
-        'http://localhost:4000/api/videos/search',
-        {}
-      );
+      const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
       console.log('getData', response.data);
       setVideos(response.data);
     };

@@ -69,6 +69,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "serve": "^14.2.0",
     "@babel/core": "^7.19.3",
     "@babel/eslint-parser": "^7.19.1",
     "@svgr/webpack": "^6.5.0",

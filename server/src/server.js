@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
 
 server.listen(PORT, async () => {
   console.log(`listening on port ${PORT}`);
-  const db = await connect('mongodb://localhost:27017');
+  const db = await connect();
   await setup(db);
   console.log('application setup completed');
   // which request, what handler
