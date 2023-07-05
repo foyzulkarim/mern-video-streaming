@@ -151,6 +151,13 @@ yarn start
 
 You can now access the application at http://localhost:3000.
 
+## Special note: Video folder structures
+
+To upload the videos and serve them from server's folder we need to have below folder structure.
+
+<img width="284" alt="image" src="https://github.com/foyzulkarim/mern-video-streaming/assets/497812/391fa393-50ee-483a-b3fb-a3e076c20b86">
+
+
 ## Contributing to MERN Video Streaming
 
 MERN Video Streaming is an open-source project and we welcome contributions from
