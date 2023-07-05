@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
 // @mui
-import { Box, Card,  Typography, Stack } from '@mui/material';
+import { Box, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { Link } from "react-router-dom";
 
 // utils
-import { fCurrency } from '../../../utils/formatNumber';
 // components
 import Label from '../../../components/label';
-import { ColorPreview } from '../../../components/color-utils';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +29,7 @@ export default function ShopProductCard({ video }) {
   const {
     title: name,
     thumbnailUrl: cover,
-    viewCount: price,
+    viewCount,
     duration: status,
     publishedAt,
     _id: id,
@@ -74,9 +72,8 @@ export default function ShopProductCard({ video }) {
           alignItems='center'
           justifyContent='space-between'
         >
-          {/* <ColorPreview colors={colors} /> */}
           <Typography variant='subtitle1'>{publishedAt}</Typography>
-          <Typography variant='subtitle1'>{price} views</Typography>
+          <Typography variant='subtitle1'>{viewCount} views</Typography>
         </Stack>
       </Stack>
     </Card>

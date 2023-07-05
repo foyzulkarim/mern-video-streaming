@@ -1,8 +1,8 @@
 const multer = require('multer');
-
+const { ObjectId } = require('mongodb');
 const { insert, search, getById, update, deleteById } = require('./service');
 const { validate } = require('./request');
-const { name } = require('./model');
+const { Video, name } = require('./model');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
 
@@ -26,8 +26,13 @@ const setupRoutes = (app) => {
 
   app.get(`${BASE_URL}/detail/:id`, async (req, res) => {
     console.log(`GET`, req.params);
-    const student = await getById(req.params.id);
-    res.send(student);
+    const video = await getById(req.params.id);
+    await Video.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $inc: { viewCount: 1 } }
+    );
+
+    res.send(video);
   });
 
   // TODO: Proper searching with paging and ordering
@@ -134,6 +139,7 @@ const setupRoutes = (app) => {
         originalName: req.file.originalname,
         recordingDate: new Date(),
         videoLink: req.file.path,
+        viewCount:0
       };
       console.log('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database
