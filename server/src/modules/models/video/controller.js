@@ -1,6 +1,6 @@
 const multer = require('multer');
 const { ObjectId } = require('mongodb');
-const { insert, search, getById, update, deleteById } = require('./service');
+const { insert, search, getById, update,updateViewCount,  deleteById } = require('./service');
 const { validate } = require('./request');
 const { Video, name } = require('./model');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
@@ -26,12 +26,10 @@ const setupRoutes = (app) => {
 
   app.get(`${BASE_URL}/detail/:id`, async (req, res) => {
     console.log(`GET`, req.params);
-    const video = await getById(req.params.id);
-    await Video.updateOne(
-      { _id: new ObjectId(req.params.id) },
-      { $inc: { viewCount: 1 } }
-    );
-
+    const video = await updateViewCount(req.params.id);
+    if (video instanceof Error) {
+      return res.status(400).json(JSON.parse(video.message));
+    }
     res.send(video);
   });
 

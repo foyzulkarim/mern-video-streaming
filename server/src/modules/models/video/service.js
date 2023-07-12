@@ -77,6 +77,18 @@ const updateHistory = async (id, { history, ...rest }) => {
   }
 };
 
+const updateViewCount = async (id) => {
+  try {
+    const updatedDoc = await Video.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $inc: { viewCount: 1 } }
+    );
+    return updatedDoc.value;
+  } catch (error) {
+    return error;
+  }
+};
+
 const deleteById = async (id) => {
   try {
     const deleted = await Video.deleteOne({
@@ -95,5 +107,6 @@ module.exports = {
   getById,
   update,
   updateHistory,
+  updateViewCount,
   deleteById,
 };
