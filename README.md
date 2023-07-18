@@ -112,7 +112,26 @@ servers altogether.
 
 ### 4. Start the application
 
-#### 4.1 Start the server
+#### 4.1 Create `.env` file
+
+Create a `.env` file inside `server` directory and copy paste all the key-values from `.env.template` file.
+
+#### 4.2 Create `uploads` directory
+
+```bash
+cd server
+mkdir uploads
+cd uploads
+mkdir hls processed videos thumbnails
+```
+
+#### 4.3 Set the value of `API_SERVER` & `VIDEO_SERVER` for localhost
+
+To run this project locally just set `http://localhost:4000` as `API_SERVER` and `http://localhost:4001` as `VIDEO_SERVER` in `client/src/constants.js`.
+
+Make sure your server(`server/src/server.js`) running on port `4000` and your video-server(`server/src/video-server.js`) running on port `4001`
+
+#### 4.4 Start the server
 
 This will start all the backend services and database together.
 
@@ -121,7 +140,7 @@ cd server
 npm run start
 ```
 
-#### 4.2 Start the client
+#### 4.5 Start the client
 
 ```bash
 cd client
