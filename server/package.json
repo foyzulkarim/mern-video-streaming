@@ -16,7 +16,8 @@
     "kill-servers": "npm run kill-web-server && npm run kill-video-processor",
     "kill-db": "docker-compose down",
     "kill-all": "npm run kill-servers && npm run kill-db",
-    "restart-servers": "npm run kill-servers && npm run server"
+    "restart-servers": "npm run kill-servers && npm run server",
+    "init-directories": "mkdir -p uploads/hls uploads/processed uploads/videos uploads/thumbnails"
   },
   "keywords": [],
   "author": "",
