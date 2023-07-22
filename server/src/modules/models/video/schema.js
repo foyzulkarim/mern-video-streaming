@@ -1,6 +1,8 @@
-const { name } = require("./model");
+const { MongoManager } = require("../../db/mongo");
 
 const VIDEO_VISIBILITIES = ["Public", "Private", "Unlisted"];
+
+const name = 'videos'
 
 /**
  *  Video properties: 
@@ -8,7 +10,8 @@ const VIDEO_VISIBILITIES = ["Public", "Private", "Unlisted"];
     thumbnailUrl, playlistId, language, recordingDate, 
     category, viewsCount, likesCount, dislikesCount, 
  */
-const updateSchema = async (db) => {
+const updateSchema = async () => {
+  const db = MongoManager.Instance;
   const validator = {
     $jsonSchema: {
       bsonType: "object",
