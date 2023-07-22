@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb');
-const { Video, name } = require('./model');
+const { Video, Role } = require('../../db/collections');
 
 // TODO: add logging
 
