@@ -1,5 +1,7 @@
 const { ObjectId } = require('mongodb');
-const { Video } = require('../../db/collections');
+const { Video, Role } = require('../../db/collections');
+
+// TODO: add logging
 
 const insert = async (document) => {
   try {

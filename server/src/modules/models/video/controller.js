@@ -1,15 +1,12 @@
 const multer = require('multer');
-const {
-  insert,
-  search,
-  update,
-  getById,
-  deleteById,
-} = require('./service');
+const { insert, search, update,updateViewCount,  deleteById } = require('./service');
 const { validate } = require('./request');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
 const { getVideoDurations } = require('../../queues/video-processor');
+
+const { getFakeVideosData } = require('./data');
+
 
 const BASE_URL = `/api/videos`;
 
