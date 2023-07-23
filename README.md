@@ -121,6 +121,7 @@ Create a `.env` file inside `server` directory and copy paste all the key-values
 This will create `uploads` directory inside `server` directory.
 
 ```bash
+npm i -g zx
 npm run init-directories
 ```
 
