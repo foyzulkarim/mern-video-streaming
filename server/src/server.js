@@ -5,9 +5,7 @@ const eventEmitter = require('./event-manager').getInstance();
 
 const PORT = 4000;
 
-const setup = async () => {
-  const { updateSchema } = await require('./modules/models/video/schema');
-  await updateSchema();
+const setup = async () => {  
   const { setup: setupVideoModule } =
     await require('./modules/models/video/controller');
   setupVideoModule(app);

@@ -4,10 +4,8 @@ const { MongoManager } = require('./modules/db/mongo');
 const { setupAllQueueEvents } = require('./modules/queues/worker');
 
 const setup = async () => {
-  const db = await MongoManager.connect();
-  const { updateSchema } = await require('./modules/models/video/schema');
-  await updateSchema();
-  const status = setupAllQueueEvents(db);
+  await MongoManager.connect();  
+  const status = setupAllQueueEvents();
   console.log('setupAllQueueEvents: ', status);
 };
 

@@ -51,7 +51,7 @@ const listenQueueEvent = (queueName) => {
   console.log(queueName, ' worker started', new Date().toTimeString());
 };
 
-const setupAllQueueEvents = (db) => {
+const setupAllQueueEvents = () => {
   Object.values(VIDEO_QUEUE_EVENTS).map((queueName) =>
     listenQueueEvent(queueName)
   );
