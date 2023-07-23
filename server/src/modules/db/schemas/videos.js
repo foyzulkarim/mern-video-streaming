@@ -1,5 +1,3 @@
-const { baseSchema, ensureCollection } = require('./common');
-
 const VIDEO_VISIBILITIES = ['Public', 'Private', 'Unlisted'];
 
 const name = 'videos';
@@ -14,7 +12,6 @@ const updateSchema = async (db) => {
   const validator = {
     $jsonSchema: {
       bsonType: 'object',
-      additionalProperties: false,
       required: [
         'title',
         'fileName',
@@ -22,10 +19,8 @@ const updateSchema = async (db) => {
         'visibility',
         'recordingDate',
         'videoLink',
-        ...Object.keys(baseSchema),
       ],
       properties: {
-        ...baseSchema,
         title: {
           bsonType: 'string',
           description: 'must be a string and is required',
@@ -34,7 +29,7 @@ const updateSchema = async (db) => {
           bsonType: 'string',
           description: 'must be a string and is required',
         },
-        viewCount: {
+        viewsCount: {
           bsonType: 'int',
           minimum: 0,
           description: 'must be an integer',
@@ -90,46 +85,48 @@ const updateSchema = async (db) => {
           bsonType: 'string',
           description: 'must be a string and is required',
         },
-        tags: {
-          bsonType: 'array',
-          description: 'must be an array and is required',
-        },
-        publishedAt: {
-          bsonType: 'date',
-          description: 'must be a date and is required',
-        },
       },
     },
   };
 
-  const indexes = [
-    {
-      key: { title: -1 },
-      name: 'custom_title_index',
-    },
-    {
-      key: { title: 'text' },
-      name: 'title_text_index',
-    },
-    {
-      key: { visibility: -1 },
-      name: 'custom_visibility_index',
-    },
-    {
-      key: { playlistId: -1 },
-      name: 'custom_playlistId_index',
-    },
-    {
-      key: { recordingDate: -1 },
-      name: 'custom_recordingDate_index',
-    },
-    {
-      key: { viewCount: -1 },
-      name: 'custom_viewCount_index',
-    },
-  ];
+  const collections = await db.listCollections({ name }).toArray();
+  if (collections.length === 0) {
+    console.log(`creating collection ${name}`);
+    await db.createCollection(name, { validator });
+  } else {
+    console.log(`updating collection ${name}`);
+    await db.command({
+      collMod: name,
+      validator,
+    });
+  }
 
-  await ensureCollection({ db, name, validator, indexes });
+  // indexes: title, visibility, playlistId, recordingDate
+  await db.command({
+    createIndexes: name,
+    indexes: [
+      {
+        key: { title: -1 },
+        name: 'custom_title_index',
+      },
+      {
+        key: { title: 'text' },
+        name: 'title_text_index',
+      },
+      {
+        key: { visibility: -1 },
+        name: 'custom_visibility_index',
+      },
+      {
+        key: { playlistId: -1 },
+        name: 'custom_playlistId_index',
+      },
+      {
+        key: { recordingDate: -1 },
+        name: 'custom_recordingDate_index',
+      },
+    ],
+  });
 };
 
 module.exports = {

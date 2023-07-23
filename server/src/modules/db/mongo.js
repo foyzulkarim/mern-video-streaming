@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 
 // Singleton design pattern
 class MongoManager {
-  static setInstance(instance) {
+  static async setInstance(instance) {
     if (!MongoManager.instance) {
       console.log('setting instance');
       MongoManager.instance = instance;
@@ -16,6 +16,16 @@ class MongoManager {
     return MongoManager.instance;
   }
 
+  static updateSchemas = async () => {
+    const directoryPath = path.join(__dirname, "schemas");
+    const files = fs.readdirSync(directoryPath);
+    for (const file of files) {
+      const filePath = path.join(directoryPath, file);
+      const { updateSchema } = require(filePath);
+      await updateSchema(MongoManager.instance);
+    }
+  };
+
   static connect = async () => {
     if (MongoManager.instance) return MongoManager.instance;
 
@@ -25,14 +35,13 @@ class MongoManager {
     });
     console.log('connecting to MongoDB');
     await client.connect();
-    _db = client.db('videodb');
+    const db = client.db('videodb');
     console.log('connected to MongoDB');
-    MongoManager.setInstance(_db);
-    return _db;
+    await MongoManager.setInstance(db);
+    await MongoManager.updateSchemas();
+    return db;
   };
 }
-
-let _db = null;
 
 // export them
 module.exports = {
