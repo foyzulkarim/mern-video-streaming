@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb');
-const { Video, name } = require('./model');
+const { Video } = require('./model');
 
 // TODO: add logging
 
@@ -35,7 +35,7 @@ const insert = async (document) => {
 
 // TODO: use regex or like search
 const search = async (searchObject) => {
-  const result = await Video.find(searchObject).toArray();
+  const result = await Video.find(searchObject).sort({ createdAt: -1 }).toArray();
   return result;
 };
 

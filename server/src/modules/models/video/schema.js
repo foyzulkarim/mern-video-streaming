@@ -1,6 +1,7 @@
 const { name } = require("./model");
 
 const VIDEO_VISIBILITIES = ["Public", "Private", "Unlisted"];
+const VIDEO_LANGUAGES = [ "en", "bn", "es",  "hi", "ur"];
 
 /**
  *  Video properties: 
@@ -43,8 +44,8 @@ const updateSchema = async (db) => {
           description: "must be an objectId and is required",
         },
         language: {
-          bsonType: "string",
-          description: "must be a string and is required",
+          enum: VIDEO_LANGUAGES,
+          description: "can only be one of the enum values and is required",
         },
         recordingDate: {
           bsonType: "date",
@@ -79,7 +80,7 @@ const updateSchema = async (db) => {
         thumbnailUrl: {
           bsonType: "string",
           description: "must be a string and is required",
-        },
+        }        
       },
     },
   };
@@ -119,7 +120,7 @@ const updateSchema = async (db) => {
       {
         key: { recordingDate: -1 },
         name: "custom_recordingDate_index",
-      },
+      }
     ],
   });
 };

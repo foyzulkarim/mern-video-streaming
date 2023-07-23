@@ -1,12 +1,12 @@
+import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { Routes, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import ReactPlayer from 'react-player';
+import { useNavigate, useParams } from 'react-router-dom';
 // @mui
-import { styled } from '@mui/material/styles';
-import { palette } from '@mui/system';
+import { styled } from '@mui/material/styles'; 
 import {
-  Typography,
-  Divider,
+  Typography, 
   Card,
   Box,
   CardActions,
@@ -16,9 +16,6 @@ import {
 
 import { API_SERVER, VIDEO_SERVER } from '../constants';
 
-import ReactPlayer from 'react-player';
-
-import axios from 'axios';
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 800,

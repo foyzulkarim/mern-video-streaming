@@ -1,11 +1,9 @@
-const multer = require('multer');
-const { ObjectId } = require('mongodb');
-const { insert, search, getById, update,updateViewCount,  deleteById } = require('./service');
+const multer = require('multer'); 
+const { insert, search, update,updateViewCount,  deleteById } = require('./service');
 const { validate } = require('./request');
-const { Video, name } = require('./model');
+const { name } = require('./model');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
-
 const { getFakeVideosData } = require('./data');
 
 const BASE_URL = `/api/${name}`;

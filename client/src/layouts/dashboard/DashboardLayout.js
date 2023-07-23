@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // @mui
 import { styled } from '@mui/material/styles';
 //
@@ -43,6 +45,7 @@ export default function DashboardLayout() {
 
       <Main>
         <Outlet />
+        <ToastContainer position='bottom-left' />
       </Main>
     </StyledRoot>
   );

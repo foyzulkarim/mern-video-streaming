@@ -1,5 +1,10 @@
+import axios from 'axios';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -8,9 +13,7 @@ import {
   TextField,
   FormControl,
   Typography,
-  Button,
-  Alert,
-  Snackbar,
+  Button, 
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -21,13 +24,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
 import { API_SERVER } from '../constants';
+
+
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 600,
@@ -59,9 +58,7 @@ const validationSchema = yup.object({
 });
 
 export default function VideoUploadPage() {
-  const [uploadResponse, setUploadResponse] = useState(null);
-  const [alertType, setAlertType] = useState('success');
-
+  const [videoFileName, setVideoFileName] = useState('');
   const navigate = useNavigate();
   const navigateToVideos = () => {
     // 👇️ navigate to /contacts
@@ -69,7 +66,7 @@ export default function VideoUploadPage() {
   };
 
   // axios post the values to the backend
-  const postToServer = async (values, helpers) => {
+  const postToServer = async (values, _) => {
     console.log(values);
     const {
       title,
@@ -78,14 +75,14 @@ export default function VideoUploadPage() {
       language,
       recordingDate,
       visibility,
-    } = values;
-    const videoFile = values.videoFile;
+      videoFile
+    } = values; 
     const formData = new FormData();
     formData.append('title', title);
     formData.append('visibility', visibility);
     formData.append('category', category);
     formData.append('description', description);
-    // formData.append("language", language);
+    formData.append("language", language);
     formData.append('recordingDate', recordingDate);
     formData.append('video', videoFile);
     try {
@@ -95,14 +92,12 @@ export default function VideoUploadPage() {
           Accept: '*/*',
         },
       });
-      setAlertType('success');
-      setUploadResponse(response.data.message);
+      toast.success(response.data.message) 
       console.log(response);
       setTimeout(() => navigateToVideos(), 3000);
     } catch (error) {
-      console.log(error);
-      setAlertType('error');
-      setUploadResponse(error.response.data.error.message);
+      toast.error(error.response.data.error.message)
+      console.log(error); 
     }
   };
 
@@ -115,7 +110,7 @@ export default function VideoUploadPage() {
       description: '',
       visibility: 'Public',
       thumbnailUrl: 'test',
-      language: 'Bangla',
+      language: 'bn',
       recordingDate: new Date(),
       category: 'Education',
       videoFile: null,
@@ -132,8 +127,7 @@ export default function VideoUploadPage() {
       // check videoFile size
       if (values.videoFile?.size > 52428000) {
         errors.videoFile = 'Video file size should be less than 50MB';
-      }
-      console.log(values.videoFile?.type);
+      } 
       // check videoFile type, must be video/mp4 or video/x-matroska
       if (
         values.videoFile?.type !== 'video/mp4' &&
@@ -168,8 +162,11 @@ export default function VideoUploadPage() {
                     id='video'
                     type='file'
                     onChange={(e) => {
-                      const file = e.currentTarget.files[0];
-                      formik.setFieldValue('videoFile', file);
+                      const file = e.target.files[0];       
+                      if(file){
+                        setVideoFileName(file.name)        
+                        formik.setFieldValue('videoFile', file);
+                      }  
                     }}
                   />
                   <Button
@@ -181,21 +178,24 @@ export default function VideoUploadPage() {
                   </Button>
                 </label>
                 {/* video file name display here */}
-                <TextField
-                  value={formik.values.videoFile?.name}
-                  error={Boolean(formik.errors?.videoFile)}
+                {
+                  videoFileName && <TextField                 
+                  value={ videoFileName } 
+                  error={Boolean(formik.errors?.videoFile)} 
                   helperText={formik.errors?.videoFile}
                 />
+                }
                 <TextField
                   id='title'
                   name='title'
                   label='Video title'
                   value={formik.values.title}
                   onChange={formik.handleChange}
-                  error={formik.touched.title && Boolean(formik.errors.title)}
-                  helperText={formik.touched.title && formik.errors.title}
+                  error={formik.touched.title && Boolean(formik.errors.title)} 
                 />
                 <TextField
+                multiline
+                rows={5}
                   id='description'
                   name='description'
                   label='Video description'
@@ -205,9 +205,7 @@ export default function VideoUploadPage() {
                     formik.touched.description &&
                     Boolean(formik.errors.description)
                   }
-                  helperText={
-                    formik.touched.description && formik.errors.description
-                  }
+                  
                 />
                 <FormControl fullWidth>
                   <InputLabel id='visibility-select-label'>
@@ -220,8 +218,7 @@ export default function VideoUploadPage() {
                     label='Visibility'
                     value={formik.values.visibility}
                     onChange={formik.handleChange}
-                    error={Boolean(formik.errors.visibility)}
-                    helperText={formik.errors.visibility}
+                    error={Boolean(formik.errors.visibility)} 
                   >
                     <MenuItem value={'Public'}>Public</MenuItem>
                     <MenuItem value={'Private'}>Private</MenuItem>
@@ -248,17 +245,17 @@ export default function VideoUploadPage() {
                   <Select
                     labelId='language-select-label'
                     id='language-simple-select'
+                    name='language'
                     label='Language'
                     value={formik.values.language}
                     onChange={formik.handleChange}
-                    error={Boolean(formik.errors.language)}
-                    helperText={formik.errors.language}
+                    error={Boolean(formik.errors.language)} 
                   >
-                    <MenuItem value={'English'}>English</MenuItem>
-                    <MenuItem value={'Bangla'}>Bangla</MenuItem>
-                    <MenuItem value={'Spanish'}>Spanish</MenuItem>
-                    <MenuItem value={'Hindi'}>Hindi</MenuItem>
-                    <MenuItem value={'Urdu'}>Urdu</MenuItem>
+                    <MenuItem value={'en'}>English</MenuItem>
+                    <MenuItem value={'bn'}>Bangla</MenuItem>
+                    <MenuItem value={'es'}>Spanish</MenuItem>
+                    <MenuItem value={'hi'}>Hindi</MenuItem>
+                    <MenuItem value={'ur'}>Urdu</MenuItem>
                   </Select>
                 </FormControl>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -277,11 +274,11 @@ export default function VideoUploadPage() {
                   <Select
                     labelId='category-select-label'
                     id='category-simple-select'
+                    name='category'
                     value={formik.values.category}
                     label='Category'
                     onChange={formik.handleChange}
-                    error={Boolean(formik.errors.category)}
-                    helperText={formik.errors.category}
+                    error={Boolean(formik.errors.category)} 
                   >
                     <MenuItem value={'Education'}>Education</MenuItem>
                     <MenuItem value={'Technology'}>Technology</MenuItem>
@@ -299,29 +296,7 @@ export default function VideoUploadPage() {
                   Upload
                 </LoadingButton>
               </Stack>
-            </form>
-            <Stack>
-              <Snackbar
-                open={uploadResponse}
-                autoHideDuration={5000}
-                onClose={() => {
-                  setUploadResponse(null);
-                }}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-              >
-                <Alert
-                  onClose={() => {
-                    setUploadResponse(null);
-                  }}
-                  severity={alertType}
-                >
-                  {uploadResponse}
-                </Alert>
-              </Snackbar>
-            </Stack>
+            </form>           
           </StyledContent>
         </Container>
       </>
