@@ -17,7 +17,7 @@
     "kill-db": "docker-compose down",
     "kill-all": "npm run kill-servers && npm run kill-db",
     "restart-servers": "npm run kill-servers && npm run server",
-    "init-directories": "zx src/shell-script.mjs"
+    "init-directories": "zx scripts/shell-script.mjs"
   },
   "keywords": [],
   "author": "",
