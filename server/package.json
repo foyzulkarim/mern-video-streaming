@@ -16,7 +16,8 @@
     "kill-servers": "npm run kill-web-server && npm run kill-video-processor",
     "kill-db": "docker-compose down",
     "kill-all": "npm run kill-servers && npm run kill-db",
-    "restart-servers": "npm run kill-servers && npm run server"
+    "restart-servers": "npm run kill-servers && npm run server",
+    "init-directories": "zx scripts/shell-script.mjs"
   },
   "keywords": [],
   "author": "",
@@ -44,7 +45,8 @@
     "pm2": "^5.2.2",
     "prettier": "^2.8.3",
     "socket.io": "^4.6.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "zx": "^7.2.3"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
