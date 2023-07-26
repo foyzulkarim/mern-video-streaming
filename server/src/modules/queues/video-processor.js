@@ -107,10 +107,13 @@ const processMp4ToHls = async (filePath, outputFolder, jobData) => {
 };
 
 const getVideoDurations = (filePath) => {
-    
+
+    // if any error occour return 0.0 second as default video duration
+    // else return video durations
     return new Promise((resolve,reject) => {
         let durations = 0.0
          ffmpeg.ffprobe(filePath, function(err, metadata) {
+            // getting video durations in second
             if(!err){
                 durations = metadata.format.duration
             }
@@ -122,4 +125,4 @@ const getVideoDurations = (filePath) => {
 }
 
 
-module.exports = { processRawFileToMp4, processMp4ToHls, generateThumbnail, getVideoDurations };
+module.exports = { processRawFileToMp4, processMp4ToHls, generateThumbnail, getVideoDurations };          
