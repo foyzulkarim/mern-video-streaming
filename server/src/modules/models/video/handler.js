@@ -1,6 +1,6 @@
 const eventEmitter = require('../../../event-manager').getInstance();
 const { VIDEO_QUEUE_EVENTS } = require('../../queues/constants');
-const { updateHistory, updateStatus } = require('./service');
+const { updateHistory, update } = require('./service');
 
 const setup = () => {
   // eventEmitter.on(VIDEO_QUEUE_EVENTS.VIDEO_UPLOADED, (data) => {
@@ -27,7 +27,7 @@ const setup = () => {
           hlsPath: data.path,
         });
         
-        const video = await updateStatus(data.id, { 
+        const video = await update(data.id, { 
           status: "published" 
         });
         return;
