@@ -1,6 +1,7 @@
 const { name } = require("./model");
 
 const VIDEO_VISIBILITIES = ["Public", "Private", "Unlisted"];
+const VIDEO_STATUS = ["pending", "processed", "published"];
 
 /**
  *  Video properties: 
@@ -36,6 +37,10 @@ const updateSchema = async (db) => {
         },
         visibility: {
           enum: VIDEO_VISIBILITIES,
+          description: "can only be one of the enum values and is required",
+        },
+        status: {
+          enum: VIDEO_STATUS,
           description: "can only be one of the enum values and is required",
         },
         playlistId: {
@@ -96,7 +101,7 @@ const updateSchema = async (db) => {
     });
   }
 
-  // indexes: title, visibility, playlistId, recordingDate
+  // indexes: title, visibility, playlistId, recordingDate, status
   await db.command({
     createIndexes: name,
     indexes: [
@@ -119,6 +124,10 @@ const updateSchema = async (db) => {
       {
         key: { recordingDate: -1 },
         name: "custom_recordingDate_index",
+      },
+      {
+        key: { status: -1 },
+        name: "custom_status_index",
       },
     ],
   });
