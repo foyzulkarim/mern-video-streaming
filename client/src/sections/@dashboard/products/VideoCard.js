@@ -21,11 +21,11 @@ const StyledProductImg = styled('img')({
 
 // ----------------------------------------------------------------------
 
-ShopProductCard.propTypes = {
-  product: PropTypes.object,
+VideoCard.propTypes = {
+  video: PropTypes.object,
 };
 
-export default function ShopProductCard({ video }) {
+export default function VideoCard({ video }) {
   const {
     title: name,
     thumbnailUrl: cover,

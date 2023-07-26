@@ -8,7 +8,7 @@ import { Container, Stack, Typography } from '@mui/material';
 // components
 import {
   ProductSort,
-  ProductList,
+  VideoList,
   ProductCartWidget,
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
@@ -23,7 +23,6 @@ export default function ProductsPage() {
   useEffect(() => {
     const getData = async () => {
       const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
-      console.log('getData', response.data);
       setVideos(response.data);
     };
 
@@ -46,7 +45,7 @@ export default function ProductsPage() {
 
       <Container>
         <Typography variant='h4' sx={{ mb: 5 }}>
-          Products
+          Videos
         </Typography>
 
         <Stack
@@ -66,7 +65,7 @@ export default function ProductsPage() {
           </Stack>
         </Stack>
 
-        <ProductList products={videos} />
+        <VideoList videos={videos} />
         <ProductCartWidget />
       </Container>
     </>
