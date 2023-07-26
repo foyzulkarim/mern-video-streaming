@@ -1,8 +1,12 @@
 /** execute function will take a filePath and run  ffmpeg command to convert it to mp4 */
-const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
 const ffmpeg = require("fluent-ffmpeg");
+
+const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
-console.log(ffmpegInstaller.path, ffmpegInstaller.version);
+
+const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
+ffmpeg.setFfprobePath(ffprobeInstaller.path);
+
 const path = require("path");
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require("./constants");
 const { addQueueItem } = require("./queue");
@@ -102,4 +106,20 @@ const processMp4ToHls = async (filePath, outputFolder, jobData) => {
     return;
 };
 
-module.exports = { processRawFileToMp4, processMp4ToHls, generateThumbnail };
+const getVideoDurations = (filePath) => {
+    
+    return new Promise((resolve,reject) => {
+        let durations = 0.0
+         ffmpeg.ffprobe(filePath, function(err, metadata) {
+            if(!err){
+                durations = metadata.format.duration
+            }
+            resolve(durations)
+        });
+    })
+
+
+}
+
+
+module.exports = { processRawFileToMp4, processMp4ToHls, generateThumbnail, getVideoDurations };

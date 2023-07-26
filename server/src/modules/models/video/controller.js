@@ -5,6 +5,7 @@ const { validate } = require('./request');
 const { Video, name } = require('./model');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
+const { getVideoDurations } = require('../../queues/video-processor');
 
 const { getFakeVideosData } = require('./data');
 
@@ -130,14 +131,16 @@ const setupRoutes = (app) => {
 
   app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
     try {
-      console.log('POST upload', JSON.stringify(req.body));
+
+      const videoDurations = await getVideoDurations(`./${req.file.path}`)
       const dbPayload = {
         ...req.body,
         fileName: req.file.filename,
         originalName: req.file.originalname,
         recordingDate: new Date(),
         videoLink: req.file.path,
-        viewCount:0
+        viewCount:0,
+        durations:videoDurations
       };
       console.log('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database

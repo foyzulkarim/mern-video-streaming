@@ -34,6 +34,11 @@ const updateSchema = async (db) => {
           minimum: 0,
           description: "must be an integer",
         },
+        durations: {
+          bsonType: "double",
+          minimum: 0.0,
+          description: "video durations in second. Must be a double",
+        },
         visibility: {
           enum: VIDEO_VISIBILITIES,
           description: "can only be one of the enum values and is required",
