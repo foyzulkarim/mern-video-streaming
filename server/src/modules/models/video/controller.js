@@ -137,7 +137,8 @@ const setupRoutes = (app) => {
         originalName: req.file.originalname,
         recordingDate: new Date(),
         videoLink: req.file.path,
-        viewCount:0
+        viewCount:0,
+        status: "pending"
       };
       console.log('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database
