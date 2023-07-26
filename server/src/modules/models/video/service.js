@@ -89,6 +89,19 @@ const updateViewCount = async (id) => {
   }
 };
 
+const updateStatus = async (id, { status }) => {
+  try {
+    const updatedDoc = await Video.updateOne(
+      { _id: new ObjectId(id) },
+      {  $set: { status }  }
+    );
+    return updatedDoc;
+  } catch (error) {
+    return error;
+  }
+};
+
+
 const deleteById = async (id) => {
   try {
     const deleted = await Video.deleteOne({
@@ -108,5 +121,6 @@ module.exports = {
   update,
   updateHistory,
   updateViewCount,
+  updateStatus,
   deleteById,
 };
