@@ -66,25 +66,23 @@ export default function VideoCard({ video }) {
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Link to={id} color='inherit' underline='hover'>
-          <Typography variant='subtitle2' noWrap>
-            {name}
-          </Typography>
-        </Link>
-
-        <Stack
-          direction='row'
-          alignItems='center'
-          justifyContent='space-between'
-        >
-          <Typography variant='subtitle1'>
-            <Moment format='DD/MM/yyyy'>{recordingDate}</Moment>
-          </Typography>
-          <Typography variant='subtitle1'>{viewCount} views</Typography>
-          <Typography variant='subtitle1'>
-            <Moment utc format='HH:mm:ss'>{videoDurations*1000}</Moment>
-          </Typography>
-        </Stack>
+        <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <Link to={id} color='inherit' underline='hover'>
+              <Typography variant='subtitle2' noWrap>
+                {name}
+              </Typography>
+            </Link>
+            <Typography variant='subtitle1'>
+                <Moment format='DD/MM/yyyy'>{recordingDate}</Moment>
+            </Typography>
+          </Stack>
+          
+          <Stack direction='row' alignItems='center' justifyContent='space-between'>
+            <Typography variant='subtitle1'>{viewCount} views</Typography>
+            <Typography variant='subtitle1'>
+              <Moment utc format='HH:mm:ss'>{videoDurations*1000}</Moment>
+            </Typography>
+          </Stack>
       </Stack>
     </Card>
   );
