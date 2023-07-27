@@ -33,7 +33,7 @@ export default function VideoCard({ video }) {
     viewCount,
     durations,
     status,
-    publishedAt,
+    recordingDate,
     _id: id,
   } = video;
 
@@ -77,7 +77,9 @@ export default function VideoCard({ video }) {
           alignItems='center'
           justifyContent='space-between'
         >
-          <Typography variant='subtitle1'>{publishedAt}</Typography>
+          <Typography variant='subtitle1'>
+            <Moment format='DD/MM/yyyy'>{recordingDate}</Moment>
+          </Typography>
           <Typography variant='subtitle1'>{viewCount} views</Typography>
           <Typography variant='subtitle1'>
             <Moment utc format='HH:mm:ss'>{videoDurations*1000}</Moment>
