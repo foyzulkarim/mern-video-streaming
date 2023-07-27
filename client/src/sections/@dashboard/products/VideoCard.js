@@ -4,6 +4,7 @@ import { Box, Card, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { Link } from "react-router-dom";
+import Moment from 'react-moment';
 
 // utils
 // components
@@ -30,7 +31,8 @@ export default function VideoCard({ video }) {
     title: name,
     thumbnailUrl: cover,
     viewCount,
-    duration: status,
+    durations,
+    status,
     publishedAt,
     _id: id,
   } = video;
@@ -38,6 +40,9 @@ export default function VideoCard({ video }) {
   const onClickHandler = () => {
     console.log('clicked', video);
   };
+
+  let videoDurations = 0
+  if(durations) videoDurations = durations
 
   return (
     <Card onClick={onClickHandler}>
@@ -74,6 +79,9 @@ export default function VideoCard({ video }) {
         >
           <Typography variant='subtitle1'>{publishedAt}</Typography>
           <Typography variant='subtitle1'>{viewCount} views</Typography>
+          <Typography variant='subtitle1'>
+            <Moment utc format='HH:mm:ss'>{videoDurations*1000}</Moment>
+          </Typography>
         </Stack>
       </Stack>
     </Card>
