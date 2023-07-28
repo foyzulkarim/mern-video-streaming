@@ -17,12 +17,12 @@ class MongoManager {
   }
 
   static updateSchemas = async () => {
-    const directoryPath = path.join(__dirname, "schemas");
+    const directoryPath = path.join(__dirname, 'schemas');
     const files = fs.readdirSync(directoryPath);
     for (const file of files) {
       const filePath = path.join(directoryPath, file);
       const { updateSchema } = require(filePath);
-      await updateSchema(MongoManager.instance);
+      if (updateSchema) await updateSchema(MongoManager.instance);
     }
   };
 

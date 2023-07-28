@@ -1,3 +1,5 @@
+const { baseSchema, ensureCollection } = require('./common');
+
 const VIDEO_VISIBILITIES = ['Public', 'Private', 'Unlisted'];
 
 const name = 'videos';
@@ -21,6 +23,7 @@ const updateSchema = async (db) => {
         'videoLink',
       ],
       properties: {
+        ...baseSchema,
         title: {
           bsonType: 'string',
           description: 'must be a string and is required',
@@ -84,44 +87,30 @@ const updateSchema = async (db) => {
     },
   };
 
-  const collections = await db.listCollections({ name }).toArray();
-  if (collections.length === 0) {
-    console.log(`creating collection ${name}`);
-    await db.createCollection(name, { validator });
-  } else {
-    console.log(`updating collection ${name}`);
-    await db.command({
-      collMod: name,
-      validator,
-    });
-  }
+  const indexes = [
+    {
+      key: { title: -1 },
+      name: 'custom_title_index',
+    },
+    {
+      key: { title: 'text' },
+      name: 'title_text_index',
+    },
+    {
+      key: { visibility: -1 },
+      name: 'custom_visibility_index',
+    },
+    {
+      key: { playlistId: -1 },
+      name: 'custom_playlistId_index',
+    },
+    {
+      key: { recordingDate: -1 },
+      name: 'custom_recordingDate_index',
+    },
+  ];
 
-  // indexes: title, visibility, playlistId, recordingDate
-  await db.command({
-    createIndexes: name,
-    indexes: [
-      {
-        key: { title: -1 },
-        name: 'custom_title_index',
-      },
-      {
-        key: { title: 'text' },
-        name: 'title_text_index',
-      },
-      {
-        key: { visibility: -1 },
-        name: 'custom_visibility_index',
-      },
-      {
-        key: { playlistId: -1 },
-        name: 'custom_playlistId_index',
-      },
-      {
-        key: { recordingDate: -1 },
-        name: 'custom_recordingDate_index',
-      },
-    ],
-  });
+  await ensureCollection({ db, name, validator, indexes });
 };
 
 module.exports = {
