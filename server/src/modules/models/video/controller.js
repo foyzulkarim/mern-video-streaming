@@ -1,11 +1,14 @@
 const multer = require('multer');
-const { insert, search, update,updateViewCount,  deleteById } = require('./service');
+const {
+  insert,
+  search,
+  update,
+  updateViewCount,
+  deleteById,
+} = require('./service');
 const { validate } = require('./request');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
-
-const { getFakeVideosData } = require('./data');
-
 
 const BASE_URL = `/api/videos`;
 
@@ -137,7 +140,7 @@ const setupRoutes = (app) => {
         originalName: req.file.originalname,
         recordingDate: new Date(),
         videoLink: req.file.path,
-        viewCount:0
+        viewCount: 0,
       };
       console.log('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database
