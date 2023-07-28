@@ -1,12 +1,15 @@
 const multer = require('multer');
-const { insert, search, update,updateViewCount,  deleteById } = require('./service');
+const {
+  insert,
+  search,
+  update,
+  updateViewCount,
+  deleteById,
+} = require('./service');
 const { validate } = require('./request');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
-const { getVideoDurations } = require('../../queues/video-processor');
-
-const { getFakeVideosData } = require('./data');
-
+const { getVideoDuration } = require('../../queues/video-processor');
 
 const BASE_URL = `/api/videos`;
 
@@ -132,7 +135,7 @@ const setupRoutes = (app) => {
   app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
     try {
 
-      const videoDurations = await getVideoDurations(`./${req.file.path}`)
+      const videoDuration = await getVideoDuration(`./${req.file.path}`)
       const dbPayload = {
         ...req.body,
         fileName: req.file.filename,
@@ -141,7 +144,7 @@ const setupRoutes = (app) => {
         videoLink: req.file.path,
         viewCount:0,
         status: "pending",
-        durations:videoDurations
+        duration:videoDuration
       };
       console.log('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database

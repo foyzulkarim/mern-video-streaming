@@ -1,5 +1,3 @@
-const { ObjectId } = require('mongodb');
-const { MongoManager } = require('../../db/mongo');
 const { Role } = require('../../db/collections');
 
 const insert = async (role) => {
@@ -7,6 +5,10 @@ const insert = async (role) => {
     const item = { isPublic: false, isActive: true, ...role };
     return await Role.insert(item);
   } catch (error) {
+    if (error.code === 121) {
+      console.log(JSON.stringify(error));
+      return new Error(JSON.stringify(error));
+    }
     return error;
   }
 };
@@ -20,33 +22,7 @@ const update = async (role) => {
   }
 };
 
-const search = async (searchObject) => {
-  const filter = searchObject.keyword
-    ? {
-        name: new RegExp(searchObject.keyword),
-        isDeleted: false,
-      }
-    : {
-        isDeleted: false,
-      };
-
-  const projection = {
-    name: 1,
-  };
-
-  const pageNumber = searchObject.pageNumber || 1;
-  const skip = (pageNumber - 1) * 10;
-  const limit = 10;
-
-  const sort = searchObject.sort || { createdAt: -1 };
-
-  const cursor = await Role.find(filter, { projection, sort, skip, limit });
-  const result = await cursor.toArray();
-  return result;
-};
-
 module.exports = {
   insert,
   update,
-  getById: Role.getObjectById,
 };

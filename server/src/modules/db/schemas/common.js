@@ -24,23 +24,6 @@ const baseSchema = {
   },
 };
 
-const baseIndexes = (prefix) => {
-  return [
-    {
-      key: { createdAt: -1 },
-      name: `${prefix}_createdAt_index`,
-    },
-    {
-      key: { updatedAt: -1 },
-      name: `${prefix}_updatedAt_index`,
-    },
-    {
-      key: { isDeleted: -1 },
-      name: `${prefix}_isDeleted_index`,
-    },
-  ];
-};
-
 const baseDefaults = () => ({
   _id: new ObjectId(),
   createdAt: new Date(),
@@ -63,7 +46,7 @@ const ensureCollection = async ({ db, name, validator, indexes }) => {
 
   await db.command({
     createIndexes: name,
-    indexes: [...indexes, ...baseIndexes(name)],
+    indexes,
   });
 };
 

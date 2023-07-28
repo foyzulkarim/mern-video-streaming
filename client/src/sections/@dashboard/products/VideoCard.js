@@ -31,7 +31,7 @@ export default function VideoCard({ video }) {
     title: name,
     thumbnailUrl: cover,
     viewCount,
-    durations,
+    duration,
     status,
     recordingDate,
     _id: id,
@@ -41,8 +41,8 @@ export default function VideoCard({ video }) {
     console.log('clicked', video);
   };
 
-  let videoDurations = 0
-  if(durations) videoDurations = durations
+  let videoDuration = 0
+  if(duration) videoDuration = duration
 
   return (
     <Card onClick={onClickHandler}>
@@ -80,7 +80,7 @@ export default function VideoCard({ video }) {
           <Stack direction='row' alignItems='center' justifyContent='space-between'>
             <Typography variant='subtitle1'>{viewCount} views</Typography>
             <Typography variant='subtitle1'>
-              <Moment utc format='HH:mm:ss'>{videoDurations*1000}</Moment>
+              <Moment utc format='HH:mm:ss'>{videoDuration*1000}</Moment>
             </Typography>
           </Stack>
       </Stack>
