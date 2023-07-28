@@ -11,6 +11,7 @@ import ProductsPage from './pages/ProductsPage';
 import VideoUploadPage from './pages/VideoUploadPage';
 import VideoPlayerPage from './pages/VideoPlayerPage';
 import VideoListPage from './pages/VideoListPage';
+import VideosPage from './pages/VideosPage'
 import DashboardAppPage from './pages/DashboardAppPage';
 
 // ----------------------------------------------------------------------
@@ -28,7 +29,8 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'video-upload', element: <VideoUploadPage /> },
         { path: 'videos/:id', element: <VideoPlayerPage /> },
-        { path: 'videos', element: <VideoListPage /> },
+        { path: 'video-list', element: <VideoListPage /> },
+        { path: 'videos', element: <VideosPage /> },
       ],
     },
     {
