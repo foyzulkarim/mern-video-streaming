@@ -7,21 +7,33 @@ import Iconify from '../../../components/iconify';
 // ----------------------------------------------------------------------
 
 const SORT_BY_OPTIONS = [
-  { value: 'featured', label: 'Featured' },
-  { value: 'newest', label: 'Newest' },
-  { value: 'priceDesc', label: 'Price: High-Low' },
-  { value: 'priceAsc', label: 'Price: Low-High' },
+  { value: 'latest', label: 'Latest' },
+  { value: 'popular', label: 'Popular' },
+  { value: 'oldest', label: 'Oldest' },
 ];
 
-export default function ShopProductSort() {
+export default function ShopProductSort({setVideos }) {
   const [open, setOpen] = useState(null);
+  const [label, setLabel] = useState("Popular");
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (event,val) => {
     setOpen(null);
+    if(val === 'backdropClick') return 
+    switch(val) {
+      case 'oldest':
+        setVideos(prev=>[...prev.sort((a, b) => new Date(a.recordingDate) - new Date(b.recordingDate))])
+        break;
+      case 'latest':
+        setVideos(prev=>[...prev.sort((a, b) => new Date(b.recordingDate) - new Date(a.recordingDate))])
+        break;
+      default:
+        setVideos(prev=>[...prev.sort((a, b) => b.viewCount - a.viewCount===0 ? new Date(b.recordingDate) - new Date(a.recordingDate) : b.viewCount - a.viewCount)])
+    }
+    setLabel(val)
   };
 
   return (
@@ -34,7 +46,7 @@ export default function ShopProductSort() {
       >
         Sort By:&nbsp;
         <Typography component="span" variant="subtitle2" sx={{ color: 'text.secondary' }}>
-          Newest
+          {label}
         </Typography>
       </Button>
       <Menu
@@ -48,8 +60,8 @@ export default function ShopProductSort() {
         {SORT_BY_OPTIONS.map((option) => (
           <MenuItem
             key={option.value}
-            selected={option.value === 'newest'}
-            onClick={handleClose}
+            selected={option.value === 'popular'}
+            onClick={(event)=>handleClose(event,option.value)}
             sx={{ typography: 'body2' }}
           >
             {option.label}

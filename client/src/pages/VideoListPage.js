@@ -24,6 +24,7 @@ export default function ProductsPage() {
     const getData = async () => {
       const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
       console.log('getData', response.data);
+      response.data.sort((a, b) => b.viewCount - a.viewCount===0 ? new Date(b.recordingDate) - new Date(a.recordingDate) : b.viewCount - a.viewCount);
       setVideos(response.data);
     };
 
@@ -62,7 +63,7 @@ export default function ProductsPage() {
               onOpenFilter={handleOpenFilter}
               onCloseFilter={handleCloseFilter}
             />
-            <ProductSort />
+            <ProductSort setVideos={setVideos}/>
           </Stack>
         </Stack>
 
