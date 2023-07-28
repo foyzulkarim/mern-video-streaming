@@ -1,8 +1,6 @@
 const { ObjectId } = require('mongodb');
 const { Video, Role } = require('../../db/collections');
 
-// TODO: add logging
-
 const insert = async (document) => {
   try {
     const result = await Video.insertOne(document);
@@ -51,13 +49,9 @@ const getById = async (id) => {
   }
 };
 
-const update = async (id, document) => {
+const update = async (document) => {
   try {
-    const updatedDoc = await Video.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { ...document } }
-    );
-    return updatedDoc;
+    return await Video.update(document);
   } catch (error) {
     console.error(error);
     return error;

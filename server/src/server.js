@@ -10,6 +10,10 @@ const setup = async () => {
     await require('./modules/models/video/controller');
   setupVideoModule(app);
 
+  const { setup: setupRoleModule } =
+    await require('./modules/models/role/controller');
+    setupRoleModule(app);
+
   const { listenQueueEvent } = await require('./modules/queues/worker');
   listenQueueEvent(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED);
 
