@@ -21,6 +21,7 @@ const updateSchema = async (db) => {
         'visibility',
         'recordingDate',
         'videoLink',
+        ...Object.keys(baseSchema)
       ],
       properties: {
         ...baseSchema,
