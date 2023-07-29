@@ -118,11 +118,11 @@ Create a `.env` file inside `server` directory and copy paste all the key-values
 
 #### 4.2 Create `uploads` directory
 
+This will create `uploads` directory inside `server` directory.
+
 ```bash
-cd server
-mkdir uploads
-cd uploads
-mkdir hls processed videos thumbnails
+npm i -g zx
+npm run init-directories
 ```
 
 #### 4.3 Set the value of `API_SERVER` & `VIDEO_SERVER` for localhost
@@ -156,7 +156,6 @@ You can now access the application at http://localhost:3000.
 To upload the videos and serve them from server's folder we need to have below folder structure.
 
 <img width="284" alt="image" src="https://github.com/foyzulkarim/mern-video-streaming/assets/497812/391fa393-50ee-483a-b3fb-a3e076c20b86">
-
 
 ## Contributing to MERN Video Streaming
 
