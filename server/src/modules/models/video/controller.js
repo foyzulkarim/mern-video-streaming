@@ -3,7 +3,7 @@ const {
   insert,
   search,
   update,
-  updateViewCount,
+  getById,
   deleteById,
 } = require('./service');
 const { validate } = require('./request');
