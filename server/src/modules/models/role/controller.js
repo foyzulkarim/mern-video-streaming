@@ -1,5 +1,4 @@
-const multer = require('multer');
-const { insert, update } = require('./service');
+const { insert, update,  getById } = require('./service');
 
 const BASE_URL = `/api/roles`;
 
@@ -23,6 +22,15 @@ const setupRoutes = (app) => {
       return;
     }
     return res.json(result);
+  });
+
+  app.get(`${BASE_URL}/detail/:id`, async (req, res) => {
+    console.log(`GET`, req.params);
+    const item = await getById(req.params.id);
+    if (item instanceof Error) {
+      return res.status(400).json(JSON.parse(item.message));
+    }
+    res.send(item);
   });
 };
 
