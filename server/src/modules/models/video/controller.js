@@ -1,32 +1,35 @@
 const multer = require('multer');
-const { ObjectId } = require('mongodb');
-const { insert, search, getById, update,updateViewCount,  deleteById } = require('./service');
+const {
+  insert,
+  search,
+  update,
+  getById,
+  deleteById,
+} = require('./service');
 const { validate } = require('./request');
-const { Video, name } = require('./model');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
 
-const { getFakeVideosData } = require('./data');
-
-const BASE_URL = `/api/${name}`;
+const BASE_URL = `/api/videos`;
 
 const setupRoutes = (app) => {
-  console.log(`Setting up routes for ${name}`);
+  console.log(`Setting up routes for ${BASE_URL}`);
 
   // return empty response with success message for the base route
   app.get(`${BASE_URL}/`, async (req, res) => {
     console.log(`GET`, req.params);
+    const data = await search({});
     res.send({
       status: 'success',
       message: 'OK',
       timestamp: new Date(),
-      data: getFakeVideosData(),
+      data,
     });
   });
 
   app.get(`${BASE_URL}/detail/:id`, async (req, res) => {
     console.log(`GET`, req.params);
-    const video = await updateViewCount(req.params.id);
+    const video = await getById(req.params.id);
     if (video instanceof Error) {
       return res.status(400).json(JSON.parse(video.message));
     }
@@ -137,7 +140,7 @@ const setupRoutes = (app) => {
         originalName: req.file.originalname,
         recordingDate: new Date(),
         videoLink: req.file.path,
-        viewCount:0
+        viewCount: 0,
       };
       console.log('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database

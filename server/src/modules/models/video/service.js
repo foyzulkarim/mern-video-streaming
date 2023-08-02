@@ -1,67 +1,47 @@
 const { ObjectId } = require('mongodb');
-const { Video, name } = require('./model');
-
-// TODO: add logging
+const { Video } = require('../../db/collections');
 
 const insert = async (document) => {
   try {
-    const result = await Video.insertOne(document);
-    return result;
+    return await Video.insert(document);
   } catch (error) {
-    if (error.code === 121) {
-      console.log(
-        JSON.stringify(
-          error.errInfo.details.schemaRulesNotSatisfied.find(
-            (x) => x.operatorName == 'properties'
-          ).propertiesNotSatisfied
-        )
-      );
-      const errors = error.errInfo.details.schemaRulesNotSatisfied.find(
-        (x) => x.operatorName == 'properties'
-      ).propertiesNotSatisfied;
-      const reasons = errors.map((e) => {
-        return {
-          property: e.propertyName,
-          description: e.description,
-          errors: e.details.map((d) => d.reason),
-          rawErrors: e.details,
-        };
-      });
-      return new Error(JSON.stringify(reasons));
-    }
     return error;
   }
 };
 
-// TODO: use regex or like search
+const update = async (document) => {
+  try {
+    return await Video.update(document);
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
+
 const search = async (searchObject) => {
-  const result = await Video.find(searchObject).toArray();
-  return result;
-};
+  const filter = searchObject.keyword
+    ? {
+        title: new RegExp(searchObject.keyword),
+        isDeleted: false,
+      }
+    : {
+        isDeleted: false,
+      };
 
-const getById = async (id) => {
-  try {
-    const video = await Video.findOne({
-      _id: new ObjectId(id),
-    });
-    return video;
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-};
+  const projection = {
+    title: 1,
+    description: 1,
+    category: 1,
+    duration: 1,
+    viewCount: 1,
+  };
 
-const update = async (id, document) => {
-  try {
-    const updatedDoc = await Video.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { ...document } }
-    );
-    return updatedDoc;
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
+  const sort = searchObject.sort || { viewCount: -1 };
+  const pageNumber = searchObject.pageNumber || 1;
+  console.log('search', searchObject);
+
+  const videos = await Video.search({ filter, projection, sort, pageNumber });
+  return videos;
 };
 
 const updateHistory = async (id, { history, ...rest }) => {
@@ -104,7 +84,7 @@ const deleteById = async (id) => {
 module.exports = {
   insert,
   search,
-  getById,
+  getById: Video.getObjectById,
   update,
   updateHistory,
   updateViewCount,
