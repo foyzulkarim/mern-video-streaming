@@ -10,7 +10,12 @@ const insertItem = async (collection, item) => {
     });
   } catch (error) {
     console.error(error);
-    return null;
+    if (error.code === 121) {
+      // MongoServerError: Document failed validation
+      const schemaErrors = error.errInfo?.details?.schemaRulesNotSatisfied;
+      console.log('schemaErrors', JSON.stringify(schemaErrors));
+    }
+    return error;
   }
 };
 
@@ -34,9 +39,11 @@ const updateItem = async (collection, item) => {
 
 const getObjectById = async (collectionName, id) => {
   try {
-    const item = await MongoManager.Instance.collection(collectionName).findOne({
-      _id: new ObjectId(id),
-    });
+    const item = await MongoManager.Instance.collection(collectionName).findOne(
+      {
+        _id: new ObjectId(id),
+      }
+    );
     return item;
   } catch (error) {
     console.error(error);
@@ -44,11 +51,34 @@ const getObjectById = async (collectionName, id) => {
   }
 };
 
+const search = async (
+  collectionName,
+  { filter, projection, sort, pageNumber = 1 }
+) => {
+  const skip = (pageNumber - 1) * 10;
+  const limit = 10;
+  console.log(
+    'filter, projection, sort, pageNumber',
+    filter,
+    projection,
+    sort,
+    pageNumber
+  );
+
+  const cursor = await MongoManager.Instance.collection(collectionName).find(
+    filter,
+    { projection, sort: sort || { createdAt: -1 }, skip, limit }
+  );
+  const result = await cursor.toArray();
+  return result;
+};
+
 const common = (collectionName) => {
   return {
     insert: async (item) => await insertItem(collectionName, item),
     update: async (item) => await updateItem(collectionName, item),
     getObjectById: async (id) => await getObjectById(collectionName, id),
+    search: async (params) => await search(collectionName, params),
   };
 };
 

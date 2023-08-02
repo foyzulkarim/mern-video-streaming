@@ -101,7 +101,7 @@ export default function UserPage() {
     const getData = async () => {
       const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
       console.log('getData', response.data);
-      setVideos(response.data);
+      // setVideos(response.data);
     };
 
     getData();
