@@ -14,6 +14,7 @@ const updateSchema = async (db) => {
   const validator = {
     $jsonSchema: {
       bsonType: 'object',
+      additionalProperties: false,
       required: [
         'title',
         'fileName',
@@ -21,7 +22,7 @@ const updateSchema = async (db) => {
         'visibility',
         'recordingDate',
         'videoLink',
-        ...Object.keys(baseSchema)
+        ...Object.keys(baseSchema),
       ],
       properties: {
         ...baseSchema,
@@ -33,7 +34,7 @@ const updateSchema = async (db) => {
           bsonType: 'string',
           description: 'must be a string and is required',
         },
-        viewsCount: {
+        viewCount: {
           bsonType: 'int',
           minimum: 0,
           description: 'must be an integer',
@@ -41,6 +42,11 @@ const updateSchema = async (db) => {
         visibility: {
           enum: VIDEO_VISIBILITIES,
           description: 'can only be one of the enum values and is required',
+        },
+        duration: {
+          bsonType: 'int',
+          minimum: 1,
+          description: 'must be an integer',
         },
         playlistId: {
           bsonType: 'objectId',
@@ -84,6 +90,14 @@ const updateSchema = async (db) => {
           bsonType: 'string',
           description: 'must be a string and is required',
         },
+        tags: {
+          bsonType: 'array',
+          description: 'must be an array and is required',
+        },
+        publishedAt: {
+          bsonType: 'date',
+          description: 'must be a date and is required',
+        },
       },
     },
   };
@@ -108,6 +122,10 @@ const updateSchema = async (db) => {
     {
       key: { recordingDate: -1 },
       name: 'custom_recordingDate_index',
+    },
+    {
+      key: { viewCount: -1 },
+      name: 'custom_viewCount_index',
     },
   ];
 
