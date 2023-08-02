@@ -100,7 +100,8 @@ export default function UserPage() {
   useEffect(() => {
     const getData = async () => {
       const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
-      setVideos(response.data);
+      console.log('getData', response.data);
+      // setVideos(response.data);
     };
 
     getData();

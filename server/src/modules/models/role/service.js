@@ -20,8 +20,33 @@ const update = async (role) => {
   }
 };
 
+const search = async (searchObject) => {
+  const filter = searchObject.keyword
+    ? {
+        name: new RegExp(searchObject.keyword),
+        isDeleted: false,
+      }
+    : {
+        isDeleted: false,
+      };
+
+  const projection = {
+    name: 1,
+  };
+
+  const pageNumber = searchObject.pageNumber || 1;
+  const skip = (pageNumber - 1) * 10;
+  const limit = 10;
+
+  const sort = searchObject.sort || { createdAt: -1 };
+
+  const cursor = await Role.find(filter, { projection, sort, skip, limit });
+  const result = await cursor.toArray();
+  return result;
+};
+
 module.exports = {
   insert,
   update,
-  getById: Role.getObjectById
+  getById: Role.getObjectById,
 };

@@ -1,9 +1,9 @@
 const { ObjectId } = require('mongodb');
-const { Video, Role } = require('../../db/collections');
+const { Video } = require('../../db/collections');
 
 const insert = async (document) => {
   try {
-    return await Video.insertOne(document);
+    return await Video.insert(document);
   } catch (error) {
     return error;
   }
@@ -18,10 +18,30 @@ const update = async (document) => {
   }
 };
 
-// TODO: use regex or like search
 const search = async (searchObject) => {
-  const result = await Video.find(searchObject).toArray();
-  return result;
+  const filter = searchObject.keyword
+    ? {
+        title: new RegExp(searchObject.keyword),
+        isDeleted: false,
+      }
+    : {
+        isDeleted: false,
+      };
+
+  const projection = {
+    title: 1,
+    description: 1,
+    category: 1,
+    duration: 1,
+    viewCount: 1,
+  };
+
+  const sort = searchObject.sort || { viewCount: -1 };
+  const pageNumber = searchObject.pageNumber || 1;
+  console.log('search', searchObject);
+
+  const videos = await Video.search({ filter, projection, sort, pageNumber });
+  return videos;
 };
 
 const updateHistory = async (id, { history, ...rest }) => {
