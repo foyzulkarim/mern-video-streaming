@@ -65,7 +65,6 @@ export default function ProductsPage() {
             <ProductSort />
           </Stack>
         </Stack>
-
         <VideoList videos={videos} />
         <ProductCartWidget />
       </Container>
