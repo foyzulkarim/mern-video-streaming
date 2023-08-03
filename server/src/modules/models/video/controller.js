@@ -4,6 +4,7 @@ const {
   search,
   update,
   getById,
+  updateViewCount,
   deleteById,
 } = require('./service');
 const { validate } = require('./request');
@@ -30,7 +31,7 @@ const setupRoutes = (app) => {
 
   app.get(`${BASE_URL}/detail/:id`, async (req, res) => {
     console.log(`GET`, req.params);
-    const video = await getById(req.params.id);
+    const video = await updateViewCount(req.params.id);
     if (video instanceof Error) {
       return res.status(400).json(JSON.parse(video.message));
     }
