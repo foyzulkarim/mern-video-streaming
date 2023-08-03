@@ -27,7 +27,8 @@ const setup = () => {
           hlsPath: data.path,
         });
         
-        const video = await update(data.id, { 
+        const video = await update({ 
+          _id: data.id,
           status: "published" 
         });
         return;
