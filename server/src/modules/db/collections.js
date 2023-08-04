@@ -73,12 +73,28 @@ const search = async (
   return result;
 };
 
+const deleteObjectById = async (collectionName, id) => {
+  try {
+    const result = await MongoManager.Instance.collection(collectionName).deleteOne(
+      {
+        _id: new ObjectId(id),
+      }
+    );
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
+
 const common = (collectionName) => {
   return {
     insert: async (item) => await insertItem(collectionName, item),
     update: async (item) => await updateItem(collectionName, item),
     getObjectById: async (id) => await getObjectById(collectionName, id),
     search: async (params) => await search(collectionName, params),
+    deleteById: async (id) => await deleteObjectById(collectionName, id)
   };
 };
 
