@@ -1,5 +1,6 @@
 const { faker } = require('@faker-js/faker');
 const { MongoManager } = require('../../src/modules/db/mongo');
+const { VIDEO_STATUS, VIDEO_VISIBILITIES } = require('../../src/modules/db/schemas/videos');
 
 const getFakeVideosData = (x) => {
   const videos = [];
@@ -7,7 +8,7 @@ const getFakeVideosData = (x) => {
   for (let i = 0; i < 1000; i++) {
     videos.push({
       title: faker.lorem.sentence(5),
-      visibility: faker.helpers.arrayElement(['Public', 'Private', 'Unlisted']),
+      visibility: faker.helpers.arrayElement(VIDEO_VISIBILITIES),
       category: faker.helpers.arrayElement([
         'education',
         'entertainment',
@@ -18,7 +19,8 @@ const getFakeVideosData = (x) => {
       recordingDate: faker.date.past(),
       publishedAt: faker.date.past(),
       fileName: faker.lorem.sentence(5),
-
+      status: faker.helpers.arrayElement(VIDEO_STATUS),
+      isDeleted : faker.datatype.boolean(),
       thumbnailUrl: faker.image.imageUrl(),
       duration: parseInt(faker.random.numeric()),
       viewCount: parseInt(faker.random.numeric()),

@@ -144,4 +144,6 @@ const updateSchema = async (db) => {
 
 module.exports = {
   updateSchema,
+  VIDEO_STATUS,
+  VIDEO_VISIBILITIES,
 };
