@@ -41,8 +41,7 @@ export default function VideoCard({ video }) {
     console.log('clicked', video);
   };
 
-  let videoDuration = 0
-  if(duration) videoDuration = duration
+  const videoDuration = duration ?? 0;
 
   return (
     <Card onClick={onClickHandler}>

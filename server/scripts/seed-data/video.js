@@ -1,6 +1,6 @@
 const { faker } = require('@faker-js/faker');
 const { MongoManager } = require('../../src/modules/db/mongo');
-const { VIDEO_STATUS, VIDEO_VISIBILITIES } = require('../../src/modules/db/schemas/videos');
+const { VIDEO_STATUS, VIDEO_VISIBILITIES } = require('../../src/modules/db/constant');
 
 const getFakeVideosData = (x) => {
   const videos = [];

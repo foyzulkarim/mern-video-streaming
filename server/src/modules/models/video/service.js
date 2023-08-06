@@ -1,11 +1,13 @@
 const { ObjectId } = require('mongodb');
 const { Video } = require('../../db/collections');
+const { PENDING_STATUS } = require('../../db/constant')
+
 
 // TODO: add logging
 
 const insert = async (document) => {
   try {
-    return await Video.insert(document);
+    return await Video.insert({status: PENDING_STATUS, ...document}); // assigning default satus for all new videos
   } catch (error) {
     return error;
   }
@@ -15,7 +17,6 @@ const update = async (document) => {
   try {
     return await Video.update(document);
   } catch (error) {
-    console.error(error);
     return error;
   }
 };

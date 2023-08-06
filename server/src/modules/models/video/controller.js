@@ -10,7 +10,7 @@ const {
 const { validate } = require('./request');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
 const { addQueueItem } = require('../../queues/queue');
-const { getVideoDuration } = require('../../queues/video-processor');
+const { getVideoMetadata } = require('../../queues/video-processor');
 
 const BASE_URL = `/api/videos`;
 
@@ -136,15 +136,19 @@ const setupRoutes = (app) => {
   app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
     try {
 
-      const videoDuration = await getVideoDuration(`./${req.file.path}`)
+      const videoMetadata = await getVideoMetadata(`./${req.file.path}`)
+      let videoDuration = 0
+      if (typeof videoMetadata != Error){
+        videoDuration = parseInt(videoMetadata.format.duration)
+      }
+
       const dbPayload = {
         ...req.body,
         fileName: req.file.filename,
-        originalName: req.file.originalname,
+        originalName: req.file.originalname, 
         recordingDate: new Date(),
         videoLink: req.file.path,
         viewCount:0,
-        status: "pending",
         duration:videoDuration
       };
       console.log('dbPayload', dbPayload);

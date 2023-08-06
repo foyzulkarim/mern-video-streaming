@@ -1,7 +1,6 @@
 const { baseSchema, ensureCollection } = require('./common');
 
-const VIDEO_VISIBILITIES = ['Public', 'Private', 'Unlisted'];
-const VIDEO_STATUS = ["pending", "processed", "published"];
+const { VIDEO_STATUS, VIDEO_VISIBILITIES } = require('../constant');
 
 const name = 'videos';
 
@@ -144,6 +143,4 @@ const updateSchema = async (db) => {
 
 module.exports = {
   updateSchema,
-  VIDEO_STATUS,
-  VIDEO_VISIBILITIES,
 };
