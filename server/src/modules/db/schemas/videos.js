@@ -1,6 +1,6 @@
 const { baseSchema, ensureCollection } = require('./common');
 
-const VIDEO_VISIBILITIES = ['Public', 'Private', 'Unlisted'];
+const { VIDEO_STATUS, VIDEO_VISIBILITIES } = require('../constant');
 
 const name = 'videos';
 
@@ -20,6 +20,7 @@ const updateSchema = async (db) => {
         'fileName',
         'originalName',
         'visibility',
+        'status',
         'recordingDate',
         'videoLink',
         ...Object.keys(baseSchema),
@@ -40,13 +41,17 @@ const updateSchema = async (db) => {
           description: 'must be an integer',
         },
         visibility: {
-          enum: VIDEO_VISIBILITIES,
+          enum: Object.values(VIDEO_VISIBILITIES),
           description: 'can only be one of the enum values and is required',
         },
         duration: {
           bsonType: 'int',
           minimum: 1,
           description: 'must be an integer',
+        },
+        status: {
+          enum: Object.values(VIDEO_STATUS),
+          description: "can only be one of the enum values and is required",
         },
         playlistId: {
           bsonType: 'objectId',
@@ -126,6 +131,10 @@ const updateSchema = async (db) => {
     {
       key: { viewCount: -1 },
       name: 'custom_viewCount_index',
+    },
+    {
+      key: { status: -1 },
+      name: "custom_status_index",
     },
   ];
 

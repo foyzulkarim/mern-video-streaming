@@ -8,7 +8,7 @@ import { Container, Stack, Typography } from '@mui/material';
 // components
 import {
   ProductSort,
-  ProductList,
+  VideoList,
   ProductCartWidget,
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
@@ -66,7 +66,7 @@ export default function ProductsPage() {
           </Stack>
         </Stack>
 
-        <ProductList products={videos} />
+        <VideoList videos={videos} />
         <ProductCartWidget />
       </Container>
     </>
