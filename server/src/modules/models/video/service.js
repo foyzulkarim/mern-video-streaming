@@ -71,10 +71,7 @@ const updateViewCount = async (id) => {
 
 const deleteById = async (id) => {
   try {
-    const deleted = await Video.deleteOne({
-      _id: new ObjectId(id),
-    });
-    return deleted;
+    return await Video.deleteById(id);
   } catch (error) {
     console.error(error);
     return error;
