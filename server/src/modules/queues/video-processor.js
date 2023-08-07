@@ -106,16 +106,26 @@ const processMp4ToHls = async (filePath, outputFolder, jobData) => {
     return;
 };
 
-const getVideoMetadata = (filePath) => {
+const getVideoDurationAndResolution = (filePath) => {
 
     // if any error occour return error
     // else return video meta data
     return new Promise((resolve,reject) => {
+        let videoDuration = 0
+        let videoResolution = {
+            height : 0,
+            width : 0
+        } 
          ffmpeg.ffprobe(filePath, function(err, metadata) {
-            if(err){
-                resolve(err);
+            if(!err){
+                videoDuration = parseInt(metadata.format.duration);
+                videoResolution  ={
+                    height : metadata.streams[0].coded_height,
+                    width : metadata.streams[0].coded_width
+                }
             };
-            resolve(metadata);
+            
+            resolve({videoDuration, videoResolution});
         });
     })
 
@@ -123,4 +133,4 @@ const getVideoMetadata = (filePath) => {
 }
 
 
-module.exports = { processRawFileToMp4, processMp4ToHls, generateThumbnail, getVideoMetadata };          
+module.exports = { processRawFileToMp4, processMp4ToHls, generateThumbnail, getVideoDurationAndResolution };          
