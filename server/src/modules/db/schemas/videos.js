@@ -41,7 +41,7 @@ const updateSchema = async (db) => {
           description: 'must be an integer',
         },
         visibility: {
-          enum: VIDEO_VISIBILITIES,
+          enum: Object.values(VIDEO_VISIBILITIES),
           description: 'can only be one of the enum values and is required',
         },
         duration: {
@@ -50,7 +50,7 @@ const updateSchema = async (db) => {
           description: 'must be an integer',
         },
         status: {
-          enum: VIDEO_STATUS,
+          enum: Object.values(VIDEO_STATUS),
           description: "can only be one of the enum values and is required",
         },
         playlistId: {

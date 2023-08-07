@@ -1,7 +1,7 @@
 const eventEmitter = require('../../../event-manager').getInstance();
 const { VIDEO_QUEUE_EVENTS } = require('../../queues/constants');
 const { updateHistory, update } = require('./service');
-const { PUBLISHED_STATUS } = require('../../db/constant')
+const { VIDEO_STATUS } = require('../../db/constant')
 
 const setup = () => {
   // eventEmitter.on(VIDEO_QUEUE_EVENTS.VIDEO_UPLOADED, (data) => {
@@ -30,7 +30,7 @@ const setup = () => {
         
         await update({ 
           _id: data.id,
-          status: PUBLISHED_STATUS
+          status: VIDEO_STATUS.PUBLISHED
         });
 
         return;
