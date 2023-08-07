@@ -1,9 +1,13 @@
 const { ObjectId } = require('mongodb');
 const { Video } = require('../../db/collections');
+const { VIDEO_STATUS } = require('../../db/constant')
+
+
+// TODO: add logging
 
 const insert = async (document) => {
   try {
-    return await Video.insert(document);
+    return await Video.insert({status: VIDEO_STATUS.PENDING, ...document}); // assigning default satus for all new videos
   } catch (error) {
     return error;
   }
@@ -13,7 +17,6 @@ const update = async (document) => {
   try {
     return await Video.update(document);
   } catch (error) {
-    console.error(error);
     return error;
   }
 };
@@ -34,6 +37,7 @@ const search = async (searchObject) => {
     category: 1,
     duration: 1,
     viewCount: 1,
+    status : 1
   };
 
   const sort = searchObject.sort || { viewCount: -1 };
@@ -77,6 +81,7 @@ const deleteById = async (id) => {
     return error;
   }
 };
+
 
 module.exports = {
   insert,
