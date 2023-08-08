@@ -101,8 +101,7 @@ export default function UserPage() {
     const getData = async () => {
       const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
       console.log('getData', response.data);
-      response.data.sort((a, b) => b.viewCount - a.viewCount===0 ? new Date(b.recordingDate) - new Date(a.recordingDate) : b.viewCount - a.viewCount);
-      setVideos(response.data);
+      // setVideos(response.data);
     };
 
     getData();
@@ -187,14 +186,15 @@ export default function UserPage() {
           justifyContent='space-between'
           mb={5}
         >
-          <Stack direction='row' spacing={1} flexShrink={0} sx={{ my: 1 }}>
-            <ProductFilterSidebar
-              openFilter={openFilter}
-              onOpenFilter={handleOpenFilter}
-              onCloseFilter={handleCloseFilter}
-            />
-            <ProductSort setVideos={setVideos}/>
-          </Stack>
+          <Typography variant='h4' gutterBottom>
+            User
+          </Typography>
+          <Button
+            variant='contained'
+            startIcon={<Iconify icon='eva:plus-fill' />}
+          >
+            New User
+          </Button>
         </Stack>
 
         <Card>
