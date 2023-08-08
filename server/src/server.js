@@ -1,16 +1,18 @@
 const app = require('./app');
-const { connect } = require('./modules/db/mongo');
+const { MongoManager } = require('./modules/db/mongo');
 const { NOTIFY_EVENTS } = require('./modules/queues/constants');
 const eventEmitter = require('./event-manager').getInstance();
 
 const PORT = 4000;
 
-const setup = async (db) => {
-  const { updateSchema } = await require('./modules/models/video/schema');
-  await updateSchema(db);
+const setup = async () => {  
   const { setup: setupVideoModule } =
     await require('./modules/models/video/controller');
   setupVideoModule(app);
+
+  const { setup: setupRoleModule } =
+    await require('./modules/models/role/controller');
+    setupRoleModule(app);
 
   const { listenQueueEvent } = await require('./modules/queues/worker');
   listenQueueEvent(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED);
@@ -38,8 +40,8 @@ io.on('connection', (socket) => {
 
 server.listen(PORT, async () => {
   console.log(`listening on port ${PORT}`);
-  const db = await connect();
-  await setup(db);
+  await MongoManager.connect();
+  await setup();
   console.log('application setup completed');
   // which request, what handler
   app.use('/', (req, res) => {
