@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Container, Stack, Typography } from '@mui/material';
 // components
 import {
-  ProductSort,
+  VideoSort,
   VideoList,
   ProductCartWidget,
   ProductFilterSidebar,
@@ -63,7 +63,7 @@ export default function ProductsPage() {
               onOpenFilter={handleOpenFilter}
               onCloseFilter={handleCloseFilter}
             />
-            <ProductSort setVideos={setVideos}/>
+            <VideoSort setVideos={setVideos}/>
           </Stack>
         </Stack>
 
