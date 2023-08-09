@@ -1,8 +1,9 @@
 {
-  "name": "@minimal/material-kit-react",
-  "author": "minimals.cc",
+  "name": "vidigenie-client",
+  "author": "foyzulkarim",
+  "homepage": "https://foyzulkarim.github.io/mern-video-streaming",
   "licence": "MIT",
-  "version": "1.6.0",
+  "version": "1.0.0",
   "private": false,
   "scripts": {
     "start": "react-scripts start",
