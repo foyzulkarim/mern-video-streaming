@@ -39,6 +39,7 @@ const search = async (searchObject) => {
     viewCount: 1,
     status : 1,
     recordingDate: 1,
+    thumbnailUrl : 1
   };
 
   const sort = searchObject.sort || { viewCount: -1 };
