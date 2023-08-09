@@ -69,13 +69,12 @@ export default function VideoUploadPage() {
   };
 
   // axios post the values to the backend
-  const postToServer = async (values, helpers) => {
+  const postToServer = async (values) => {
     console.log(values);
     const {
       title,
       category,
       description,
-      language,
       recordingDate,
       visibility,
     } = values;
