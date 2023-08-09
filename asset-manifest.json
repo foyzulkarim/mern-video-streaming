@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/mern-video-streaming/static/js/main.c279c096.js",
+    "static/js/496.9cd10793.chunk.js": "/mern-video-streaming/static/js/496.9cd10793.chunk.js",
+    "index.html": "/mern-video-streaming/index.html",
+    "main.c279c096.js.map": "/mern-video-streaming/static/js/main.c279c096.js.map",
+    "496.9cd10793.chunk.js.map": "/mern-video-streaming/static/js/496.9cd10793.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.c279c096.js"
+  ]
+}
