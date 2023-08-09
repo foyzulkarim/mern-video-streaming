@@ -28,6 +28,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      REACT_APP_API_SERVER: https://www.google.com
+      REACT_APP_VIDEO_SERVER: https://www.amazon.com
     steps:
       - name: Checkout
         uses: actions/checkout@v3
