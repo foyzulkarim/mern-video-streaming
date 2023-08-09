@@ -93,16 +93,32 @@ const updateSchema = async (db) => {
         },
         thumbnailUrl: {
           bsonType: 'string',
-          description: 'must be a string and is required',
+          description: 'must be a string',
+        },
+        thumbnailPath: {
+          bsonType: 'string',
+          description: 'must be a string',
+        },
+        processedPath: {
+          bsonType: 'string',
+          description: 'must be a string',
+        },
+        hlsPath: {
+          bsonType: 'string',
+          description: 'must be a string',
         },
         tags: {
           bsonType: 'array',
-          description: 'must be an array and is required',
+          description: 'must be an array',
         },
         publishedAt: {
           bsonType: 'date',
-          description: 'must be a date and is required',
+          description: 'must be a date',
         },
+        history: {
+          bsonType: 'array',
+          description: 'must be a array',
+        }
       },
     },
   };
