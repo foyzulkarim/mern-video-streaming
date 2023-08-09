@@ -1,7 +1,6 @@
 {
-  "name": "vidigenie-client",
+  "name": "mern-video-streaming",
   "author": "foyzulkarim",
-  "homepage": "https://foyzulkarim.github.io/mern-video-streaming",
   "licence": "MIT",
   "version": "1.0.0",
   "private": false,
