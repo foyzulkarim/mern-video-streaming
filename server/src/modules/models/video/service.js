@@ -38,6 +38,7 @@ const search = async (searchObject) => {
     duration: 1,
     viewCount: 1,
     status : 1,
+    recordingDate: 1,
     thumbnailUrl : 1
   };
 
