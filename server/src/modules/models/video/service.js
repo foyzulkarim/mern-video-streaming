@@ -73,16 +73,6 @@ const updateViewCount = async (id) => {
   }
 };
 
-const deleteById = async (id) => {
-  try {
-    return await Video.deleteById(id);
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-};
-
-
 module.exports = {
   insert,
   search,
@@ -90,5 +80,5 @@ module.exports = {
   update,
   updateHistory,
   updateViewCount,
-  deleteById,
+  deleteById: Video.deleteById,
 };
