@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { styled } from '@mui/material/styles';
-import { palette } from '@mui/system';
 import {
   Typography,
-  Divider,
   Card,
   Box,
   CardActions,
