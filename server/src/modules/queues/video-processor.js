@@ -4,8 +4,8 @@ const ffmpeg = require("fluent-ffmpeg");
 const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
-const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
-ffmpeg.setFfprobePath(ffprobeInstaller.path);
+// const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
+// ffmpeg.setFfprobePath(ffprobeInstaller.path);
 
 const path = require("path");
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require("./constants");
@@ -116,17 +116,18 @@ const getVideoDurationAndResolution = (filePath) => {
             height : 0,
             width : 0
         } 
-         ffmpeg.ffprobe(filePath, function(err, metadata) {
-            if(!err){
-                videoDuration = parseInt(metadata.format.duration);
-                videoResolution  ={
-                    height : metadata.streams[0].coded_height,
-                    width : metadata.streams[0].coded_width
-                }
-            };
+        //  ffmpeg.ffprobe(filePath, function(err, metadata) {
+        //     if(!err){
+        //         videoDuration = parseInt(metadata.format.duration);
+        //         videoResolution  ={
+        //             height : metadata.streams[0].coded_height,
+        //             width : metadata.streams[0].coded_width
+        //         }
+        //     };
             
-            resolve({videoDuration, videoResolution});
-        });
+        //     resolve({videoDuration, videoResolution});
+        // });
+        resolve({videoDuration, videoResolution});
     })
 
 
