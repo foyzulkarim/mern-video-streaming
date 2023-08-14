@@ -4,8 +4,8 @@ const ffmpeg = require("fluent-ffmpeg");
 const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
-const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
-ffmpeg.setFfprobePath(ffprobeInstaller.path);
+// const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
+// ffmpeg.setFfprobePath(ffprobeInstaller.path);
 
 const path = require("path");
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require("./constants");
