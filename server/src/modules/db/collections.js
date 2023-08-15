@@ -8,12 +8,11 @@ const insertItem = async (collection, item) => {
       ...baseDefaults(),
       ...item,
     });
-  } catch (error) {
-    console.error(error);
-    if (error.code === 121) {
+  } catch (error) {    
+    console.error(error.errInfo?.details);
+    if (error.code.toString() === '121') {
       // MongoServerError: Document failed validation
-      const schemaErrors = error.errInfo?.details?.schemaRulesNotSatisfied;
-      console.log('schemaErrors', JSON.stringify(schemaErrors));
+      console.log('schemaErrors', JSON.stringify(error.errInfo?.details));
     }
     return error;
   }
@@ -73,12 +72,28 @@ const search = async (
   return result;
 };
 
+const deleteObjectById = async (collectionName, id) => {
+  try {
+    const result = await MongoManager.Instance.collection(
+      collectionName
+    ).deleteOne({
+      _id: new ObjectId(id),
+    });
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
+
 const common = (collectionName) => {
   return {
     insert: async (item) => await insertItem(collectionName, item),
     update: async (item) => await updateItem(collectionName, item),
     getObjectById: async (id) => await getObjectById(collectionName, id),
     search: async (params) => await search(collectionName, params),
+    deleteById: async (id) => await deleteObjectById(collectionName, id),
   };
 };
 

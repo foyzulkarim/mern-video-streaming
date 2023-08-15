@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  client:
+    container_name: client-app
+    image: docker-mern-video-streaming-client
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_SERVER=${REACT_APP_API_SERVER}
+        - REACT_APP_VIDEO_SERVER=${REACT_APP_VIDEO_SERVER}
+    ports:
+      - 3000:3000

@@ -4,3 +4,32 @@ services:
     image: redis
     ports:
       - 6379:6379
+    networks:
+      - backend
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - backend
+  api:
+    image: app
+    build: .
+    volumes:
+      - ./src:/app/src
+      - ./uploads:/app/uploads
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - backend
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017
+      - REDIS_SERVER=redis
+      - SERVER_URL=http://localhost:4000
+networks:
+  backend:
+    driver: bridge

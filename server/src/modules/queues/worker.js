@@ -2,7 +2,10 @@ const { Worker, QueueEvents } = require('bullmq');
 const { VIDEO_QUEUE_EVENTS } = require('./constants');
 const { QUEUE_EVENT_HANDLERS } = require('./handlers');
 
-const redisConnection = { host: 'localhost', port: 6379 };
+const redisConnection = {
+  host: process.env.REDIS_SERVER || 'localhost',
+  port: 6379,
+};
 
 const listenQueueEvent = (queueName) => {
   const queueEvents = new QueueEvents(queueName, {
