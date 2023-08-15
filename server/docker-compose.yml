@@ -15,6 +15,9 @@ services:
   api:
     image: app
     build: .
+    volumes:
+      - ./src:/app/src
+      - ./uploads:/app/uploads
     depends_on:
       - mongo
       - redis

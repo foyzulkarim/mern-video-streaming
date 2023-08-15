@@ -10,7 +10,7 @@
     "video-server": "nodemon ./src/video-server.js",
     "db": "docker-compose up -d",
     "server": "concurrently \"npm run web-server\" \"npm run video-processor\" \"npm run video-server\"",
-    "start": "npm run server",
+    "start": "npm run docker",
     "kill-web-server": "sudo lsof -PiTCP -sTCP:LISTEN | grep 4000 | awk '{print $2}' | xargs kill -9",
     "kill-video-processor": "sudo lsof -PiTCP -sTCP:LISTEN | grep 4001 | awk '{print $2}' | xargs kill -9",
     "kill-servers": "npm run kill-web-server && npm run kill-video-processor",
@@ -20,7 +20,7 @@
     "init-directories": "zx scripts/shell-script.mjs",
     "docker-build-and-run": "docker-compose up --build",
     "docker-build": "docker-compose build",
-    "docker-run": "docker-compose up"
+    "docker": "docker-compose up"
   },
   "keywords": [],
   "author": "",
