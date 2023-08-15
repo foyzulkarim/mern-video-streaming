@@ -15,7 +15,7 @@
     "clear-all": "rm -rf build node_modules",
     "re-start": "rm -rf build node_modules && yarn install && yarn start",
     "re-build": "rm -rf build node_modules && yarn install && yarn build",
-    "docker-build": "docker-compose build --build-arg REACT_APP_VIDEO_SERVER=http://localhost:4000  --build-arg REACT_APP_API_SERVER=http://localhost:4001",
+    "docker-build": "docker-compose build --build-arg REACT_APP_VIDEO_SERVER=http://localhost:4001  --build-arg REACT_APP_API_SERVER=http://localhost:4000",
     "docker-run": "docker-compose up"
   },
   "eslintConfig": {

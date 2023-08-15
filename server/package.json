@@ -19,6 +19,7 @@
     "restart-servers": "npm run kill-servers && npm run server",
     "init-directories": "zx scripts/shell-script.mjs",
     "docker-build-and-run": "docker-compose up --build",
+    "docker-build": "docker-compose build",
     "docker-run": "docker-compose up"
   },
   "keywords": [],
