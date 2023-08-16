@@ -95,7 +95,8 @@ From project directory run bellow commands
 
 ```bash
 cd client
-npm run docker
+yarn install
+yarn start
 ```
 
 
