@@ -140,7 +140,7 @@ const setupRoutes = (app) => {
       const { videoDuration } = await getVideoDurationAndResolution(
         `./${req.file.path}`
       );
-      console.log('videoDuration', videoDuration);
+      // console.log('videoDuration', videoDuration);
 
       const dbPayload = {
         ...req.body,

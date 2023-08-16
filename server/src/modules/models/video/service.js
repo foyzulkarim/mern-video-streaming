@@ -26,9 +26,11 @@ const search = async (searchObject) => {
     ? {
         title: new RegExp(searchObject.keyword),
         isDeleted: false,
+        status: VIDEO_STATUS.PUBLISHED
       }
     : {
         isDeleted: false,
+        status: VIDEO_STATUS.PUBLISHED
       };
 
   const projection = {
@@ -44,7 +46,6 @@ const search = async (searchObject) => {
 
   const sort = searchObject.sort || { viewCount: -1 };
   const pageNumber = searchObject.pageNumber || 1;
-  console.log('search', searchObject);
 
   const videos = await Video.search({ filter, projection, sort, pageNumber });
   return videos;

@@ -79,75 +79,27 @@ To run the project locally, follow these steps:
 git clone git@github.com:foyzulkarim/mern-video-streaming.git
 ```
 
-### 2. Install dependencies using npm
 
-#### 2.1 Server dependencies
+### 2. Run project locally using docker-compose
 
-```bash
-cd server
-npm install
-```
-
-#### 2.2 Client dependencies
-
-```bash
-cd client
-yarn
-```
-
-### 3. Start the database and Redis
-
-Navigate to the `server` directory and then run `docker-compose up` command like
-below. It will spin up the databases as daemon mode.
-
-```bash
-cd server
-docker-compose up -d
-or
-npm run db
-```
-
-Otherwise the updated `npm run start` script will start the database and web
-servers altogether.
-
-### 4. Start the application
-
-#### 4.1 Create `.env` file
-
-Create a `.env` file inside `server` directory and copy paste all the key-values from `.env.template` file.
-
-#### 4.2 Create `uploads` directory
-
-This will create `uploads` directory inside `server` directory.
-
-```bash
-npm i -g zx
-npm run init-directories
-```
-
-#### 4.3 Set the value of `API_SERVER` & `VIDEO_SERVER` for localhost
-
-To run this project locally just set `http://localhost:4000` as `API_SERVER` and `http://localhost:4001` as `VIDEO_SERVER` in `client/src/constants.js`.
-
-Make sure your server(`server/src/server.js`) running on port `4000` and your video-server(`server/src/video-server.js`) running on port `4001`
-
-#### 4.4 Start the server
-
-This will start all the backend services and database together.
+#### 2.1 Run the `server` app
+From project directory run bellow commands
 
 ```bash
 cd server
 npm run start
 ```
 
-#### 4.5 Start the client
+#### 2.2 Run the `client` app
+From project directory run bellow commands
 
 ```bash
 cd client
-yarn start
+npm run docker
 ```
 
-### 5. Usage
+
+### 3. Usage
 
 You can now access the application at http://localhost:3000.
 
