@@ -137,9 +137,9 @@ const setupRoutes = (app) => {
 
   app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
     try {
-      const { videoDuration } = await getVideoDurationAndResolution(
-        `./${req.file.path}`
-      );
+      // const { videoDuration } = await getVideoDurationAndResolution(
+      //   `./${req.file.path}`
+      // );
       // console.log('videoDuration', videoDuration);
 
       const dbPayload = {
@@ -149,7 +149,7 @@ const setupRoutes = (app) => {
         recordingDate: new Date(),
         videoLink: req.file.path,
         viewCount: 0,
-        duration: videoDuration,
+        duration: 0,
       };
       console.log('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database

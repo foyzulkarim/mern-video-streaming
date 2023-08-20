@@ -46,7 +46,7 @@ const updateSchema = async (db) => {
         },
         duration: {
           bsonType: 'int',
-          minimum: 1,
+          minimum: 0,
           description: 'must be an integer',
         },
         status: {

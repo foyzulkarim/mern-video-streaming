@@ -1,13 +1,12 @@
 const { ObjectId } = require('mongodb');
 const { Video } = require('../../db/collections');
-const { VIDEO_STATUS } = require('../../db/constant')
-
+const { VIDEO_STATUS } = require('../../db/constant');
 
 // TODO: add logging
 
 const insert = async (document) => {
   try {
-    return await Video.insert({status: VIDEO_STATUS.PENDING, ...document}); // assigning default satus for all new videos
+    return await Video.insert({ status: VIDEO_STATUS.PENDING, ...document }); // assigning default satus for all new videos
   } catch (error) {
     return error;
   }
@@ -26,11 +25,11 @@ const search = async (searchObject) => {
     ? {
         title: new RegExp(searchObject.keyword),
         isDeleted: false,
-        status: VIDEO_STATUS.PUBLISHED
+        status: VIDEO_STATUS.PUBLISHED,
       }
     : {
         isDeleted: false,
-        status: VIDEO_STATUS.PUBLISHED
+        status: VIDEO_STATUS.PUBLISHED,
       };
 
   const projection = {
@@ -39,15 +38,22 @@ const search = async (searchObject) => {
     category: 1,
     duration: 1,
     viewCount: 1,
-    status : 1,
+    status: 1,
     recordingDate: 1,
-    thumbnailUrl : 1
+    thumbnailUrl: 1,
   };
 
   const sort = searchObject.sort || { viewCount: -1 };
   const pageNumber = searchObject.pageNumber || 1;
+  const limit = searchObject.limit || 10;
 
-  const videos = await Video.search({ filter, projection, sort, pageNumber });
+  const videos = await Video.search({
+    filter,
+    projection,
+    sort,
+    pageNumber,
+    limit,
+  });
   return videos;
 };
 

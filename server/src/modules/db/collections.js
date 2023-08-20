@@ -8,7 +8,7 @@ const insertItem = async (collection, item) => {
       ...baseDefaults(),
       ...item,
     });
-  } catch (error) {    
+  } catch (error) {
     console.error(error.errInfo?.details);
     if (error.code.toString() === '121') {
       // MongoServerError: Document failed validation
@@ -52,16 +52,16 @@ const getObjectById = async (collectionName, id) => {
 
 const search = async (
   collectionName,
-  { filter, projection, sort, pageNumber = 1 }
+  { filter, projection, sort, pageNumber = 1, limit = 10 }
 ) => {
-  const skip = (pageNumber - 1) * 10;
-  const limit = 10;
+  const skip = (pageNumber - 1) * limit;
   console.log(
     'filter, projection, sort, pageNumber',
     filter,
     projection,
     sort,
-    pageNumber
+    pageNumber,
+    limit
   );
 
   const cursor = await MongoManager.Instance.collection(collectionName).find(

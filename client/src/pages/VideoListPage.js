@@ -1,7 +1,16 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import {
+  DataGrid,
+  GridColDef,
+  GridValueGetterParams,
+  GridActionsCellItem,
+} from '@mui/x-data-grid';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SecurityIcon from '@mui/icons-material/Security';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 import axios from 'axios';
 
@@ -30,21 +39,6 @@ import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import { API_SERVER } from '../constants';
-// sections
-import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-// mock
-import USERLIST from '../_mock/user';
-
-// ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
-];
 
 // ----------------------------------------------------------------------
 
@@ -83,7 +77,7 @@ function applySortFilter(array, comparator, query) {
 export default function UserPage() {
   const [open, setOpen] = useState(null);
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
 
   const [order, setOrder] = useState('asc');
 
@@ -93,85 +87,139 @@ export default function UserPage() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rows, setRows] = useState([]);
 
-  const [videos, setVideos] = useState([]);
+  const deleteUser = useCallback(
+    (id) => () => {
+      setTimeout(() => {
+        // setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+        console.log('delete', id);
+      });
+    },
+    []
+  );
+
+  const toggleAdmin = useCallback(
+    (id) => () => {
+      // setRows((prevRows) =>
+      //   prevRows.map((row) =>
+      //     row.id === id ? { ...row, isAdmin: !row.isAdmin } : row
+      //   )
+      // );
+      console.log('toggleAdmin', id);
+    },
+    []
+  );
+
+  const duplicateUser = useCallback(
+    (id) => () => {
+      // setRows((prevRows) => {
+      //   const rowToDuplicate = prevRows.find((row) => row.id === id);
+      //   return [...prevRows, { ...rowToDuplicate, id: Date.now() }];
+      // });
+      console.log('duplicate', id);
+    },
+    []
+  );
+
+  const handleRowClick = (params) => {
+    console.log(`clicked`, params.row);
+  };
+
+  // const rows = [
+  //   { id: 1, col1: 'Hello', col2: 'World' },
+  //   { id: 2, col1: 'DataGridPro', col2: 'is Awesome' },
+  //   { id: 3, col1: 'MUI', col2: 'is Amazing' },
+  // ];
+
+  const columns = [
+    { field: '_id', headerName: 'ID', width: 70 },
+    { field: 'title', headerName: 'Title', width: 130 },
+    { field: 'category', headerName: 'Category', width: 130 },
+    { field: 'duration', headerName: 'Duration', type: 'number', width: 90 },
+    { field: 'viewCount', headerName: 'Views', type: 'number', width: 90 },
+    { field: 'status', headerName: 'Status', width: 90 },
+    {
+      field: 'actions',
+      type: 'actions',
+      width: 80,
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<DeleteIcon />}
+          label='Delete'
+          onClick={deleteUser(params.id)}
+        />,
+        <GridActionsCellItem
+          icon={<SecurityIcon />}
+          label='Toggle Admin'
+          onClick={toggleAdmin(params.id)}
+          showInMenu
+        />,
+        <GridActionsCellItem
+          icon={<FileCopyIcon />}
+          label='Duplicate User'
+          onClick={duplicateUser(params.id)}
+          showInMenu
+        />,
+      ],
+    },
+  ];
+
+  const [searchPayload, setSearchPayload] = useState({
+    keyword: '',
+    sortKey: '',
+    isDecending: true,
+    pageNumber: 1,
+    limit: 1,
+  });
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
-      console.log('getData', response.data);
-      setVideos(response.data);
+      const response = await axios.post(
+        `${API_SERVER}/api/videos/search`,
+        searchPayload
+      );
+      // setVideos(response.data);
+      const videos = response.data.map((video) => {
+        video.id = video._id;
+        return video;
+      });
+      console.log(
+        'getData: payload ',
+        searchPayload,
+        'result:',
+        response.data,
+        'videos',
+        videos
+      );
+      setRows(videos);
+      setRowCountState(4);
     };
 
     getData();
-  }, []);
-
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
+  }, [searchPayload]);
 
   const handleCloseMenu = () => {
     setOpen(null);
   };
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 1,
+  });
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+  const [rowCountState, setRowCountState] = useState(0);
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
-
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-  const filteredUsers = applySortFilter(
-    USERLIST,
-    getComparator(order, orderBy),
-    filterName
-  );
-  console.log('filter', filteredUsers);
-  const isNotFound = !filteredUsers.length && !!filterName;
+  useEffect(() => {
+    console.log('paginationModel', paginationModel);
+    setSearchPayload((prevSearchPayload) => {
+      return {
+        ...prevSearchPayload,
+        pageNumber: paginationModel.page + 1,
+        limit: paginationModel.pageSize,
+      };
+    });
+  }, [paginationModel]);
 
   return (
     <>
@@ -187,152 +235,38 @@ export default function UserPage() {
           mb={5}
         >
           <Typography variant='h4' gutterBottom>
-            User
+            Videos
           </Typography>
           <Button
             variant='contained'
             startIcon={<Iconify icon='eva:plus-fill' />}
           >
-            New User
+            New Video
           </Button>
         </Stack>
 
         <Card>
-          <UserListToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {videos
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const {
-                        _id: id,
-                        title: name,
-                        visibility: role,
-                        visibility: status,
-                        originalName: company,
-                        thumbnailUrl: avatarUrl,
-                        viewCount: isVerified,
-                      } = row;
-                      const selectedUser = selected.indexOf(name) !== -1;
-
-                      return (
-                        <TableRow
-                          hover
-                          key={id}
-                          tabIndex={-1}
-                          role='checkbox'
-                          selected={selectedUser}
-                        >
-                          <TableCell padding='checkbox'>
-                            <Checkbox
-                              checked={selectedUser}
-                              onChange={(event) => handleClick(event, name)}
-                            />
-                          </TableCell>
-
-                          <TableCell component='th' scope='row' padding='none'>
-                            <Stack
-                              direction='row'
-                              alignItems='center'
-                              spacing={2}
-                            >
-                              <Avatar alt={name} src={avatarUrl} />
-                              <Typography variant='subtitle2' noWrap>
-                                {name}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-
-                          <TableCell align='left'>{company}</TableCell>
-
-                          <TableCell align='left'>{role}</TableCell>
-
-                          <TableCell align='left'>
-                            {isVerified ? 'Yes' : 'No'}
-                          </TableCell>
-
-                          <TableCell align='left'>
-                            <Label
-                              color={
-                                (status === 'banned' && 'error') || 'success'
-                              }
-                            >
-                              {sentenceCase(status)}
-                            </Label>
-                          </TableCell>
-
-                          <TableCell align='right'>
-                            <IconButton
-                              size='large'
-                              color='inherit'
-                              onClick={handleOpenMenu}
-                            >
-                              <Iconify icon={'eva:more-vertical-fill'} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align='center' colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant='h6' paragraph>
-                            Not found
-                          </Typography>
-
-                          <Typography variant='body2'>
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete
-                            words.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
+              <DataGrid
+                initialState={{
+                  pagination: { paginationModel: { pageSize: 1 } },
+                }}
+                columnVisibilityModel={{
+                  // Hide columns status and traderName, the other columns will remain visible
+                  id: false,
+                  _id: false,
+                }}
+                rows={rows}
+                columns={columns}
+                pageSizeOptions={[1, 5, 10, 25]}
+                paginationMode='server'
+                paginationModel={paginationModel}
+                rowCount={rowCountState}
+                onPaginationModelChange={setPaginationModel}
+              />
             </TableContainer>
           </Scrollbar>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component='div'
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
         </Card>
       </Container>
 
