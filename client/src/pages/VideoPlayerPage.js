@@ -30,7 +30,7 @@ const StyledContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 0),
 }));
 
-export default function VideoUploadPage() {
+export default function VideoPlayerPage() {
   const [url, setUrl] = useState('');
   const [data, setData] = useState({
     title: '',
@@ -44,10 +44,10 @@ export default function VideoUploadPage() {
   });
   const { id } = useParams();
   const navigate = useNavigate();
-  const navigateToContacts = () => {
-    // 👇️ navigate to /contacts
-    navigate('/videos');
-  };
+// const navigateToContacts = () => {
+//     // 👇️ navigate to /contacts
+//     navigate('/videos');
+//   };
 
   const card = (
     <React.Fragment>
@@ -62,17 +62,23 @@ export default function VideoUploadPage() {
         <Typography sx={{ mb: 1.5 }} color='text.secondary'>
           Visibility: {data?.visibility}
         </Typography>
-        {/* <Typography variant="body2">
-                    well meaning and kindly.
-                    <br />
-                    {'"a benevolent smile"'}
-                </Typography> */}
       </CardContent>
+      <CardActions>
+        <Button 
+          size='small'
+          onClick={() => {
+            navigate(`/video/update/${id}`)
+          }}
+        >
+          Update Video
+        </Button>
+      </CardActions>
+
       <CardActions>
         <Button
           size='small'
           onClick={() => {
-            navigateToContacts();
+            navigate('/videos');
           }}
         >
           Back to Video list page
@@ -82,27 +88,20 @@ export default function VideoUploadPage() {
   );
 
   useEffect(() => {
-    console.log('id', id);
-
     const fetchData = async () => {
       const response = await axios.get(`${API_SERVER}/api/videos/detail/${id}`);
-      // console.log(response);
       setData(response.data);
-      // const videoDetails = await axios.get(
-
-      // )
       const u = `${VIDEO_SERVER}/${response.data.fileName}.m3u8`;
       setUrl(u);
     };
-
     fetchData();
   }, [id]);
-  console.log(data);
+
 
   return (
     <>
       <Helmet>
-        <title> Video upload</title>
+        <title> Video</title>
       </Helmet>
       <Box
         sx={{

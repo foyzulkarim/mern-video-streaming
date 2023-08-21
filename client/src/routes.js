@@ -29,7 +29,7 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'video-upload', element: <VideoUploadPage /> },
         { path: 'videos/:id', element: <VideoPlayerPage /> },
-        { path: 'videos/update/:id', element: <VideoUploadPage /> },
+        { path: 'video/update/:id', element: <VideoUploadPage /> },
         { path: 'video-list', element: <VideoListPage /> },
         { path: 'videos', element: <VideosPage /> },
       ],

@@ -131,7 +131,6 @@ export default function VideoUploadPage() {
       });
       setAlertType('success');
       setUploadResponse(response.data.message);
-      console.log(response);
       setTimeout(() => navigateToVideos(), 3000);
     } catch (error) {
       setAlertType('error');
