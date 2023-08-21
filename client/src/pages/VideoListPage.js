@@ -100,20 +100,28 @@ export default function UserPage() {
         searchPayload
       );
 
+      const countResponse = await axios.post(
+        `${API_SERVER}/api/videos/count`,
+        {}
+      );
+
       const videos = response.data.map((video) => {
         video.id = video._id;
         return video;
       });
+
       console.log(
         'getData: payload ',
         searchPayload,
         'result:',
         response.data,
         'videos',
-        videos
+        videos,
+        'count',
+        countResponse
       );
       setRows(videos);
-      setRowCountState(5);
+      setRowCountState(countResponse.data.count);
     };
 
     getData();
@@ -149,6 +157,23 @@ export default function UserPage() {
           sortKey: sortModel[0].field,
           sortValue: sortModel[0].sort === 'desc' ? -1 : 1,
           isDecending: sortModel[0].sort === 'desc',
+        };
+      });
+    }
+  }, []);
+
+  const onFilterChange = useCallback((filterModel) => {
+    // Here you save the data you need from the filter model
+    console.log('filterModel', filterModel);
+    //filter = filterModel.items[0]
+    // filterKey, filterValue
+    if (filterModel.items.length) {
+      setSearchPayload((prevSearchPayload) => {
+        return {
+          ...prevSearchPayload,
+          keyword: filterModel.items[0].value,
+          filterKey: filterModel.items[0].field,
+          filterValue: filterModel.items[0].value,
         };
       });
     }
@@ -206,6 +231,13 @@ export default function UserPage() {
                 onPaginationModelChange={setPaginationModel}
                 sortingMode='server'
                 onSortModelChange={handleSortModelChange}
+                filterMode='server'
+                onFilterModelChange={onFilterChange}
+                slotProps={{
+                  toolbar: {
+                    showQuickFilter: true,
+                  },
+                }}
               />
             </TableContainer>
           </Scrollbar>

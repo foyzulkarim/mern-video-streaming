@@ -21,9 +21,10 @@ const update = async (document) => {
 };
 
 const search = async (searchObject) => {
-  const filter = searchObject.keyword
+  console.log('searchObject', searchObject);
+  const filter = searchObject.filterKey
     ? {
-        title: new RegExp(searchObject.keyword),
+        [searchObject.filterKey]: new RegExp(searchObject.filterValue),
         isDeleted: false,
         status: VIDEO_STATUS.PUBLISHED,
       }
@@ -92,4 +93,5 @@ module.exports = {
   updateHistory,
   updateViewCount,
   deleteById: Video.deleteById,
+  count: Video.count
 };

@@ -6,6 +6,7 @@ const {
   getById,
   updateViewCount,
   deleteById,
+  count,
 } = require('./service');
 const { validate } = require('./request');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
@@ -45,6 +46,12 @@ const setupRoutes = (app) => {
     console.log('POST search', req.body);
     const result = await search(req.body);
     res.send(result);
+  });
+
+  app.post(`${BASE_URL}/count`, async (req, res) => {
+    console.log('POST count', req.body);
+    const result = await count(req.body);
+    res.send({count: result});
   });
 
   app.post(`${BASE_URL}/create`, async (req, res) => {

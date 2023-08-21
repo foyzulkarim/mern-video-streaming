@@ -56,7 +56,8 @@ const search = async (
 ) => {
   const skip = (pageNumber - 1) * limit;
   console.log(
-    'filter, projection, sort, pageNumber',
+    'search filter, projection, sort, pageNumber',
+    collectionName,
     filter,
     projection,
     sort,
@@ -70,6 +71,15 @@ const search = async (
   );
   const result = await cursor.toArray();
   return result;
+};
+
+const count = async (collectionName, { filter }) => {
+  const cursor = await MongoManager.Instance.collection(collectionName);
+  const countDocuments = filter
+    ? await cursor.countDocuments(filter)
+    : await cursor.estimatedDocumentCount();
+  console.log('count:', collectionName, filter, countDocuments);
+  return countDocuments;
 };
 
 const deleteObjectById = async (collectionName, id) => {
@@ -94,6 +104,7 @@ const common = (collectionName) => {
     getObjectById: async (id) => await getObjectById(collectionName, id),
     search: async (params) => await search(collectionName, params),
     deleteById: async (id) => await deleteObjectById(collectionName, id),
+    count: async (filter) => await count(collectionName, { filter }),
   };
 };
 
