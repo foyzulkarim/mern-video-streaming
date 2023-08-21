@@ -24,7 +24,7 @@ const search = async (searchObject) => {
   console.log('searchObject', searchObject);
   const filter = searchObject.filterKey
     ? {
-        [searchObject.filterKey]: new RegExp(searchObject.filterValue),
+        [searchObject.filterKey]: new RegExp(searchObject.filterValue, 'i'),
         isDeleted: false,
         status: VIDEO_STATUS.PUBLISHED,
       }
@@ -64,7 +64,7 @@ const count = async (searchObject) => {
   console.log('searchObject', searchObject);
   const filter = searchObject.filterKey
     ? {
-        [searchObject.filterKey]: new RegExp(searchObject.filterValue),
+        [searchObject.filterKey]: new RegExp(searchObject.filterValue, 'i'),
         isDeleted: false,
         status: VIDEO_STATUS.PUBLISHED,
       }
