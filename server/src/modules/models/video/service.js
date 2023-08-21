@@ -60,6 +60,22 @@ const search = async (searchObject) => {
   return videos;
 };
 
+const count = async (searchObject) => {
+  console.log('searchObject', searchObject);
+  const filter = searchObject.filterKey
+    ? {
+        [searchObject.filterKey]: new RegExp(searchObject.filterValue),
+        isDeleted: false,
+        status: VIDEO_STATUS.PUBLISHED,
+      }
+    : {
+        isDeleted: false,
+        status: VIDEO_STATUS.PUBLISHED,
+      };
+  const videos = await Video.count({ filter });
+  return videos;
+};
+
 const updateHistory = async (id, { history, ...rest }) => {
   try {
     const updatedDoc = await Video.updateOne(
@@ -93,5 +109,5 @@ module.exports = {
   updateHistory,
   updateViewCount,
   deleteById: Video.deleteById,
-  count: Video.count
+  count,
 };

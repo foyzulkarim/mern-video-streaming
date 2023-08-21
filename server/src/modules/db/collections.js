@@ -104,7 +104,7 @@ const common = (collectionName) => {
     getObjectById: async (id) => await getObjectById(collectionName, id),
     search: async (params) => await search(collectionName, params),
     deleteById: async (id) => await deleteObjectById(collectionName, id),
-    count: async (filter) => await count(collectionName, { filter }),
+    count: async (params) => await count(collectionName, params),
   };
 };
 

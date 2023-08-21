@@ -91,6 +91,8 @@ export default function UserPage() {
     isDecending: true,
     pageNumber: 1,
     limit: 2,
+    filterKey: '',
+    filterValue: '',
   });
 
   useEffect(() => {
@@ -98,11 +100,6 @@ export default function UserPage() {
       const response = await axios.post(
         `${API_SERVER}/api/videos/search`,
         searchPayload
-      );
-
-      const countResponse = await axios.post(
-        `${API_SERVER}/api/videos/count`,
-        {}
       );
 
       const videos = response.data.map((video) => {
@@ -116,16 +113,32 @@ export default function UserPage() {
         'result:',
         response.data,
         'videos',
-        videos,
-        'count',
-        countResponse
+        videos
       );
       setRows(videos);
-      setRowCountState(countResponse.data.count);
     };
 
     getData();
   }, [searchPayload]);
+
+  useEffect(() => {
+    const getCount = async () => {
+      let countFilter = {};
+      if (searchPayload.filterKey) {
+        countFilter = {
+          filterKey: searchPayload.filterKey,
+          filterValue: searchPayload.filterValue,
+        };
+      }
+      const countResponse = await axios.post(
+        `${API_SERVER}/api/videos/count`,
+        countFilter
+      );
+      setRowCountState(countResponse.data.count);
+    };
+
+    getCount();
+  }, [searchPayload.filterKey, searchPayload.filterValue]);
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -163,10 +176,6 @@ export default function UserPage() {
   }, []);
 
   const onFilterChange = useCallback((filterModel) => {
-    // Here you save the data you need from the filter model
-    console.log('filterModel', filterModel);
-    //filter = filterModel.items[0]
-    // filterKey, filterValue
     if (filterModel.items.length) {
       setSearchPayload((prevSearchPayload) => {
         return {
