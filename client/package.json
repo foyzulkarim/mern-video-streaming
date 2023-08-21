@@ -41,12 +41,14 @@
     ]
   },
   "dependencies": {
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@faker-js/faker": "^7.6.0",
     "@iconify/react": "^4.0.0",
+    "@mui/icons-material": "^5.14.3",
     "@mui/lab": "^5.0.0-alpha.103",
-    "@mui/material": "^5.10.9",
+    "@mui/material": "^5.14.5",
+    "@mui/x-data-grid": "^6.11.2",
     "@mui/x-date-pickers": "^5.0.16",
     "apexcharts": "^3.36.0",
     "axios": "^1.2.6",

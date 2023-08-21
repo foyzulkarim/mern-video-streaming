@@ -1,177 +1,192 @@
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SecurityIcon from '@mui/icons-material/Security';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 import axios from 'axios';
 
 // @mui
 import {
   Card,
-  Table,
   Stack,
-  Paper,
-  Avatar,
   Button,
   Popover,
-  Checkbox,
-  TableRow,
   MenuItem,
-  TableBody,
-  TableCell,
   Container,
   Typography,
-  IconButton,
   TableContainer,
-  TablePagination,
 } from '@mui/material';
 // components
-import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import { API_SERVER } from '../constants';
-// sections
-import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-// mock
-import USERLIST from '../_mock/user';
-
-// ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
-];
-
-// ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(
-      array,
-      (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-    );
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
 
 export default function UserPage() {
   const [open, setOpen] = useState(null);
 
-  const [page, setPage] = useState(0);
+  const [rows, setRows] = useState([]);
 
-  const [order, setOrder] = useState('asc');
+  const deleteUser = useCallback(
+    (id) => () => {
+      setTimeout(() => {
+        console.log('delete', id);
+      });
+    },
+    []
+  );
 
-  const [selected, setSelected] = useState([]);
+  const toggleAdmin = useCallback(
+    (id) => () => {
+      console.log('toggleAdmin', id);
+    },
+    []
+  );
 
-  const [orderBy, setOrderBy] = useState('name');
+  const duplicateUser = useCallback(
+    (id) => () => {
+      console.log('duplicate', id);
+    },
+    []
+  );
 
-  const [filterName, setFilterName] = useState('');
+  const columns = [
+    { field: '_id', headerName: 'ID', width: 70 },
+    { field: 'title', headerName: 'Title', width: 300 },
+    { field: 'category', headerName: 'Category', width: 130 },
+    { field: 'duration', headerName: 'Duration', type: 'number', width: 90 },
+    { field: 'viewCount', headerName: 'Views', type: 'number', width: 90 },
+    { field: 'status', headerName: 'Status', width: 90 },
+    {
+      field: 'actions',
+      type: 'actions',
+      width: 80,
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<DeleteIcon />}
+          label='Delete'
+          onClick={deleteUser(params.id)}
+        />,
+        <GridActionsCellItem
+          icon={<SecurityIcon />}
+          label='Toggle Admin'
+          onClick={toggleAdmin(params.id)}
+          showInMenu
+        />,
+        <GridActionsCellItem
+          icon={<FileCopyIcon />}
+          label='Duplicate User'
+          onClick={duplicateUser(params.id)}
+          showInMenu
+        />,
+      ],
+    },
+  ];
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const [videos, setVideos] = useState([]);
+  const [searchPayload, setSearchPayload] = useState({
+    keyword: '',
+    sortKey: '',
+    sortValue: 1,
+    isDecending: true,
+    pageNumber: 1,
+    limit: 2,
+    filterKey: '',
+    filterValue: '',
+  });
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
-      console.log('getData', response.data);
-      setVideos(response.data);
+      const response = await axios.post(
+        `${API_SERVER}/api/videos/search`,
+        searchPayload
+      );
+
+      const videos = response.data.map((video) => {
+        video.id = video._id;
+        return video;
+      });
+
+      console.log(
+        'getData: payload ',
+        searchPayload,
+        'result:',
+        response.data,
+        'videos',
+        videos
+      );
+      setRows(videos);
     };
 
     getData();
-  }, []);
+  }, [searchPayload]);
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
+  useEffect(() => {
+    const getCount = async () => {
+      let countFilter = {};
+      if (searchPayload.filterKey) {
+        countFilter = {
+          filterKey: searchPayload.filterKey,
+          filterValue: searchPayload.filterValue,
+        };
+      }
+      const countResponse = await axios.post(
+        `${API_SERVER}/api/videos/count`,
+        countFilter
+      );
+      setRowCountState(countResponse.data.count);
+    };
+
+    getCount();
+  }, [searchPayload.filterKey, searchPayload.filterValue]);
 
   const handleCloseMenu = () => {
     setOpen(null);
   };
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 1,
+  });
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
+  const [rowCountState, setRowCountState] = useState(0);
+
+  useEffect(() => {
+    console.log('paginationModel', paginationModel);
+    setSearchPayload((prevSearchPayload) => {
+      return {
+        ...prevSearchPayload,
+        pageNumber: paginationModel.page + 1,
+        limit: paginationModel.pageSize,
+      };
+    });
+  }, [paginationModel]);
+
+  const handleSortModelChange = useCallback((sortModel) => {
+    if (sortModel.length) {
+      setSearchPayload((prevSearchPayload) => {
+        return {
+          ...prevSearchPayload,
+          sortKey: sortModel[0].field,
+          sortValue: sortModel[0].sort === 'desc' ? -1 : 1,
+          isDecending: sortModel[0].sort === 'desc',
+        };
+      });
     }
-    setSelected([]);
-  };
+  }, []);
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
+  const onFilterChange = useCallback((filterModel) => {
+    if (filterModel.items.length) {
+      setSearchPayload((prevSearchPayload) => {
+        return {
+          ...prevSearchPayload,
+          keyword: filterModel.items[0].value,
+          filterKey: filterModel.items[0].field,
+          filterValue: filterModel.items[0].value,
+        };
+      });
     }
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
-
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-  const filteredUsers = applySortFilter(
-    USERLIST,
-    getComparator(order, orderBy),
-    filterName
-  );
-  console.log('filter', filteredUsers);
-  const isNotFound = !filteredUsers.length && !!filterName;
+  }, []);
 
   return (
     <>
@@ -187,152 +202,54 @@ export default function UserPage() {
           mb={5}
         >
           <Typography variant='h4' gutterBottom>
-            User
+            Videos
           </Typography>
           <Button
             variant='contained'
             startIcon={<Iconify icon='eva:plus-fill' />}
           >
-            New User
+            New Video
           </Button>
         </Stack>
 
         <Card>
-          <UserListToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {videos
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const {
-                        _id: id,
-                        title: name,
-                        visibility: role,
-                        visibility: status,
-                        originalName: company,
-                        thumbnailUrl: avatarUrl,
-                        viewCount: isVerified,
-                      } = row;
-                      const selectedUser = selected.indexOf(name) !== -1;
-
-                      return (
-                        <TableRow
-                          hover
-                          key={id}
-                          tabIndex={-1}
-                          role='checkbox'
-                          selected={selectedUser}
-                        >
-                          <TableCell padding='checkbox'>
-                            <Checkbox
-                              checked={selectedUser}
-                              onChange={(event) => handleClick(event, name)}
-                            />
-                          </TableCell>
-
-                          <TableCell component='th' scope='row' padding='none'>
-                            <Stack
-                              direction='row'
-                              alignItems='center'
-                              spacing={2}
-                            >
-                              <Avatar alt={name} src={avatarUrl} />
-                              <Typography variant='subtitle2' noWrap>
-                                {name}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-
-                          <TableCell align='left'>{company}</TableCell>
-
-                          <TableCell align='left'>{role}</TableCell>
-
-                          <TableCell align='left'>
-                            {isVerified ? 'Yes' : 'No'}
-                          </TableCell>
-
-                          <TableCell align='left'>
-                            <Label
-                              color={
-                                (status === 'banned' && 'error') || 'success'
-                              }
-                            >
-                              {sentenceCase(status)}
-                            </Label>
-                          </TableCell>
-
-                          <TableCell align='right'>
-                            <IconButton
-                              size='large'
-                              color='inherit'
-                              onClick={handleOpenMenu}
-                            >
-                              <Iconify icon={'eva:more-vertical-fill'} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align='center' colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: 'center',
-                          }}
-                        >
-                          <Typography variant='h6' paragraph>
-                            Not found
-                          </Typography>
-
-                          <Typography variant='body2'>
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete
-                            words.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                )}
-              </Table>
+              <DataGrid
+                initialState={{
+                  pagination: { paginationModel: { pageSize: 2 } },
+                  sorting: {
+                    sortModel: [
+                      {
+                        field: 'id',
+                        sort: 'desc',
+                      },
+                    ],
+                  },
+                }}
+                columnVisibilityModel={{
+                  id: false,
+                  _id: false,
+                }}
+                rows={rows}
+                columns={columns}
+                pageSizeOptions={[1, 2, 3, 5, 10, 25]}
+                paginationMode='server'
+                paginationModel={paginationModel}
+                rowCount={rowCountState}
+                onPaginationModelChange={setPaginationModel}
+                sortingMode='server'
+                onSortModelChange={handleSortModelChange}
+                filterMode='server'
+                onFilterModelChange={onFilterChange}
+                slotProps={{
+                  toolbar: {
+                    showQuickFilter: true,
+                  },
+                }}
+              />
             </TableContainer>
           </Scrollbar>
-
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component='div'
-            count={USERLIST.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
         </Card>
       </Container>
 

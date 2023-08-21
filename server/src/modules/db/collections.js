@@ -8,7 +8,7 @@ const insertItem = async (collection, item) => {
       ...baseDefaults(),
       ...item,
     });
-  } catch (error) {    
+  } catch (error) {
     console.error(error.errInfo?.details);
     if (error.code.toString() === '121') {
       // MongoServerError: Document failed validation
@@ -52,16 +52,17 @@ const getObjectById = async (collectionName, id) => {
 
 const search = async (
   collectionName,
-  { filter, projection, sort, pageNumber = 1 }
+  { filter, projection, sort, pageNumber = 1, limit = 10 }
 ) => {
-  const skip = (pageNumber - 1) * 10;
-  const limit = 10;
+  const skip = (pageNumber - 1) * limit;
   console.log(
-    'filter, projection, sort, pageNumber',
+    'search filter, projection, sort, pageNumber',
+    collectionName,
     filter,
     projection,
     sort,
-    pageNumber
+    pageNumber,
+    limit
   );
 
   const cursor = await MongoManager.Instance.collection(collectionName).find(
@@ -70,6 +71,15 @@ const search = async (
   );
   const result = await cursor.toArray();
   return result;
+};
+
+const count = async (collectionName, { filter }) => {
+  const cursor = await MongoManager.Instance.collection(collectionName);
+  const countDocuments = filter
+    ? await cursor.countDocuments(filter)
+    : await cursor.estimatedDocumentCount();
+  console.log('count:', collectionName, filter, countDocuments);
+  return countDocuments;
 };
 
 const deleteObjectById = async (collectionName, id) => {
@@ -94,6 +104,7 @@ const common = (collectionName) => {
     getObjectById: async (id) => await getObjectById(collectionName, id),
     search: async (params) => await search(collectionName, params),
     deleteById: async (id) => await deleteObjectById(collectionName, id),
+    count: async (params) => await count(collectionName, params),
   };
 };
 
