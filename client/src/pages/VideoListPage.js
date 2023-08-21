@@ -1,13 +1,6 @@
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
 import { useState, useEffect, useCallback } from 'react';
-import {
-  DataGrid,
-  GridColDef,
-  GridValueGetterParams,
-  GridActionsCellItem,
-} from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
@@ -17,82 +10,27 @@ import axios from 'axios';
 // @mui
 import {
   Card,
-  Table,
   Stack,
-  Paper,
-  Avatar,
   Button,
   Popover,
-  Checkbox,
-  TableRow,
   MenuItem,
-  TableBody,
-  TableCell,
   Container,
   Typography,
-  IconButton,
   TableContainer,
-  TablePagination,
 } from '@mui/material';
 // components
-import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import { API_SERVER } from '../constants';
 
-// ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(
-      array,
-      (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-    );
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
-
 export default function UserPage() {
   const [open, setOpen] = useState(null);
-
-  const [page, setPage] = useState(1);
-
-  const [order, setOrder] = useState('asc');
-
-  const [selected, setSelected] = useState([]);
-
-  const [orderBy, setOrderBy] = useState('name');
-
-  const [filterName, setFilterName] = useState('');
 
   const [rows, setRows] = useState([]);
 
   const deleteUser = useCallback(
     (id) => () => {
       setTimeout(() => {
-        // setRows((prevRows) => prevRows.filter((row) => row.id !== id));
         console.log('delete', id);
       });
     },
@@ -101,11 +39,6 @@ export default function UserPage() {
 
   const toggleAdmin = useCallback(
     (id) => () => {
-      // setRows((prevRows) =>
-      //   prevRows.map((row) =>
-      //     row.id === id ? { ...row, isAdmin: !row.isAdmin } : row
-      //   )
-      // );
       console.log('toggleAdmin', id);
     },
     []
@@ -113,28 +46,14 @@ export default function UserPage() {
 
   const duplicateUser = useCallback(
     (id) => () => {
-      // setRows((prevRows) => {
-      //   const rowToDuplicate = prevRows.find((row) => row.id === id);
-      //   return [...prevRows, { ...rowToDuplicate, id: Date.now() }];
-      // });
       console.log('duplicate', id);
     },
     []
   );
 
-  const handleRowClick = (params) => {
-    console.log(`clicked`, params.row);
-  };
-
-  // const rows = [
-  //   { id: 1, col1: 'Hello', col2: 'World' },
-  //   { id: 2, col1: 'DataGridPro', col2: 'is Awesome' },
-  //   { id: 3, col1: 'MUI', col2: 'is Amazing' },
-  // ];
-
   const columns = [
     { field: '_id', headerName: 'ID', width: 70 },
-    { field: 'title', headerName: 'Title', width: 130 },
+    { field: 'title', headerName: 'Title', width: 300 },
     { field: 'category', headerName: 'Category', width: 130 },
     { field: 'duration', headerName: 'Duration', type: 'number', width: 90 },
     { field: 'viewCount', headerName: 'Views', type: 'number', width: 90 },
@@ -168,9 +87,10 @@ export default function UserPage() {
   const [searchPayload, setSearchPayload] = useState({
     keyword: '',
     sortKey: '',
+    sortValue: 1,
     isDecending: true,
     pageNumber: 1,
-    limit: 1,
+    limit: 2,
   });
 
   useEffect(() => {
@@ -179,7 +99,7 @@ export default function UserPage() {
         `${API_SERVER}/api/videos/search`,
         searchPayload
       );
-      // setVideos(response.data);
+
       const videos = response.data.map((video) => {
         video.id = video._id;
         return video;
@@ -193,7 +113,7 @@ export default function UserPage() {
         videos
       );
       setRows(videos);
-      setRowCountState(4);
+      setRowCountState(5);
     };
 
     getData();
@@ -220,6 +140,19 @@ export default function UserPage() {
       };
     });
   }, [paginationModel]);
+
+  const handleSortModelChange = useCallback((sortModel) => {
+    if (sortModel.length) {
+      setSearchPayload((prevSearchPayload) => {
+        return {
+          ...prevSearchPayload,
+          sortKey: sortModel[0].field,
+          sortValue: sortModel[0].sort === 'desc' ? -1 : 1,
+          isDecending: sortModel[0].sort === 'desc',
+        };
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -250,20 +183,29 @@ export default function UserPage() {
             <TableContainer sx={{ minWidth: 800 }}>
               <DataGrid
                 initialState={{
-                  pagination: { paginationModel: { pageSize: 1 } },
+                  pagination: { paginationModel: { pageSize: 2 } },
+                  sorting: {
+                    sortModel: [
+                      {
+                        field: 'id',
+                        sort: 'desc',
+                      },
+                    ],
+                  },
                 }}
                 columnVisibilityModel={{
-                  // Hide columns status and traderName, the other columns will remain visible
                   id: false,
                   _id: false,
                 }}
                 rows={rows}
                 columns={columns}
-                pageSizeOptions={[1, 5, 10, 25]}
+                pageSizeOptions={[1, 2, 3, 5, 10, 25]}
                 paginationMode='server'
                 paginationModel={paginationModel}
                 rowCount={rowCountState}
                 onPaginationModelChange={setPaginationModel}
+                sortingMode='server'
+                onSortModelChange={handleSortModelChange}
               />
             </TableContainer>
           </Scrollbar>

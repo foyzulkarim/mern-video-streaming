@@ -43,7 +43,9 @@ const search = async (searchObject) => {
     thumbnailUrl: 1,
   };
 
-  const sort = searchObject.sort || { viewCount: -1 };
+  const sort = searchObject.sortKey
+    ? { [searchObject.sortKey]: searchObject.sortValue ?? 1 }
+    : { _id: -1 };
   const pageNumber = searchObject.pageNumber || 1;
   const limit = searchObject.limit || 10;
 
