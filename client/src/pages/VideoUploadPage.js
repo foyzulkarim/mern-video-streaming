@@ -61,9 +61,9 @@ const validationSchema = yup.object({
 export default function VideoUploadPage() {
   const [uploadResponse, setUploadResponse] = useState(null);
   const [alertType, setAlertType] = useState('success');
-
-  const { id } = useParams();
-
+  const [fileUploadFiled, setFileUploadFiled] = useState(true);
+  const [title, setTitle] = useState('Upload Video');
+  const [buttonTitle, setButtonTitle] = useState('Upload');
   const [initialValues, setInitialValues] = useState({
     title: '',
     description: '',
@@ -72,26 +72,21 @@ export default function VideoUploadPage() {
     language: 'Bangla',
     recordingDate: new Date(),
     category: 'Education',
-  });
-  
-  const [fileUploadFiled, setFileUploadFiled] = useState(true);
-  const [title, setTitle] = useState('Upload Video');
-  const [buttonTitle, setButtonTitle] = useState('Upload');
-  const [formSubmitUrl, setFormSubmitUrl] = useState(`${API_SERVER}/api/videos/upload`);
 
+  });
+
+  const { id } = useParams();
 
   useEffect(() => {
-
     const fetchData = async () => {
       const response = await axios.get(`${API_SERVER}/api/videos/detail/${id}`);
       setInitialValues(response.data)
     };
     
     if(id){
-      setTitle('Edit Video');
-      setButtonTitle('Edit');
+      setTitle('Update Video');
+      setButtonTitle('Update');
       setFileUploadFiled(false);
-      setFormSubmitUrl(`${API_SERVER}/api/videos/edit/${id}`)
       fetchData();
     }
     
@@ -105,28 +100,32 @@ export default function VideoUploadPage() {
   };
 
   // axios post the values to the backend
-  const postToServer = async (values) => {
+  const postToServer = async (videoInfo) => {
 
-    const {
-      title,
-      category,
-      description,
-      recordingDate,
-      visibility,
-    } = values;
-    const videoFile = values.videoFile;
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('visibility', visibility);
-    formData.append('category', category);
-    formData.append('description', description);
-    // formData.append("language", language);
-    formData.append('recordingDate', recordingDate);
-    formData.append('video', videoFile);
+
+    formData.append('title', videoInfo.title);
+    formData.append('visibility', videoInfo.visibility);
+    formData.append('category', videoInfo.category);
+    formData.append('description', videoInfo.description);
+    formData.append('recordingDate', videoInfo.recordingDate);
+    // formData.append("language", videoInfo.language);
+
+    let axiosMethod = axios.put;
+    let contentType = 'application/json';
+    let formSubmitUrl = `${API_SERVER}/api/videos/update/${id}`;
+
+    if(!id){
+      formData.append('video', videoInfo.videoFile);
+      axiosMethod = axios.post;
+      contentType = 'multipart/form-data';
+      formSubmitUrl = `${API_SERVER}/api/videos/upload`;
+    };
+
     try {
-      const response = await axios.post(formSubmitUrl, formData, {
+      const response = await axiosMethod(formSubmitUrl, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': contentType,
           Accept: '*/*',
         },
       });
@@ -135,7 +134,6 @@ export default function VideoUploadPage() {
       console.log(response);
       setTimeout(() => navigateToVideos(), 3000);
     } catch (error) {
-      console.log(error);
       setAlertType('error');
       setUploadResponse(error.response.data.error.message);
     }

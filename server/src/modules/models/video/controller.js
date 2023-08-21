@@ -3,7 +3,6 @@ const {
   insert,
   search,
   update,
-  getById,
   updateViewCount,
   deleteById,
   count,
@@ -54,30 +53,28 @@ const setupRoutes = (app) => {
     res.send({count: result});
   });
 
-  app.post(`${BASE_URL}/create`, async (req, res) => {
-    console.log('POST create', req.body);
-    const validationResult = validate(req.body);
-    if (!validationResult.error) {
-      const result = await insert(req.body);
-      if (result instanceof Error) {
-        res.status(400).json(JSON.parse(result.message));
-        return;
-      }
-      return res.json(result);
-    }
-    return res
-      .status(400)
-      .json({ status: 'error', message: validationResult.error });
-  });
+  // app.post(`${BASE_URL}/create`, async (req, res) => {
+  //   console.log('POST create', req.body);
+  //   const validationResult = validate(req.body);
+  //   if (!validationResult.error) {
+  //     const result = await insert(req.body);
+  //     if (result instanceof Error) {
+  //       res.status(400).json(JSON.parse(result.message));
+  //       return;
+  //     }
+  //     return res.json(result);
+  //   }
+  //   return res
+  //     .status(400)
+  //     .json({ status: 'error', message: validationResult.error });
+  // });
 
   app.put(`${BASE_URL}/update/:id`, async (req, res) => {
-    console.log('PUT', req.params.id);
     const validationResult = validate(req.body);
     if (req.params.id && !validationResult.error) {
-      const result = await update(req.params.id, req.body);
+      const result = await update({_id:req.params.id, ...validationResult.value});
       if (result instanceof Error) {
-        res.status(400).json(JSON.parse(result.message));
-        return;
+        return res.status(400).json(JSON.parse(result.message));
       }
       return res.json(result);
     }
