@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
+import moment from 'moment';
 
 import axios from 'axios';
 
@@ -58,6 +58,12 @@ export default function UserPage() {
     { field: 'duration', headerName: 'Duration', type: 'number', width: 90 },
     { field: 'viewCount', headerName: 'Views', type: 'number', width: 90 },
     { field: 'status', headerName: 'Status', width: 90 },
+    { 
+      field: 'recordingDate', 
+      headerName: 'Date', 
+      width: 200,
+      valueFormatter: params => moment(params?.value).format("DD/MM/YYYY hh:mm A")
+     },
     {
       field: 'actions',
       type: 'actions',
