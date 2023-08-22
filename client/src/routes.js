@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import VideoUploadPage from './pages/VideoUploadPage';
+import VideoEditPage from './pages/VideoEditPage';
 import VideoPlayerPage from './pages/VideoPlayerPage';
 import VideoListPage from './pages/VideoListPage';
 import VideosPage from './pages/VideosPage'
@@ -29,7 +30,7 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'video-upload', element: <VideoUploadPage /> },
         { path: 'videos/:id', element: <VideoPlayerPage /> },
-        { path: 'video/update/:id', element: <VideoUploadPage /> },
+        { path: 'video/update/:id', element: <VideoEditPage /> },
         { path: 'video-list', element: <VideoListPage /> },
         { path: 'videos', element: <VideosPage /> },
       ],

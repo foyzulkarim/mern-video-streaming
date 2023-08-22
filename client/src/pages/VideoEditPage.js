@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -8,7 +6,6 @@ import {
   TextField,
   FormControl,
   Typography,
-  Button,
   Alert,
   Snackbar,
 } from '@mui/material';
@@ -17,17 +14,24 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { LoadingButton } from '@mui/lab';
 
+// @mui-x
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+//react
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+
+//others
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
+//internal
 import { API_SERVER } from '../constants';
+
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 600,
@@ -53,94 +57,85 @@ const validationSchema = yup.object({
   description: yup.string().required('Description is required'),
   visibility: yup.string().required('Visibility is required'),
   thumbnailUrl: yup.string().required('Thumbnail URL is required'),
-  language: yup.string().required('Language is required'),
+  language: yup.string(),
   recordingDate: yup.date().required('Recording date is required'),
   category: yup.string().required('Category is required'),
 });
 
-export default function VideoUploadPage() {
+export default function VideoEditPage() {
+  const navigate = useNavigate();
+  const { id } = useParams();
   const [uploadResponse, setUploadResponse] = useState(null);
   const [alertType, setAlertType] = useState('success');
+  const [initialValues, setInitialValues] = useState({
+    title: '',
+    description: '',
+    visibility: 'Public',
+    thumbnailUrl: 'test',
+    language: 'Bangla',
+    recordingDate: new Date(),
+    category: 'Education',
 
-  const navigate = useNavigate();
-  const navigateToVideos = () => {
-    // 👇️ navigate to /contacts
-    navigate('/videos');
-  };
+  });
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`${API_SERVER}/api/videos/detail/${id}`);
+      setInitialValues(response.data)
+    };
+    
+    if(id){
+      fetchData();
+    }else{
+        setAlertType('error');
+        setUploadResponse("Undefined Id");
+    }
+    
+  }, [id]);
 
   // axios post the values to the backend
-  const postToServer = async (values) => {
-    console.log(values);
-    const {
-      title,
-      category,
-      description,
-      recordingDate,
-      visibility,
-    } = values;
-    const videoFile = values.videoFile;
+  const putToServer = async (videoInfo) => {
+
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('visibility', visibility);
-    formData.append('category', category);
-    formData.append('description', description);
-    // formData.append("language", language);
-    formData.append('recordingDate', recordingDate);
-    formData.append('video', videoFile);
+
+    formData.append('title', videoInfo.title);
+    formData.append('visibility', videoInfo.visibility);
+    formData.append('category', videoInfo.category);
+    formData.append('description', videoInfo.description);
+    formData.append('recordingDate', videoInfo.recordingDate);
+    // formData.append("language", videoInfo.language);
+
     try {
-      const response = await axios.post(`${API_SERVER}/api/videos/upload`, formData, {
+      const response = await axios.put(`${API_SERVER}/api/videos/update/${id}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
           Accept: '*/*',
         },
       });
+
       setAlertType('success');
       setUploadResponse(response.data.message);
-      console.log(response);
-      setTimeout(() => navigateToVideos(), 3000);
+      setTimeout(() => navigate('/videos'), 1500);
     } catch (error) {
-      console.log(error);
       setAlertType('error');
       setUploadResponse(error.response.data.error.message);
     }
   };
 
   const formik = useFormik({
-    initialErrors: {
-      videoFile: 'Video file is required',
-    },
-    initialValues: {
-      title: '',
-      description: '',
-      visibility: 'Public',
-      thumbnailUrl: 'test',
-      language: 'Bangla',
-      recordingDate: new Date(),
-      category: 'Education',
-      videoFile: null,
-    },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      await postToServer(values);
-    },
-    validate: (values) => {
-      const errors = {};
-      if (!values.videoFile) {
-        errors.videoFile = 'Video file is required';
-      }
-      // check videoFile size
-      if (values.videoFile?.size > 52428000) {
-        errors.videoFile = 'Video file size should be less than 50MB';
-      }
-      console.log(values.videoFile?.type);
-      // check videoFile type, must be video/mp4 or video/x-matroska
-      if (
-        values.videoFile?.type !== 'video/mp4' &&
-        values.videoFile?.type !== 'video/webm'
-      ) {
-        errors.videoFile = 'Video file type should be .mp4 or .webm';
-      }
 
+    enableReinitialize: true,
+    initialValues: initialValues,
+    validationSchema: validationSchema,
+    onSubmit: async (videoInfo) => {
+      await putToServer(videoInfo);
+    },
+    validate: (videoInfo) => {
+      const errors = {};
+    //   if (!values.videoFile) {
+    //     errors.videoFile = 'Video file is required';
+    //   }
       return errors;
     },
   });
@@ -148,43 +143,20 @@ export default function VideoUploadPage() {
   return (
     <>
       <Helmet>
-        <title> Video upload</title>
+        <title>Update Video</title>
       </Helmet>
 
       <>
         <Container>
           <StyledContent>
             <Typography variant='h4' sx={{ mb: 5 }}>
-              Upload video
+                Update Video
             </Typography>
             <form onSubmit={formik.handleSubmit}>
               <Stack spacing={3}>
-                <label htmlFor='video'>
-                  <input
-                    style={{ display: 'none' }}
-                    name='video'
-                    accept='video/*'
-                    id='video'
-                    type='file'
-                    onChange={(e) => {
-                      const file = e.currentTarget.files[0];
-                      formik.setFieldValue('videoFile', file);
-                    }}
-                  />
-                  <Button
-                    color='secondary'
-                    variant='contained'
-                    component='span'
-                  >
-                    Upload video
-                  </Button>
-                </label>
+                
                 {/* video file name display here */}
-                <TextField
-                  value={formik.values.videoFile?.name}
-                  error={Boolean(formik.errors?.videoFile)}
-                  helperText={formik.errors?.videoFile}
-                />
+
                 <TextField
                   id='title'
                   name='title'
@@ -295,7 +267,7 @@ export default function VideoUploadPage() {
                   variant='contained'
                   disabled={formik.isSubmitting || !formik.isValid}
                 >
-                  Upload
+                  Update
                 </LoadingButton>
               </Stack>
             </form>
