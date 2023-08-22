@@ -192,6 +192,9 @@ export default function UserPage() {
           <Button
             variant='contained'
             startIcon={<Iconify icon='eva:plus-fill' />}
+            onClick={() => {
+              navigate('/video-upload')
+            }}
           >
             New Video
           </Button>
