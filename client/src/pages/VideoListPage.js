@@ -1,13 +1,6 @@
-import { Helmet } from 'react-helmet-async';
-import { useState, useEffect, useCallback } from 'react';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SecurityIcon from '@mui/icons-material/Security';
-import moment from 'moment';
-
-import axios from 'axios';
-
 // @mui
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Card,
   Stack,
@@ -18,9 +11,22 @@ import {
   Typography,
   TableContainer,
 } from '@mui/material';
+
+// @mui-x
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+
+// react
+import { useState, useEffect, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
+
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
+
+// other
+import moment from 'moment';
+import axios from 'axios';
 import { API_SERVER } from '../constants';
 
 export default function UserPage() {
@@ -28,7 +34,7 @@ export default function UserPage() {
 
   const [rows, setRows] = useState([]);
 
-  const deleteUser = useCallback(
+  const deleteVideo = useCallback(
     (id) => () => {
       setTimeout(() => {
         console.log('delete', id);
@@ -37,19 +43,7 @@ export default function UserPage() {
     []
   );
 
-  const toggleAdmin = useCallback(
-    (id) => () => {
-      console.log('toggleAdmin', id);
-    },
-    []
-  );
-
-  const duplicateUser = useCallback(
-    (id) => () => {
-      console.log('duplicate', id);
-    },
-    []
-  );
+  const navigate = useNavigate();
 
   const columns = [
     { field: '_id', headerName: 'ID', width: 70 },
@@ -67,24 +61,18 @@ export default function UserPage() {
     {
       field: 'actions',
       type: 'actions',
+      headerName: 'Action',
       width: 80,
       getActions: (params) => [
         <GridActionsCellItem
+          icon={<EditIcon />}
+          label='Update'
+          onClick={ () =>  navigate(`/video/update/${params.id}`)}
+        />,
+        <GridActionsCellItem
           icon={<DeleteIcon />}
           label='Delete'
-          onClick={deleteUser(params.id)}
-        />,
-        <GridActionsCellItem
-          icon={<SecurityIcon />}
-          label='Toggle Admin'
-          onClick={toggleAdmin(params.id)}
-          showInMenu
-        />,
-        <GridActionsCellItem
-          icon={<FileCopyIcon />}
-          label='Duplicate User'
-          onClick={duplicateUser(params.id)}
-          showInMenu
+          onClick={deleteVideo(params.id)}
         />,
       ],
     },
@@ -113,14 +101,6 @@ export default function UserPage() {
         return video;
       });
 
-      console.log(
-        'getData: payload ',
-        searchPayload,
-        'result:',
-        response.data,
-        'videos',
-        videos
-      );
       setRows(videos);
     };
 
@@ -152,13 +132,12 @@ export default function UserPage() {
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 1,
+    pageSize: 10,
   });
 
   const [rowCountState, setRowCountState] = useState(0);
 
   useEffect(() => {
-    console.log('paginationModel', paginationModel);
     setSearchPayload((prevSearchPayload) => {
       return {
         ...prevSearchPayload,
@@ -197,7 +176,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> Video List </title>
       </Helmet>
 
       <Container>
