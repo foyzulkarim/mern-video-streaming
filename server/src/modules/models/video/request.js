@@ -7,10 +7,6 @@ const schema = Joi.object().keys({
   visibility: Joi.string().min(3).max(30).required(),
   category: Joi.string().min(3).max(30).required(),
   recordingDate: Joi.date().required(),
-  // language: Joi.string().min(3).max(30).required(),
-  // originalName: Joi.string().min(3).max(30).required(),
-  // fileName: Joi.string().min(3).max(30).required(),
-  // videoLink: Joi.string().min(3).max(30).required(),
 });
 
 const validate = (data) => {
