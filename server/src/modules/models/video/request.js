@@ -3,16 +3,18 @@ const Joi = require("joi");
 const schema = Joi.object().keys({
   _id: Joi.string().optional(),
   title: Joi.string().min(3).max(30).required(),
-  fileName: Joi.string().min(3).max(30).required(),
-  originalName: Joi.string().min(3).max(30).required(),
+  description: Joi.string().min(3).max(30).required(),
   visibility: Joi.string().min(3).max(30).required(),
+  category: Joi.string().min(3).max(30).required(),
   recordingDate: Joi.date().required(),
-  videoLink: Joi.string().min(3).max(30).required(),
+  // language: Joi.string().min(3).max(30).required(),
+  // originalName: Joi.string().min(3).max(30).required(),
+  // fileName: Joi.string().min(3).max(30).required(),
+  // videoLink: Joi.string().min(3).max(30).required(),
 });
 
 const validate = (data) => {
   const validationResult = schema.validate(data);
-  console.log(`validationResult:`, validationResult);
   return validationResult;
 };
 
