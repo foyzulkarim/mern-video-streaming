@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb');
 const { MongoManager } = require('./mongo');
 const { baseDefaults } = require('./schemas/common');
+const { collectionName:userCollectionName } =  require('./schemas/user')
 
 const insertItem = async (collection, item) => {
   try {
@@ -117,4 +118,5 @@ const createCollectionObject = (collectionName) =>
 module.exports = {
   Video: createCollectionObject('videos'),
   Role: createCollectionObject('roles'),
+  User: createCollectionObject(userCollectionName),
 };
