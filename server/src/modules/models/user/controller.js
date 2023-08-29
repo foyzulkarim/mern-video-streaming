@@ -1,5 +1,6 @@
 const { User } = require('../../db/collections');
 const { validate } = require('./request');
+const bcrypt = require('bcrypt')
 
 const BASE_URL = `/api/user`;
 
@@ -11,7 +12,12 @@ const setupRoutes = (app) => {
     const validationResult = validate(req.body);
 
     if (!validationResult.error) {
-      const result = await User.insert({isActive:true, ...validationResult.value});
+      const hashPassword = await bcrypt.hash(req.body.password, 10)
+      const result = await User.insert({
+        isActive:true, 
+        ...validationResult.value,
+        password: hashPassword
+    });
       if (result instanceof Error) {
         return res.status(400).json(result.message);
       }
