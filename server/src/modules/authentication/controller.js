@@ -1,5 +1,6 @@
 const { loginValidate, authenticate } = require('./request');
-
+const { generateJwtToken } = require('./utils')
+const { setCookie } = require('../../utils/cookie')
 
 const setupRoutes = (app) => {
 
@@ -10,15 +11,25 @@ const setupRoutes = (app) => {
     if (!loginValidationResult.error) {
       const { email, password } = req.body
       const authenticationResult =  await authenticate(email, password)
+      
       if(authenticationResult.isAuthenticate){
-        return res
-        .status(200)
-        .json({user: authenticationResult.user });
+
+        const jwtToken = await generateJwtToken({
+          _id: authenticationResult.user._id,
+          name: authenticationResult.user.name
+        });
+
+        setCookie(res, 'Bearer', jwtToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
+          sameSite: 'strict', // Prevent CSRF attacks
+          maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+        });
+        
+        return res.status(200).json({user: authenticationResult.user });
       }
       else{
-        return res
-        .status(401)
-        .json({message: authenticationResult.message });
+        return res.status(401).json({message: authenticationResult.message });
       }
 
     }
@@ -27,7 +38,6 @@ const setupRoutes = (app) => {
       .json({ status:'error', message:loginValidationResult.error });
 
   });
-
 
 };
 

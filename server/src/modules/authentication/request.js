@@ -17,29 +17,23 @@ const loginValidate = (data) => {
 
 const authenticate = async (email, password) => {
 
-  const defaultReturn = {
-    isAuthenticate: false,
-    message: 'wrong email or password'
-  }
-
   const user = await User.findOne({email});
-  if (user instanceof Error) {
-    return defaultReturn
-  }
 
-  const isValidPassword = bcrypt.compare(password, user.password)
-
-  if(isValidPassword){
+  if(user && (await bcrypt.compare(password, user.password))){
     return {
       isAuthenticate: true,
       user: {
+        _id: user._id,
         name: user.name,
         email: user.email
       }
     }    
   }
 
-  return defaultReturn
+  return {
+    isAuthenticate: false,
+    message: 'Invalid email or password'
+  }
 
 }
 
