@@ -1,6 +1,5 @@
 const { loginValidate, authenticate } = require('./request');
 const { generateJwtToken } = require('./utils');
-const { setCookie } = require('../../utils/cookie');
 
 const setupRoutes = (app) => {
 

@@ -13,6 +13,7 @@ const { addQueueItem } = require('../../queues/queue');
 const {
   getVideoDurationAndResolution,
 } = require('../../queues/video-processor');
+const { loginRequired } =  require('../../../middleware/auth');
 
 const BASE_URL = `/api/videos`;
 
@@ -69,7 +70,7 @@ const setupRoutes = (app) => {
   //     .json({ status: 'error', message: validationResult.error });
   // });
 
-  app.put(`${BASE_URL}/update/:id`, async (req, res) => {
+  app.put(`${BASE_URL}/update/:id`, loginRequired, async (req, res) => {
     const validationResult = validate(req.body);
     if (req.params.id && !validationResult.error) {
       const result = await update({_id:req.params.id, ...validationResult.value});
@@ -83,7 +84,7 @@ const setupRoutes = (app) => {
       .json({ status: 'error', message: validationResult.error });
   });
 
-  app.delete(`${BASE_URL}/delete/:id`, async (req, res) => {
+  app.delete(`${BASE_URL}/delete/:id`, loginRequired, async (req, res) => {
     console.log('DELETE', req.params.id);
     if (req.params.id) {
       const result = await deleteById(req.params.id);
@@ -139,7 +140,7 @@ const setupRoutes = (app) => {
     });
   };
 
-  app.post(`${BASE_URL}/upload`, uploadProcessor, async (req, res) => {
+  app.post(`${BASE_URL}/upload`, loginRequired, uploadProcessor, async (req, res) => {
     try {
       // const { videoDuration } = await getVideoDurationAndResolution(
       //   `./${req.file.path}`

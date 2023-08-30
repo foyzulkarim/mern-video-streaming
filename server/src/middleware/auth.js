@@ -16,8 +16,19 @@ const setCurrentUser = async (req, res, next) => {
   next(); 
 };
 
+const loginRequired =  (req, res, next) => {
+  
+  if(req.user){
+    next(); 
+  }else{
+    return res.status(401).json({message: 'you must login to access this resource' });
+  }
+  
+};
+
 
 module.exports = {
-    setCurrentUser
+  setCurrentUser,
+  loginRequired
 }
   
