@@ -1,6 +1,6 @@
 const { loginValidate, authenticate } = require('./request');
-const { generateJwtToken } = require('./utils')
-const { setCookie } = require('../../utils/cookie')
+const { generateJwtToken } = require('./utils');
+const { setCookie } = require('../../utils/cookie');
 
 const setupRoutes = (app) => {
 
@@ -9,8 +9,8 @@ const setupRoutes = (app) => {
     const loginValidationResult = loginValidate(req.body);
 
     if (!loginValidationResult.error) {
-      const { email, password } = req.body
-      const authenticationResult =  await authenticate(email, password)
+      const { email, password } = req.body;
+      const authenticationResult =  await authenticate(email, password);
       
       if(authenticationResult.isAuthenticate){
 
@@ -19,14 +19,10 @@ const setupRoutes = (app) => {
           name: authenticationResult.user.name
         });
 
-        setCookie(res, 'Bearer', jwtToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
-          sameSite: 'strict', // Prevent CSRF attacks
-          maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+        return res.status(200).json({
+          user: authenticationResult.user,
+          accessToken: jwtToken
         });
-        
-        return res.status(200).json({user: authenticationResult.user });
       }
       else{
         return res.status(401).json({message: authenticationResult.message });

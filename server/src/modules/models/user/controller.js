@@ -7,7 +7,7 @@ const BASE_URL = `/api/user`;
 const setupRoutes = (app) => {
 
 
-  app.post(`${BASE_URL}/registration`, async (req, res) => {
+  app.post(`/api/registration`, async (req, res) => {
 
     const validationResult = validate(req.body);
 

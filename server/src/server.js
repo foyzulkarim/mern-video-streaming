@@ -6,8 +6,10 @@ const eventEmitter = require('./event-manager').getInstance();
 const PORT = 4000;
 
 const setup = async () => {  
-  const { setup: setupVideoModule } =
-    await require('./modules/models/video/controller');
+  const { setCurrentUser } = await require('./middleware/auth');
+  app.use(setCurrentUser);
+
+  const { setup: setupVideoModule } = await require('./modules/models/video/controller');
   setupVideoModule(app);
 
   const { setup: setupRoleModule } = await require('./modules/models/role/controller');
