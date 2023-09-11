@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
-import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox,  Alert,
-  Snackbar, } from '@mui/material';
+import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
 
 import { LoadingButton } from '@mui/lab';
 
@@ -12,7 +11,9 @@ import Iconify from '../../../components/iconify';
 import axios from 'axios';
 import { API_SERVER } from '../../../constants';
 
-import { setWsResponse } from '../../../App'
+
+
+import  ShowAlert  from '../../../pages/alert'
 
 // ----------------------------------------------------------------------
 
@@ -20,8 +21,10 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [uploadResponse, setUploadResponse] = useState(null);
+
+  const [alertMessage, setAlertMessage] = useState(null);
   const [alertType, setAlertType] = useState('success');
+  
   const [loginData, setloginData] = useState({
     email: '',
     password: ''
@@ -41,12 +44,12 @@ export default function LoginForm() {
     )
     .then(function (response){
       setAlertType('success');
-      setUploadResponse('Login Successful');
+      setAlertMessage('Login Successful');
       setTimeout(() => navigate('/videos'), 2000);
     })
     .catch(function (error){
       setAlertType('error');
-      setUploadResponse(error.response.data.message);
+      setAlertMessage(error.response.data.message);
     });
 
   };
@@ -64,26 +67,9 @@ export default function LoginForm() {
 
   return (
     <>
-      <Stack>
-        <Snackbar
-          open={uploadResponse}
-          autoHideDuration={5000}
-          onClose={() => {
-            setUploadResponse(null);
-          }}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => {
-              setUploadResponse(null);
-            }}
-            severity={alertType}
-          >
-            {uploadResponse}
-          </Alert>
-        </Snackbar>
-      </Stack>
 
+      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
+      
       <Stack spacing={3}>
         <TextField name="email" onChange={handleInput} label="Email address" />
 

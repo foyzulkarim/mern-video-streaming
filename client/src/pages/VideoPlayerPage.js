@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 
 import { API_SERVER, VIDEO_SERVER } from '../constants';
+import  ShowAlert  from '../pages/alert'
 
 import ReactPlayer from 'react-player';
 
@@ -32,6 +33,8 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function VideoPlayerPage() {
   const [url, setUrl] = useState('');
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [alertType, setAlertType] = useState('success');
   const [data, setData] = useState({
     title: '',
     description: '',
@@ -44,10 +47,6 @@ export default function VideoPlayerPage() {
   });
   const { id } = useParams();
   const navigate = useNavigate();
-// const navigateToContacts = () => {
-//     // 👇️ navigate to /contacts
-//     navigate('/videos');
-//   };
 
   const card = (
     <React.Fragment>
@@ -101,6 +100,8 @@ export default function VideoPlayerPage() {
         setUrl(u);
       })
       .catch(function (error){
+        setAlertType('error');
+        setAlertMessage(error.response.data.message);
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -115,6 +116,7 @@ export default function VideoPlayerPage() {
       <Helmet>
         <title> Video</title>
       </Helmet>
+      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
       <Box
         sx={{
           bgcolor: '#eceff1',

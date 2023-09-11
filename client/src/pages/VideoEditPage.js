@@ -6,8 +6,6 @@ import {
   TextField,
   FormControl,
   Typography,
-  Alert,
-  Snackbar,
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -31,6 +29,7 @@ import axios from 'axios';
 
 //internal
 import { API_SERVER } from '../constants';
+import  ShowAlert  from '../pages/alert'
 
 
 const StyledContent = styled('div')(({ theme }) => ({
@@ -65,7 +64,7 @@ const validationSchema = yup.object({
 export default function VideoEditPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [uploadResponse, setUploadResponse] = useState(null);
+  const [alertMessage, setAlertMessage] = useState(null);
   const [alertType, setAlertType] = useState('success');
   const [initialValues, setInitialValues] = useState({
     title: '',
@@ -83,7 +82,6 @@ export default function VideoEditPage() {
     const fetchData = async () => {
       await axios.get(
         `${API_SERVER}/api/videos/detail/${id}`,
-        {},
         {
           withCredentials: true,
         }
@@ -92,6 +90,8 @@ export default function VideoEditPage() {
         setInitialValues(response.data)
       })
       .catch(function (error){
+        setAlertType('error');
+        setAlertMessage(error.response.data.message);
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 5000);
         }
@@ -102,7 +102,7 @@ export default function VideoEditPage() {
       fetchData();
     }else{
         setAlertType('error');
-        setUploadResponse("Undefined Id");
+        setAlertMessage("Undefined Id");
     }
     
   }, [id]);
@@ -132,14 +132,12 @@ export default function VideoEditPage() {
     )
     .then(function (response){
       setAlertType('success');
-      setUploadResponse('Video edit successfull');
+      setAlertMessage('Video edit successfull');
       setTimeout(() => navigate('/videos'), 3000);
     })
     .catch(function (error){
-      
       setAlertType('error');
-      setUploadResponse(error.response.data.message);
-      
+      setAlertMessage(error.response.data.message);
       if(error.response.status===401){
         setTimeout(() => navigate('/login', { replace: true }), 3000);
       }
@@ -170,6 +168,7 @@ export default function VideoEditPage() {
       <Helmet>
         <title>Update Video</title>
       </Helmet>
+      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <>
         <Container>
@@ -224,21 +223,7 @@ export default function VideoEditPage() {
                     <MenuItem value={'Unlisted'}>Unlisted</MenuItem>
                   </Select>
                 </FormControl>
-                {/* <TextField
-                                    id="thumbnailUrl"
-                                    name="thumbnailUrl"
-                                    label="Thumbnail URL"
-                                    value={formik.values.thumbnailUrl}
-                                    onChange={formik.handleChange}
-                                    error={
-                                        formik.touched.thumbnailUrl &&
-                                        Boolean(formik.errors.thumbnailUrl)
-                                    }
-                                    helperText={
-                                        formik.touched.thumbnailUrl &&
-                                        formik.errors.thumbnailUrl
-                                    }
-                                /> */}
+
                 <FormControl fullWidth>
                   <InputLabel id='language-select-label'>Language</InputLabel>
                   <Select
@@ -296,28 +281,6 @@ export default function VideoEditPage() {
                 </LoadingButton>
               </Stack>
             </form>
-            <Stack>
-              <Snackbar
-                open={uploadResponse}
-                autoHideDuration={5000}
-                onClose={() => {
-                  setUploadResponse(null);
-                }}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-              >
-                <Alert
-                  onClose={() => {
-                    setUploadResponse(null);
-                  }}
-                  severity={alertType}
-                >
-                  {uploadResponse}
-                </Alert>
-              </Snackbar>
-            </Stack>
           </StyledContent>
         </Container>
       </>

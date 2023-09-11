@@ -14,12 +14,15 @@ import {
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
 import { API_SERVER } from '../constants';
+import  ShowAlert  from '../pages/alert'
 
 // ----------------------------------------------------------------------
 
 export default function ProductsPage() {
   const [openFilter, setOpenFilter] = useState(false);
   const [videos, setVideos] = useState([]);
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [alertType, setAlertType] = useState('success');
   const navigate = useNavigate();
 
 
@@ -37,8 +40,8 @@ export default function ProductsPage() {
         setVideos(response.data);
       })
       .catch(function (error){
-        // setAlertType('error');
-        // setUploadResponse(error.response.data.message);
+        setAlertType('error');
+        setAlertMessage(error.response.data.message);
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -62,6 +65,7 @@ export default function ProductsPage() {
       <Helmet>
         <title> Dashboard: Products | Minimal UI </title>
       </Helmet>
+      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <Container>
         <Typography variant='h4' sx={{ mb: 5 }}>

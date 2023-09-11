@@ -28,11 +28,14 @@ import Scrollbar from '../components/scrollbar';
 import moment from 'moment';
 import axios from 'axios';
 import { API_SERVER } from '../constants';
+import  ShowAlert  from '../pages/alert'
 
 export default function UserPage() {
   const [open, setOpen] = useState(null);
 
   const [rows, setRows] = useState([]);
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [alertType, setAlertType] = useState('success');
 
   const deleteVideo = useCallback(
     (id) => () => {
@@ -108,6 +111,8 @@ export default function UserPage() {
         setRows(videos);
       })
       .catch(function (error){
+        setAlertType('error');
+        setAlertMessage(error.response.data.message);
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -127,11 +132,25 @@ export default function UserPage() {
           filterValue: searchPayload.filterValue,
         };
       }
-      const countResponse = await axios.post(
+
+      await axios.post(
         `${API_SERVER}/api/videos/count`,
-        countFilter
-      );
-      setRowCountState(countResponse.data.count);
+        countFilter,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        setRowCountState(response.data.count);
+      })
+      .catch(function (error){
+        setAlertType('error');
+        setAlertMessage(error.response.data.message);
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      });
+
     };
 
     getCount();
@@ -189,6 +208,7 @@ export default function UserPage() {
       <Helmet>
         <title> Video List </title>
       </Helmet>
+      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <Container>
         <Stack

@@ -9,8 +9,6 @@ import {
   FormControl,
   Typography,
   Button,
-  Alert,
-  Snackbar,
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -28,6 +26,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 import { API_SERVER } from '../constants';
+import  ShowAlert  from '../pages/alert'
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 600,
@@ -59,13 +58,15 @@ const validationSchema = yup.object({
 });
 
 export default function VideoUploadPage() {
-  const [uploadResponse, setUploadResponse] = useState(null);
+
+  const [alertMessage, setAlertMessage] = useState(null);
   const [alertType, setAlertType] = useState('success');
 
   const navigate = useNavigate();
 
   // axios post the values to the backend
   const postToServer = async (values) => {
+    
     const {
       title,
       category,
@@ -96,12 +97,12 @@ export default function VideoUploadPage() {
     )
     .then(function (response){
       setAlertType('success');
-      setUploadResponse('Video upload successfull');
+      setAlertMessage('Video upload successfull');
       setTimeout(() => navigate('/videos'), 3000)
     })
     .catch(function (error){
       setAlertType('error');
-      setUploadResponse(error.response.data.message);
+      setAlertMessage(error.response.data.message);
       if(error.response.status===401){
         setTimeout(() => navigate('/login'), 3000);
       }
@@ -154,7 +155,7 @@ export default function VideoUploadPage() {
       <Helmet>
         <title> Video upload</title>
       </Helmet>
-
+      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
       <>
         <Container>
           <StyledContent>
@@ -231,21 +232,7 @@ export default function VideoUploadPage() {
                     <MenuItem value={'Unlisted'}>Unlisted</MenuItem>
                   </Select>
                 </FormControl>
-                {/* <TextField
-                                    id="thumbnailUrl"
-                                    name="thumbnailUrl"
-                                    label="Thumbnail URL"
-                                    value={formik.values.thumbnailUrl}
-                                    onChange={formik.handleChange}
-                                    error={
-                                        formik.touched.thumbnailUrl &&
-                                        Boolean(formik.errors.thumbnailUrl)
-                                    }
-                                    helperText={
-                                        formik.touched.thumbnailUrl &&
-                                        formik.errors.thumbnailUrl
-                                    }
-                                /> */}
+
                 <FormControl fullWidth>
                   <InputLabel id='language-select-label'>Language</InputLabel>
                   <Select
@@ -303,28 +290,6 @@ export default function VideoUploadPage() {
                 </LoadingButton>
               </Stack>
             </form>
-            <Stack>
-              <Snackbar
-                open={uploadResponse}
-                autoHideDuration={5000}
-                onClose={() => {
-                  setUploadResponse(null);
-                }}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-              >
-                <Alert
-                  onClose={() => {
-                    setUploadResponse(null);
-                  }}
-                  severity={alertType}
-                >
-                  {uploadResponse}
-                </Alert>
-              </Snackbar>
-            </Stack>
           </StyledContent>
         </Container>
       </>
