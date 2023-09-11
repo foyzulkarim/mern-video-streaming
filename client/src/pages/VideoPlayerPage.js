@@ -89,10 +89,22 @@ export default function VideoPlayerPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(`${API_SERVER}/api/videos/detail/${id}`);
-      setData(response.data);
-      const u = `${VIDEO_SERVER}/${response.data.fileName}.m3u8`;
-      setUrl(u);
+      await axios.get(
+        `${API_SERVER}/api/videos/detail/${id}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        setData(response.data);
+        const u = `${VIDEO_SERVER}/${response.data.fileName}.m3u8`;
+        setUrl(u);
+      })
+      .catch(function (error){
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      });
     };
     fetchData();
   }, [id]);

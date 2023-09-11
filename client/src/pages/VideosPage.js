@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
 
@@ -19,13 +20,30 @@ import { API_SERVER } from '../constants';
 export default function ProductsPage() {
   const [openFilter, setOpenFilter] = useState(false);
   const [videos, setVideos] = useState([]);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
-      console.log('getData', response.data);
-      response.data.sort((a, b) => b.viewCount - a.viewCount===0 ? new Date(b.recordingDate) - new Date(a.recordingDate) : b.viewCount - a.viewCount);
-      setVideos(response.data);
+      await axios.post(
+        `${API_SERVER}/api/videos/search`,
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        response.data.sort((a, b) => b.viewCount - a.viewCount===0 ? new Date(b.recordingDate) - new Date(a.recordingDate) : b.viewCount - a.viewCount);
+        setVideos(response.data);
+      })
+      .catch(function (error){
+        // setAlertType('error');
+        // setUploadResponse(error.response.data.message);
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      });
+
     };
 
     getData();

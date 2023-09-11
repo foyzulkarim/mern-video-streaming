@@ -63,14 +63,9 @@ export default function VideoUploadPage() {
   const [alertType, setAlertType] = useState('success');
 
   const navigate = useNavigate();
-  const navigateToVideos = () => {
-    // 👇️ navigate to /contacts
-    navigate('/videos');
-  };
 
   // axios post the values to the backend
   const postToServer = async (values) => {
-    console.log(values);
     const {
       title,
       category,
@@ -87,22 +82,32 @@ export default function VideoUploadPage() {
     // formData.append("language", language);
     formData.append('recordingDate', recordingDate);
     formData.append('video', videoFile);
-    try {
-      const response = await axios.post(`${API_SERVER}/api/videos/upload`, formData, {
+
+    await axios.post(
+      `${API_SERVER}/api/videos/upload`,
+      formData,
+      {
+        withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',
           Accept: '*/*',
-        },
-      });
+        }
+      }
+    )
+    .then(function (response){
       setAlertType('success');
-      setUploadResponse(response.data.message);
-      console.log(response);
-      setTimeout(() => navigateToVideos(), 3000);
-    } catch (error) {
-      console.log(error);
+      setUploadResponse('Video upload successfull');
+      setTimeout(() => navigate('/videos'), 3000)
+    })
+    .catch(function (error){
       setAlertType('error');
-      setUploadResponse(error.response.data.error.message);
-    }
+      setUploadResponse(error.response.data.message);
+      if(error.response.status===401){
+        setTimeout(() => navigate('/login'), 3000);
+      }
+      
+    });
+
   };
 
   const formik = useFormik({
@@ -132,7 +137,6 @@ export default function VideoUploadPage() {
       if (values.videoFile?.size > 52428000) {
         errors.videoFile = 'Video file size should be less than 50MB';
       }
-      console.log(values.videoFile?.type);
       // check videoFile type, must be video/mp4 or video/x-matroska
       if (
         values.videoFile?.type !== 'video/mp4' &&

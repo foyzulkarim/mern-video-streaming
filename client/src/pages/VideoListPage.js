@@ -91,17 +91,28 @@ export default function UserPage() {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.post(
-        `${API_SERVER}/api/videos/search`,
-        searchPayload
-      );
 
-      const videos = response.data.map((video) => {
-        video.id = video._id;
-        return video;
+      await axios.post(
+        `${API_SERVER}/api/videos/search`,
+        searchPayload,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        const videos = response.data.map((video) => {
+          video.id = video._id;
+          return video;
+        });
+  
+        setRows(videos);
+      })
+      .catch(function (error){
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
       });
 
-      setRows(videos);
     };
 
     getData();

@@ -32,8 +32,8 @@ const setupRoutes = (app) => {
     });
   });
 
-  app.get(`${BASE_URL}/detail/:id`, async (req, res) => {
-    console.log(`GET`, req.params);
+  app.get(`${BASE_URL}/detail/:id`, loginRequired, async (req, res) => {
+
     const video = await updateViewCount(req.params.id);
     if (video instanceof Error) {
       return res.status(400).json(JSON.parse(video.message));
@@ -42,33 +42,18 @@ const setupRoutes = (app) => {
   });
 
   // TODO: Proper searching with paging and ordering
-  app.post(`${BASE_URL}/search`, async (req, res) => {
+  app.post(`${BASE_URL}/search`, loginRequired, async (req, res) => {
     console.log('POST search', req.body);
     const result = await search(req.body);
     res.send(result);
   });
 
-  app.post(`${BASE_URL}/count`, async (req, res) => {
+  app.post(`${BASE_URL}/count`, loginRequired, async (req, res) => {
     console.log('POST count', req.body);
     const result = await count(req.body);
     res.send({count: result});
   });
 
-  // app.post(`${BASE_URL}/create`, async (req, res) => {
-  //   console.log('POST create', req.body);
-  //   const validationResult = validate(req.body);
-  //   if (!validationResult.error) {
-  //     const result = await insert(req.body);
-  //     if (result instanceof Error) {
-  //       res.status(400).json(JSON.parse(result.message));
-  //       return;
-  //     }
-  //     return res.json(result);
-  //   }
-  //   return res
-  //     .status(400)
-  //     .json({ status: 'error', message: validationResult.error });
-  // });
 
   app.put(`${BASE_URL}/update/:id`, loginRequired, async (req, res) => {
     const validationResult = validate(req.body);

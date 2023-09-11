@@ -81,8 +81,21 @@ export default function VideoEditPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(`${API_SERVER}/api/videos/detail/${id}`);
-      setInitialValues(response.data)
+      await axios.get(
+        `${API_SERVER}/api/videos/detail/${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        setInitialValues(response.data)
+      })
+      .catch(function (error){
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 5000);
+        }
+      });
     };
     
     if(id){
@@ -106,21 +119,33 @@ export default function VideoEditPage() {
     formData.append('recordingDate', videoInfo.recordingDate);
     // formData.append("language", videoInfo.language);
 
-    try {
-      const response = await axios.put(`${API_SERVER}/api/videos/update/${id}`, formData, {
+    await axios.put(
+      `${API_SERVER}/api/videos/update/${id}`,
+      formData,
+      {
+        withCredentials: true,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
           Accept: '*/*',
-        },
-      });
-
+        }
+      }
+    )
+    .then(function (response){
       setAlertType('success');
-      setUploadResponse(response.data.message);
-      setTimeout(() => navigate('/videos'), 1500);
-    } catch (error) {
+      setUploadResponse('Video edit successfull');
+      setTimeout(() => navigate('/videos'), 3000);
+    })
+    .catch(function (error){
+      
       setAlertType('error');
-      setUploadResponse(error.response.data.error.message);
-    }
+      setUploadResponse(error.response.data.message);
+      
+      if(error.response.status===401){
+        setTimeout(() => navigate('/login', { replace: true }), 3000);
+      }
+
+    });
+
   };
 
   const formik = useFormik({
