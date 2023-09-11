@@ -3,6 +3,8 @@ const path = require('path');
 
 const { MongoClient } = require('mongodb');
 
+const logger = require('../../logger');
+
 // Singleton design pattern
 class MongoManager {
   static async setInstance(instance) {
@@ -36,9 +38,12 @@ class MongoManager {
     console.log('connecting to MongoDB');
     await client.connect();
     const db = client.db('videodb');
-    console.log('connected to MongoDB');
+    console.log('connected to MongoDB', logger.warn);
+    logger.info('connected to MongoDB');
     await MongoManager.setInstance(db);
     await MongoManager.updateSchemas();
+    //console.log('log', logger);
+    logger.warn('test warning', { test: 'test' });
     return db;
   };
 }
