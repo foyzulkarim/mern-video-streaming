@@ -29,7 +29,7 @@ const validationSchema = yup.object({
   email: yup.string().email().required('Email is required'),
   password: yup.string()
   .required('Password is required')
-  .min(3, 'Your password is too short.')
+  .min(4, 'Your password is too short.')
   .matches(/[a-zA-Z0-9]/, 'Password can only contain Alphanumeric letters.'),
   confirmPassword: yup
   .string()
@@ -46,7 +46,9 @@ export default function RegistrationForm() {
   const [alertType, setAlertType] = useState('success');
   
 
-  const registerUser = async (values) => {
+  const registerUser = async (values, setFieldError) => {
+
+    delete values.confirmPassword;
 
     await axios.post(`${API_SERVER}/api/registration`,
       values,
@@ -62,9 +64,12 @@ export default function RegistrationForm() {
       setAlertMessage('Registration Successful');
       setTimeout(() => navigate('/login'), 2000);
     })
-    .catch(function (error){
+    .catch(function (errors){
       setAlertType('error');
       setAlertMessage('Something went wrong');
+      errors.response.data.message.details.forEach((error) => {
+        setFieldError(error.context.key, error.message)
+      })
     });
 
   };
@@ -79,7 +84,7 @@ export default function RegistrationForm() {
 
     validationSchema: validationSchema,
 
-    onSubmit: async (values) => await registerUser(values),
+    onSubmit: async (values, formikHelpers) => await registerUser(values, formikHelpers.setFieldError),
 
   });
 
