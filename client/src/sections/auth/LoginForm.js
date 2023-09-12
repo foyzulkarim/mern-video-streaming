@@ -1,19 +1,24 @@
+// react
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 // @mui
 import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
-
 import { LoadingButton } from '@mui/lab';
 
-// components
-import Iconify from '../../../components/iconify';
-
+// other
 import axios from 'axios';
-import { API_SERVER } from '../../../constants';
+
+// components
+import Iconify from '../../components/iconify';
+
+// constants
+import { API_SERVER } from '../../constants';
+
+// pages
+import  ShowAlert  from '../../pages/alert'
 
 
-
-import  ShowAlert  from '../../../pages/alert'
 
 // ----------------------------------------------------------------------
 

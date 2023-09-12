@@ -93,7 +93,7 @@ export default function VideoEditPage() {
         setAlertType('error');
         setAlertMessage(error.response.data.message);
         if(error.response.status===401){
-          setTimeout(() => navigate('/login'), 5000);
+          setTimeout(() => navigate('/login'), 3000);
         }
       });
     };

@@ -6,6 +6,7 @@ import SimpleLayout from './layouts/simple';
 import BlogPage from './pages/BlogPage';
 import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import VideoUploadPage from './pages/VideoUploadPage';
@@ -38,6 +39,10 @@ export default function Router() {
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: 'registration',
+      element: <RegistrationPage />,
     },
     {
       element: <SimpleLayout />,
