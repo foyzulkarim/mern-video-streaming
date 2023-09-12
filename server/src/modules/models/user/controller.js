@@ -9,7 +9,7 @@ const setupRoutes = (app) => {
 
   app.post(`/api/registration`, async (req, res) => {
 
-    const validationResult = validate(req.body);
+    const validationResult = await validate(req.body);
 
     if (!validationResult.error) {
       const hashPassword = await bcrypt.hash(req.body.password, 10)
@@ -17,7 +17,7 @@ const setupRoutes = (app) => {
         isActive:true, 
         ...validationResult.value,
         password: hashPassword
-    });
+      });
       if (result instanceof Error) {
         return res.status(400).json(result.message);
       }

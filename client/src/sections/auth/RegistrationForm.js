@@ -29,10 +29,9 @@ const validationSchema = yup.object({
   email: yup.string().email().required('Email is required'),
   password: yup.string()
   .required('Password is required')
-  .min(4, 'Your password is too short.')
-  .matches(/[a-zA-Z0-9]/, 'Password can only contain Alphanumeric letters.'),
-  confirmPassword: yup
-  .string()
+  .min(4, 'Password length must be at least 4 characters long'),
+  // .matches(/[a-zA-Z0-9]/, 'Password can only contain Alphanumeric letters.'),
+  confirmPassword: yup.string()
   .oneOf([yup.ref('password')], 'Passwords must match'),
 });
 
