@@ -7,7 +7,7 @@ const { User } =  require('../db/collections');
 
 const schema = Joi.object().keys({
   email: Joi.string().email().required(),
-  password: Joi.string().min(4).max(15).required(),
+  password: Joi.string().required(),
 });
 
 const loginValidate = (data) => {
