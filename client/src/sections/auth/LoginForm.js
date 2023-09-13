@@ -50,7 +50,7 @@ export default function LoginForm() {
     .then(function (response){
       setAlertType('success');
       setAlertMessage('Login Successful');
-      setTimeout(() => navigate('/videos'), 2000);
+      setTimeout(() => navigate('/videos'), 1000);
     })
     .catch(function (error){
       setAlertType('error');

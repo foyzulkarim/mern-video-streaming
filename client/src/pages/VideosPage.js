@@ -1,11 +1,11 @@
+// react
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import axios from 'axios';
-
 // @mui
 import { Container, Stack, Typography } from '@mui/material';
+
 // components
 import {
   VideoSort,
@@ -13,8 +13,16 @@ import {
   ProductCartWidget,
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
-import { API_SERVER } from '../constants';
+
+// page
 import  ShowAlert  from '../pages/alert'
+
+// other
+import axios from 'axios';
+
+// constants
+import { API_SERVER } from '../constants';
+
 
 // ----------------------------------------------------------------------
 
@@ -63,13 +71,13 @@ export default function ProductsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Products | Minimal UI </title>
+        <title> Dashboard: Videos </title>
       </Helmet>
       <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <Container>
         <Typography variant='h4' sx={{ mb: 5 }}>
-          Products
+          Videos
         </Typography>
 
         <Stack

@@ -52,7 +52,6 @@ export default function RegistrationForm() {
     await axios.post(`${API_SERVER}/api/registration`,
       values,
       {
-        withCredentials: true,
         headers: {
           'Content-Type': 'application/json'
         }
@@ -64,11 +63,16 @@ export default function RegistrationForm() {
       setTimeout(() => navigate('/login'), 2000);
     })
     .catch(function (errors){
-      setAlertType('error');
-      setAlertMessage('Something went wrong');
-      errors.response.data.message.details.forEach((error) => {
-        setFieldError(error.context.key, error.message)
-      })
+      if(errors.response.data.message.details){
+        errors.response.data.message.details.forEach((error) => {
+          setFieldError(error.context.key, error.message)
+        })
+      }
+      else{
+        setAlertType('error');
+        setAlertMessage('Something went wrong');
+      }
+
     });
 
   };

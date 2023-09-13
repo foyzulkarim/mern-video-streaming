@@ -1,6 +1,6 @@
 const { loginValidate, authenticate } = require('./request');
 const { generateJwtToken } = require('./utils');
-const { setCookie } = require('../../utils/cookie')
+const { setCookie, removeCookie } = require('../../utils/cookie')
 
 const setupRoutes = (app) => {
 
@@ -40,6 +40,15 @@ const setupRoutes = (app) => {
     return res
       .status(400)
       .json({ status:'error', message:loginValidationResult.error });
+
+  });
+
+  app.post('/api/logout', async (req, res) => {
+
+    removeCookie(res, 'Bearer')
+    return res
+      .status(200)
+      .json({ message:'logout successful'});
 
   });
 
