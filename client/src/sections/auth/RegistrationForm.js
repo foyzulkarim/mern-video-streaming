@@ -13,16 +13,14 @@ import * as yup from 'yup';
 
 // components
 import Iconify from '../../components/iconify';
+import  ShowAlert  from '../../components/alert';
 
 // constants
 import { API_SERVER } from '../../constants';
 
-// pages
-import  ShowAlert  from '../../pages/alert'
-
-
 
 // ----------------------------------------------------------------------
+
 
 const validationSchema = yup.object({
   name: yup.string().required('Name is required'),

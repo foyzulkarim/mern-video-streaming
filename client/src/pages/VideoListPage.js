@@ -23,12 +23,16 @@ import { useNavigate } from 'react-router-dom';
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
+import  ShowAlert  from '../components/alert';
 
 // other
 import moment from 'moment';
 import axios from 'axios';
 import { API_SERVER } from '../constants';
-import  ShowAlert  from '../pages/alert'
+
+
+// ----------------------------------------------------------------------
+
 
 export default function UserPage() {
   const [open, setOpen] = useState(null);

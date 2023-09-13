@@ -13,9 +13,7 @@ import {
   ProductCartWidget,
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
-
-// page
-import  ShowAlert  from '../pages/alert'
+import  ShowAlert  from '../components/alert';
 
 // other
 import axios from 'axios';
@@ -25,6 +23,7 @@ import { API_SERVER } from '../constants';
 
 
 // ----------------------------------------------------------------------
+
 
 export default function ProductsPage() {
   const [openFilter, setOpenFilter] = useState(false);

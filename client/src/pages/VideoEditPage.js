@@ -17,19 +17,24 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-//react
+// react
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
-//others
+// components
+import  ShowAlert  from '../components/alert';
+
+// others
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
 
-//internal
+//constants
 import { API_SERVER } from '../constants';
-import  ShowAlert  from '../pages/alert'
+
+
+// ----------------------------------------------------------------------
 
 
 const StyledContent = styled('div')(({ theme }) => ({

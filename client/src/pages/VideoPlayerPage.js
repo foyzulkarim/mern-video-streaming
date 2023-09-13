@@ -1,6 +1,9 @@
+// react
+import ReactPlayer from 'react-player';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -12,12 +15,18 @@ import {
   Button,
 } from '@mui/material';
 
+// components
+import  ShowAlert  from '../components/alert';
+
+//constants
 import { API_SERVER, VIDEO_SERVER } from '../constants';
-import  ShowAlert  from '../pages/alert'
 
-import ReactPlayer from 'react-player';
-
+//other
 import axios from 'axios';
+
+
+// ----------------------------------------------------------------------
+
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 800,

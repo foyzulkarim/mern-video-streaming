@@ -1,5 +1,8 @@
+// react
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
+
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -19,14 +22,20 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+// other 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
+// components
+import  ShowAlert  from '../components/alert';
+
+// constants
 import { API_SERVER } from '../constants';
-import  ShowAlert  from '../pages/alert'
+
+
+// ----------------------------------------------------------------------
+
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 600,

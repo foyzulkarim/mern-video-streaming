@@ -11,16 +11,14 @@ import axios from 'axios';
 
 // components
 import Iconify from '../../components/iconify';
+import  ShowAlert  from '../../components/alert';
 
 // constants
 import { API_SERVER } from '../../constants';
 
-// pages
-import  ShowAlert  from '../../pages/alert'
-
-
 
 // ----------------------------------------------------------------------
+
 
 export default function LoginForm() {
   const navigate = useNavigate();
