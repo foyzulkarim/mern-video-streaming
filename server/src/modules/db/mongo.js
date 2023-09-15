@@ -1,5 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+// const logger = require('../../logger');
+
+const winston = require('winston');
+const winstonMongo = require('winston-mongodb');
 
 const { MongoClient } = require('mongodb');
 
@@ -36,9 +40,14 @@ class MongoManager {
     console.log('connecting to MongoDB');
     await client.connect();
     const db = client.db('videodb');
+    if(process.env.ENABLE_WINSTON_MONGODB){
+      // logger.add(new winston.transports.MongoDB(options));
+    }
+    // logger.info('test warning', { test: 'test' });
     console.log('connected to MongoDB');
     await MongoManager.setInstance(db);
     await MongoManager.updateSchemas();
+
     return db;
   };
 }
