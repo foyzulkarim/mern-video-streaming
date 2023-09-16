@@ -1,5 +1,5 @@
 // react
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,8 +27,9 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
 
-// components
-import  ShowAlert  from '../components/alert';
+
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
 
 // constants
 import { API_SERVER } from '../constants';
@@ -68,8 +69,7 @@ const validationSchema = yup.object({
 
 export default function VideoUploadPage() {
 
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  const setAlertContext = useContext(SetAlertContext);
 
   const navigate = useNavigate();
 
@@ -105,13 +105,11 @@ export default function VideoUploadPage() {
       }
     )
     .then(function (response){
-      setAlertType('success');
-      setAlertMessage('Video upload successfull');
+      setAlertContext({type:'success', message: 'Video upload successfull'});
       setTimeout(() => navigate('/videos'), 3000)
     })
     .catch(function (error){
-      setAlertType('error');
-      setAlertMessage(error.response.data.message);
+      setAlertContext({type:'error', message: error.response.data.message});
       if(error.response.status===401){
         setTimeout(() => navigate('/login'), 3000);
       }
@@ -164,7 +162,6 @@ export default function VideoUploadPage() {
       <Helmet>
         <title> Video upload</title>
       </Helmet>
-      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
       <>
         <Container>
           <StyledContent>

@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 
 import { SocketProvider } from "./contexts/SocketContext";
+import { AlertProvider } from "./contexts/AlertContext";
 
 //
 import App from "./App";
@@ -17,7 +18,9 @@ root.render(
   <HelmetProvider>
     <BrowserRouter>
       <SocketProvider>
-        <App />
+        <AlertProvider>
+          <App />
+        </AlertProvider>
       </SocketProvider>
     </BrowserRouter>
   </HelmetProvider>

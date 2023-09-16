@@ -1,6 +1,6 @@
 // react
 import ReactPlayer from 'react-player';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
@@ -15,8 +15,8 @@ import {
   Button,
 } from '@mui/material';
 
-// components
-import  ShowAlert  from '../components/alert';
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
 
 //constants
 import { API_SERVER, VIDEO_SERVER } from '../constants';
@@ -42,8 +42,7 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function VideoPlayerPage() {
   const [url, setUrl] = useState('');
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  const setAlertContext = useContext(SetAlertContext);
   const [data, setData] = useState({
     title: '',
     description: '',
@@ -109,8 +108,7 @@ export default function VideoPlayerPage() {
         setUrl(u);
       })
       .catch(function (error){
-        setAlertType('error');
-        setAlertMessage(error.response.data.message);
+        setAlertContext({type:'error', message: error.response.data.message});
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -125,7 +123,6 @@ export default function VideoPlayerPage() {
       <Helmet>
         <title> Video</title>
       </Helmet>
-      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
       <Box
         sx={{
           bgcolor: '#eceff1',

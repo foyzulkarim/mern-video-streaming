@@ -1,5 +1,5 @@
 // react
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // @mui
@@ -13,7 +13,10 @@ import * as yup from 'yup';
 
 // components
 import Iconify from '../../components/iconify';
-import  ShowAlert  from '../../components/alert';
+// import  ShowAlert  from '../../components/alert';
+
+// Context
+import { SetAlertContext } from "../../contexts/AlertContext";
 
 // constants
 import { API_SERVER } from '../../constants';
@@ -39,8 +42,7 @@ export default function RegistrationForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  const setAlertContext = useContext(SetAlertContext);
   
 
   const registerUser = async (values, setFieldError) => {
@@ -56,8 +58,7 @@ export default function RegistrationForm() {
       }
     )
     .then(function (response){
-      setAlertType('success');
-      setAlertMessage('Registration Successful');
+      setAlertContext({type:'success', message: 'Registration Successful'});
       setTimeout(() => navigate('/login'), 2000);
     })
     .catch(function (errors){
@@ -67,8 +68,7 @@ export default function RegistrationForm() {
         })
       }
       else{
-        setAlertType('error');
-        setAlertMessage('Something went wrong');
+        setAlertContext({type:'error', message: 'Something went wrong'});
       }
 
     });
@@ -94,7 +94,6 @@ export default function RegistrationForm() {
   return (
     <>
 
-      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <form onSubmit={formik.handleSubmit}>
         <Stack spacing={3}>

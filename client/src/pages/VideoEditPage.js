@@ -18,12 +18,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // react
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
-// components
-import  ShowAlert  from '../components/alert';
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
 
 // others
 import { useFormik } from 'formik';
@@ -69,8 +69,7 @@ const validationSchema = yup.object({
 export default function VideoEditPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  const setAlertContext = useContext(SetAlertContext);
   const [initialValues, setInitialValues] = useState({
     title: '',
     description: '',
@@ -95,8 +94,7 @@ export default function VideoEditPage() {
         setInitialValues(response.data)
       })
       .catch(function (error){
-        setAlertType('error');
-        setAlertMessage(error.response.data.message);
+        setAlertContext({type:'error', message: error.response.data.message});
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -106,8 +104,7 @@ export default function VideoEditPage() {
     if(id){
       fetchData();
     }else{
-        setAlertType('error');
-        setAlertMessage("Undefined Id");
+      setAlertContext({type:'error', message: 'Undefined Id'});
     }
     
   }, [id]);
@@ -136,13 +133,11 @@ export default function VideoEditPage() {
       }
     )
     .then(function (response){
-      setAlertType('success');
-      setAlertMessage('Video edit successfull');
+      setAlertContext({type:'success', message: 'Video edit successfull'});
       setTimeout(() => navigate('/videos'), 3000);
     })
     .catch(function (error){
-      setAlertType('error');
-      setAlertMessage(error.response.data.message);
+      setAlertContext({type:'error', message: error.response.data.message});
       if(error.response.status===401){
         setTimeout(() => navigate('/login', { replace: true }), 3000);
       }
@@ -173,7 +168,6 @@ export default function VideoEditPage() {
       <Helmet>
         <title>Update Video</title>
       </Helmet>
-      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <>
         <Container>

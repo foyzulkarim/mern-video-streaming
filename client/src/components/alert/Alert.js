@@ -1,51 +1,51 @@
+// react
+import  {  useContext } from "react";
+
+// @mui
 import {
     Stack,
     Alert,
     Snackbar,
   } from "@mui/material";
+
+// Context
+import { AlertContext, SetAlertContext } from "../../contexts/AlertContext";
+
+
+// ----------------------------------------------------------------------
   
-  
-  // theme
-  import ThemeProvider from "../../theme";
-  
-  // components
-  import ScrollToTop from "../scroll-to-top";
-  import { StyledChart } from "../chart";
-  
-  
-  // ----------------------------------------------------------------------
-  
-  
-  
-  export default function ShowAlert(data={}) {
-  
-    const {alertType, alertMessage, setAlertMessage}=data.data
-  
-    return (
-      <ThemeProvider>
-        <ScrollToTop />
-        <StyledChart />
-        {/* <Router /> */}
-        <Stack>
-          <Snackbar
-            open={alertMessage}
-            autoHideDuration={5000}
+    
+export default function ShowAlert() {
+
+  const alertContext = useContext(AlertContext);
+  const setAlertContext = useContext(SetAlertContext);
+
+  return (
+      <Stack>
+        <Snackbar
+          open={alertContext.message}
+          autoHideDuration={4000}
+          onClose={() => {
+            setAlertContext({
+              type: '',
+              message: null
+            });
+          }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
             onClose={() => {
-              setAlertMessage(null);
+              setAlertContext({
+                type: '',
+                message: null
+              });
             }}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            severity={alertContext.type}
           >
-            <Alert
-              onClose={() => {
-                setAlertMessage(null);
-              }}
-              severity={alertType}
-            >
-              {alertMessage}
-            </Alert>
-          </Snackbar>
-        </Stack>
-      </ThemeProvider>
-    );
-  }
+            {alertContext.message}
+          </Alert>
+        </Snackbar>
+      </Stack>
+  );
+}
   

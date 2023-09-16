@@ -16,14 +16,16 @@ import {
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 
 // react
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
 // components
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
-import  ShowAlert  from '../components/alert';
+
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
 
 // other
 import moment from 'moment';
@@ -38,8 +40,7 @@ export default function UserPage() {
   const [open, setOpen] = useState(null);
 
   const [rows, setRows] = useState([]);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  const setAlertContext = useContext(SetAlertContext);
 
   const deleteVideo = useCallback(
     (id) => () => {
@@ -115,8 +116,7 @@ export default function UserPage() {
         setRows(videos);
       })
       .catch(function (error){
-        setAlertType('error');
-        setAlertMessage(error.response.data.message);
+        setAlertContext({type:'error', message: error.response.data.message});
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -148,8 +148,6 @@ export default function UserPage() {
         setRowCountState(response.data.count);
       })
       .catch(function (error){
-        setAlertType('error');
-        setAlertMessage(error.response.data.message);
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -212,7 +210,6 @@ export default function UserPage() {
       <Helmet>
         <title> Video List </title>
       </Helmet>
-      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <Container>
         <Stack

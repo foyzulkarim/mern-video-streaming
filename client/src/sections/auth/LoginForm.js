@@ -1,5 +1,5 @@
 // react
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // @mui
@@ -11,7 +11,10 @@ import axios from 'axios';
 
 // components
 import Iconify from '../../components/iconify';
-import  ShowAlert  from '../../components/alert';
+// import  ShowAlert  from '../../components/alert';
+
+// Context
+import { SetAlertContext } from "../../contexts/AlertContext";
 
 // constants
 import { API_SERVER } from '../../constants';
@@ -25,13 +28,15 @@ export default function LoginForm() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  // const [alertMessage, setAlertMessage] = useState(null);
+  // const [alertType, setAlertType] = useState('success');
   
   const [loginData, setloginData] = useState({
     email: '',
     password: ''
   });
+
+  const setAlertContext = useContext(SetAlertContext);
 
   const handleSubmit = async () => {
 
@@ -46,13 +51,11 @@ export default function LoginForm() {
       }
     )
     .then(function (response){
-      setAlertType('success');
-      setAlertMessage('Login Successful');
+      setAlertContext({type:'success', message: 'Login Successful'});
       setTimeout(() => navigate('/videos'), 1000);
     })
     .catch(function (error){
-      setAlertType('error');
-      setAlertMessage(error.response.data.message);
+      setAlertContext({type:'error', message: error.response.data.message});
     });
 
   };
@@ -71,7 +74,7 @@ export default function LoginForm() {
   return (
     <>
 
-      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
+      {/* <ShowAlert data={{alertType, alertMessage, setAlertMessage}} /> */}
       
       <Stack spacing={3}>
         <TextField name="email" onChange={handleInput} label="Email address" />

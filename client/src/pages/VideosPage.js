@@ -1,6 +1,6 @@
 // react
 import { Helmet } from 'react-helmet-async';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // @mui
@@ -13,10 +13,12 @@ import {
   ProductCartWidget,
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
-import  ShowAlert  from '../components/alert';
 
 // other
 import axios from 'axios';
+
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
 
 // constants
 import { API_SERVER } from '../constants';
@@ -28,8 +30,8 @@ import { API_SERVER } from '../constants';
 export default function ProductsPage() {
   const [openFilter, setOpenFilter] = useState(false);
   const [videos, setVideos] = useState([]);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  const setAlertContext = useContext(SetAlertContext);
+
   const navigate = useNavigate();
 
 
@@ -47,8 +49,7 @@ export default function ProductsPage() {
         setVideos(response.data);
       })
       .catch(function (error){
-        setAlertType('error');
-        setAlertMessage(error.response.data.message);
+        setAlertContext({type:'error', message: error.response.data.message});
         if(error.response.status===401){
           setTimeout(() => navigate('/login'), 3000);
         }
@@ -72,7 +73,6 @@ export default function ProductsPage() {
       <Helmet>
         <title> Dashboard: Videos </title>
       </Helmet>
-      <ShowAlert data={{alertType, alertMessage, setAlertMessage}} />
 
       <Container>
         <Typography variant='h4' sx={{ mb: 5 }}>
