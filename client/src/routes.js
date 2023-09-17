@@ -26,7 +26,7 @@ export default function Router() {
   const routes = useRoutes([
     {
       path: '/',
-      element: isLoggedIn ? <DashboardLayout /> : <Navigate to="/login" state={{ from: location }}/>,
+      element: isLoggedIn ? <DashboardLayout /> : <Navigate to="/login" state={{ from: location, reason: 'You must log in first' }}/>,
       children: [
         { element: <Navigate to='/videos' />, index: true },
         { path: 'dashboard', element: <DashboardAppPage /> },

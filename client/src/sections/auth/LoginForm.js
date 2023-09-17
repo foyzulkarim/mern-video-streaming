@@ -1,5 +1,5 @@
 // react
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // @mui
@@ -33,6 +33,12 @@ export default function LoginForm({location}) {
   });
 
   const setAlertContext = useContext(SetAlertContext);
+
+  useEffect( () => {
+    if (location.state && location.state.reason){
+      setAlertContext({type:'error', message: location.state.reason});
+    }
+  }, [])
 
   const handleSubmit = async () => {
 
@@ -71,9 +77,6 @@ export default function LoginForm({location}) {
 
   return (
     <>
-
-      {/* <ShowAlert data={{alertType, alertMessage, setAlertMessage}} /> */}
-      
       <Stack spacing={3}>
         <TextField name="email" onChange={handleInput} label="Email address" />
 
