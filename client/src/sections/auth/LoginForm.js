@@ -27,10 +27,6 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-
-  // const [alertMessage, setAlertMessage] = useState(null);
-  // const [alertType, setAlertType] = useState('success');
-  
   const [loginData, setloginData] = useState({
     email: '',
     password: ''
@@ -39,7 +35,6 @@ export default function LoginForm() {
   const setAlertContext = useContext(SetAlertContext);
 
   const handleSubmit = async () => {
-
 
     await axios.post(`${API_SERVER}/api/login`,
       loginData,
@@ -51,7 +46,11 @@ export default function LoginForm() {
       }
     )
     .then(function (response){
+      console.log(response.data.user.name)
+      localStorage.setItem("name", response.data.user.name);
+      localStorage.setItem("email", response.data.user.email);
       setAlertContext({type:'success', message: 'Login Successful'});
+
       setTimeout(() => navigate('/videos'), 1000);
     })
     .catch(function (error){
@@ -61,14 +60,12 @@ export default function LoginForm() {
   };
 
   const handleInput =  (event) => {
-
     setloginData({
       ...loginData,
       [event.target.name]: event.target.value
     })
 
   };
-
 
 
   return (

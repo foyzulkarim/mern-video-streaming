@@ -1,5 +1,5 @@
 // react
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // @mui
@@ -8,6 +8,9 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover 
 
 // mocks_
 import account from '../../../_mock/account';
+
+// Context
+import { SetAlertContext } from "../../../contexts/AlertContext";
 
 // other
 import axios from 'axios';
@@ -37,6 +40,7 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const setAlertContext = useContext(SetAlertContext);
   const navigate = useNavigate();
 
   const handleOpen = (event) => {
@@ -58,10 +62,12 @@ export default function AccountPopover() {
       }
     )
     .then(function (response){
+      localStorage.removeItem("name");
+      localStorage.removeItem("email");
       navigate('/login')
     })
     .catch(function (error){
-      console.log(error)
+      setAlertContext({type:'error', message: error.response.data.message});
     });
 
   };
@@ -109,10 +115,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {localStorage.getItem('name')}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {localStorage.getItem('email')}
           </Typography>
         </Box>
 
