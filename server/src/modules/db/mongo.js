@@ -48,7 +48,7 @@ class MongoManager {
             db,
             collection: 'logs',
             storeHost: true,
-            level:'error'
+            level:'info'
           })
         );
       } catch (error) {

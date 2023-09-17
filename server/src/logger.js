@@ -22,12 +22,6 @@ class LogManager {
       transports: [
         new transports.File({ filename: 'error.log', level: 'error' }),
         new transports.File({ filename: 'combined.log' }),
-        new Loggly({
-          token: process.env.LOGGLY_TOKEN,
-          subdomain: os.hostname().toString(),
-          tags: ['Winston-NodeJS'],
-          json: true,
-        }),
         new transports.DailyRotateFile({
           level: 'info',
           filename: 'application-%DATE%.log',
@@ -47,7 +41,18 @@ class LogManager {
       );
     }
 
-    this.logger.log('info', 'Hello World from Node.js!');
+    if (process.env.ENABLE_WINSTON_LOGGLY) {
+      this.logger.add(
+        new Loggly({
+          token: process.env.LOGGLY_TOKEN,
+          subdomain: os.hostname().toString(),
+          tags: ['Winston-NodeJS'],
+          json: true,
+        })
+      );
+    }
+
+    this.logger.info(`Vidiginie system up and running!`);
   }
 
   getLogger() {
