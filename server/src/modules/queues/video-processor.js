@@ -1,11 +1,12 @@
 /** execute function will take a filePath and run  ffmpeg command to convert it to mp4 */
 const ffmpeg = require('fluent-ffmpeg');
 
-const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+const configureFFMPEG = async () => {  
+  ffmpeg.setFfmpegPath(`/usr/bin/ffmpeg`);
+  ffmpeg.setFfprobePath(`/usr/bin/ffprobe`);
+};
 
-const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
-ffmpeg.setFfprobePath(ffprobeInstaller.path);
+configureFFMPEG();
 
 const path = require('path');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('./constants');
