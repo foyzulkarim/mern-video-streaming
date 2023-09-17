@@ -1,4 +1,4 @@
-import { Navigate, useRoutes } from 'react-router-dom';
+import { Navigate, useLocation, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
@@ -16,13 +16,17 @@ import VideoListPage from './pages/VideoListPage';
 import VideosPage from './pages/VideosPage'
 import DashboardAppPage from './pages/DashboardAppPage';
 
+
 // ----------------------------------------------------------------------
 
+
 export default function Router() {
+  const isLoggedIn = localStorage.getItem("email") ? true : false;
+  const location = useLocation();
   const routes = useRoutes([
     {
       path: '/',
-      element: <DashboardLayout />,
+      element: isLoggedIn ? <DashboardLayout /> : <Navigate to="/login" state={{ from: location }}/>,
       children: [
         { element: <Navigate to='/videos' />, index: true },
         { path: 'dashboard', element: <DashboardAppPage /> },

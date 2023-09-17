@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 // @mui
 import { styled } from '@mui/material/styles';
 import { Container, Typography, Divider, Stack, Button } from '@mui/material';
@@ -42,6 +42,7 @@ const StyledContent = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function LoginPage() {
+  const location = useLocation();
   const mdUp = useResponsive('up', 'md');
 
   return (
@@ -99,7 +100,7 @@ export default function LoginPage() {
               </Typography>
             </Divider>
 
-            <LoginForm />
+            <LoginForm location={location}/>
           </StyledContent>
         </Container>
       </StyledRoot>

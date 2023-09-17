@@ -23,7 +23,7 @@ import { API_SERVER } from '../../constants';
 // ----------------------------------------------------------------------
 
 
-export default function LoginForm() {
+export default function LoginForm({location}) {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +36,8 @@ export default function LoginForm() {
 
   const handleSubmit = async () => {
 
+    const redirectUrl = location.state ? location.state.from.pathname : '/videos'
+
     await axios.post(`${API_SERVER}/api/login`,
       loginData,
       {
@@ -46,12 +48,11 @@ export default function LoginForm() {
       }
     )
     .then(function (response){
-      console.log(response.data.user.name)
       localStorage.setItem("name", response.data.user.name);
       localStorage.setItem("email", response.data.user.email);
       setAlertContext({type:'success', message: 'Login Successful'});
 
-      setTimeout(() => navigate('/videos'), 1000);
+      setTimeout(() => navigate(redirectUrl), 1000);
     })
     .catch(function (error){
       setAlertContext({type:'error', message: error.response.data.message});
