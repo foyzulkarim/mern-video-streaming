@@ -44,6 +44,7 @@
     "joi": "^17.7.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^5.7.0",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
     "passport-jwt": "^4.0.1",
@@ -54,6 +55,10 @@
     "prettier": "^2.8.3",
     "socket.io": "^4.6.0",
     "uuid": "^9.0.0",
+    "winston": "^3.10.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "winston-loggly-bulk": "^3.2.1",
+    "winston-mongodb": "^5.1.1",
     "zx": "^7.2.3"
   },
   "devDependencies": {

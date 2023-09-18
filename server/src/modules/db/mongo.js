@@ -1,7 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
+const winston = require('winston');
+const winstonMongo = require('winston-mongodb');
+
 const { MongoClient } = require('mongodb');
+
+const logger = require('../../logger');
 
 // Singleton design pattern
 class MongoManager {
@@ -36,9 +41,25 @@ class MongoManager {
     console.log('connecting to MongoDB');
     await client.connect();
     const db = client.db('videodb');
-    console.log('connected to MongoDB');
+    if (process.env.ENABLE_WINSTON_MONGODB === 'true') {
+      try {
+        logger.add(
+          new winston.transports.MongoDB({
+            db,
+            collection: 'logs',
+            storeHost: true,
+            level: 'info',
+          })
+        );
+      } catch (error) {
+        logger.error(error);
+      }
+    }
+
+    logger.info('connected to MongoDB');
     await MongoManager.setInstance(db);
     await MongoManager.updateSchemas();
+
     return db;
   };
 }
