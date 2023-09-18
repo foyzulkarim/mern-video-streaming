@@ -26,8 +26,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "@ffprobe-installer/ffprobe": "^2.1.1",
     "bcrypt": "^5.1.0",
     "bullmq": "^3.5.11",
     "compression": "^1.7.4",
@@ -42,6 +40,7 @@
     "helmet": "^6.0.1",
     "joi": "^17.7.0",
     "mongodb": "^5.7.0",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1",
     "pino": "^8.8.0",
@@ -51,6 +50,10 @@
     "prettier": "^2.8.3",
     "socket.io": "^4.6.0",
     "uuid": "^9.0.0",
+    "winston": "^3.10.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "winston-loggly-bulk": "^3.2.1",
+    "winston-mongodb": "^5.1.1",
     "zx": "^7.2.3"
   },
   "devDependencies": {
