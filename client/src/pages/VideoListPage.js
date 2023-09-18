@@ -16,7 +16,7 @@ import {
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 
 // react
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,15 +24,23 @@ import { useNavigate } from 'react-router-dom';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
+
 // other
 import moment from 'moment';
 import axios from 'axios';
 import { API_SERVER } from '../constants';
 
+
+// ----------------------------------------------------------------------
+
+
 export default function UserPage() {
   const [open, setOpen] = useState(null);
 
   const [rows, setRows] = useState([]);
+  const setAlertContext = useContext(SetAlertContext);
 
   const deleteVideo = useCallback(
     (id) => () => {
@@ -91,17 +99,29 @@ export default function UserPage() {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.post(
-        `${API_SERVER}/api/videos/search`,
-        searchPayload
-      );
 
-      const videos = response.data.map((video) => {
-        video.id = video._id;
-        return video;
+      await axios.post(
+        `${API_SERVER}/api/videos/search`,
+        searchPayload,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        const videos = response.data.map((video) => {
+          video.id = video._id;
+          return video;
+        });
+  
+        setRows(videos);
+      })
+      .catch(function (error){
+        setAlertContext({type:'error', message: error.response.data.message});
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
       });
 
-      setRows(videos);
     };
 
     getData();
@@ -116,11 +136,23 @@ export default function UserPage() {
           filterValue: searchPayload.filterValue,
         };
       }
-      const countResponse = await axios.post(
+
+      await axios.post(
         `${API_SERVER}/api/videos/count`,
-        countFilter
-      );
-      setRowCountState(countResponse.data.count);
+        countFilter,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        setRowCountState(response.data.count);
+      })
+      .catch(function (error){
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      });
+
     };
 
     getCount();

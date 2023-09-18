@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+// react
+import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
+
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -9,8 +12,6 @@ import {
   FormControl,
   Typography,
   Button,
-  Alert,
-  Snackbar,
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -21,13 +22,21 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
+// other 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
+
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
+
+// constants
 import { API_SERVER } from '../constants';
+
+
+// ----------------------------------------------------------------------
+
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 600,
@@ -59,18 +68,14 @@ const validationSchema = yup.object({
 });
 
 export default function VideoUploadPage() {
-  const [uploadResponse, setUploadResponse] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+
+  const setAlertContext = useContext(SetAlertContext);
 
   const navigate = useNavigate();
-  const navigateToVideos = () => {
-    // 👇️ navigate to /contacts
-    navigate('/videos');
-  };
 
   // axios post the values to the backend
   const postToServer = async (values) => {
-    console.log(values);
+    
     const {
       title,
       category,
@@ -87,22 +92,30 @@ export default function VideoUploadPage() {
     // formData.append("language", language);
     formData.append('recordingDate', recordingDate);
     formData.append('video', videoFile);
-    try {
-      const response = await axios.post(`${API_SERVER}/api/videos/upload`, formData, {
+
+    await axios.post(
+      `${API_SERVER}/api/videos/upload`,
+      formData,
+      {
+        withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',
           Accept: '*/*',
-        },
-      });
-      setAlertType('success');
-      setUploadResponse(response.data.message);
-      console.log(response);
-      setTimeout(() => navigateToVideos(), 3000);
-    } catch (error) {
-      console.log(error);
-      setAlertType('error');
-      setUploadResponse(error.response.data.error.message);
-    }
+        }
+      }
+    )
+    .then(function (response){
+      setAlertContext({type:'success', message: 'Video upload successfull'});
+      setTimeout(() => navigate('/videos'), 3000)
+    })
+    .catch(function (error){
+      setAlertContext({type:'error', message: error.response.data.message});
+      if(error.response.status===401){
+        setTimeout(() => navigate('/login'), 3000);
+      }
+      
+    });
+
   };
 
   const formik = useFormik({
@@ -132,7 +145,6 @@ export default function VideoUploadPage() {
       if (values.videoFile?.size > 52428000) {
         errors.videoFile = 'Video file size should be less than 50MB';
       }
-      console.log(values.videoFile?.type);
       // check videoFile type, must be video/mp4 or video/x-matroska
       if (
         values.videoFile?.type !== 'video/mp4' &&
@@ -150,7 +162,6 @@ export default function VideoUploadPage() {
       <Helmet>
         <title> Video upload</title>
       </Helmet>
-
       <>
         <Container>
           <StyledContent>
@@ -227,21 +238,7 @@ export default function VideoUploadPage() {
                     <MenuItem value={'Unlisted'}>Unlisted</MenuItem>
                   </Select>
                 </FormControl>
-                {/* <TextField
-                                    id="thumbnailUrl"
-                                    name="thumbnailUrl"
-                                    label="Thumbnail URL"
-                                    value={formik.values.thumbnailUrl}
-                                    onChange={formik.handleChange}
-                                    error={
-                                        formik.touched.thumbnailUrl &&
-                                        Boolean(formik.errors.thumbnailUrl)
-                                    }
-                                    helperText={
-                                        formik.touched.thumbnailUrl &&
-                                        formik.errors.thumbnailUrl
-                                    }
-                                /> */}
+
                 <FormControl fullWidth>
                   <InputLabel id='language-select-label'>Language</InputLabel>
                   <Select
@@ -299,28 +296,6 @@ export default function VideoUploadPage() {
                 </LoadingButton>
               </Stack>
             </form>
-            <Stack>
-              <Snackbar
-                open={uploadResponse}
-                autoHideDuration={5000}
-                onClose={() => {
-                  setUploadResponse(null);
-                }}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-              >
-                <Alert
-                  onClose={() => {
-                    setUploadResponse(null);
-                  }}
-                  severity={alertType}
-                >
-                  {uploadResponse}
-                </Alert>
-              </Snackbar>
-            </Stack>
           </StyledContent>
         </Container>
       </>

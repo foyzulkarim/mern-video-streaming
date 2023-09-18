@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+// react
+import ReactPlayer from 'react-player';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -12,11 +15,18 @@ import {
   Button,
 } from '@mui/material';
 
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
+
+//constants
 import { API_SERVER, VIDEO_SERVER } from '../constants';
 
-import ReactPlayer from 'react-player';
-
+//other
 import axios from 'axios';
+
+
+// ----------------------------------------------------------------------
+
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 800,
@@ -32,6 +42,7 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function VideoPlayerPage() {
   const [url, setUrl] = useState('');
+  const setAlertContext = useContext(SetAlertContext);
   const [data, setData] = useState({
     title: '',
     description: '',
@@ -44,10 +55,6 @@ export default function VideoPlayerPage() {
   });
   const { id } = useParams();
   const navigate = useNavigate();
-// const navigateToContacts = () => {
-//     // 👇️ navigate to /contacts
-//     navigate('/videos');
-//   };
 
   const card = (
     <React.Fragment>
@@ -89,10 +96,23 @@ export default function VideoPlayerPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(`${API_SERVER}/api/videos/detail/${id}`);
-      setData(response.data);
-      const u = `${VIDEO_SERVER}/${response.data.fileName}.m3u8`;
-      setUrl(u);
+      await axios.get(
+        `${API_SERVER}/api/videos/detail/${id}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        setData(response.data);
+        const u = `${VIDEO_SERVER}/${response.data.fileName}.m3u8`;
+        setUrl(u);
+      })
+      .catch(function (error){
+        setAlertContext({type:'error', message: error.response.data.message});
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      });
     };
     fetchData();
   }, [id]);

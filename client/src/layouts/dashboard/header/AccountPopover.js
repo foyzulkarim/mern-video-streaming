@@ -1,9 +1,23 @@
-import { useState } from 'react';
+// react
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
+
 // mocks_
 import account from '../../../_mock/account';
+
+// Context
+import { SetAlertContext } from "../../../contexts/AlertContext";
+
+// other
+import axios from 'axios';
+
+// constants
+import { API_SERVER } from '../../../constants';
+
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +40,8 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const setAlertContext = useContext(SetAlertContext);
+  const navigate = useNavigate();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -33,6 +49,27 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+
+
+  const handleLogout = async () => {
+    await axios.post(
+      `${API_SERVER}/api/logout`,
+      {},
+      {
+        withCredentials: true,
+      }
+    )
+    .then(function (response){
+      localStorage.removeItem("name");
+      localStorage.removeItem("email");
+      navigate('/login')
+    })
+    .catch(function (error){
+      setAlertContext({type:'error', message: error.response.data.message});
+    });
+
   };
 
   return (
@@ -78,10 +115,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {localStorage.getItem('name')}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {localStorage.getItem('email')}
           </Typography>
         </Box>
 
@@ -97,7 +134,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </Popover>

@@ -6,8 +6,6 @@ import {
   TextField,
   FormControl,
   Typography,
-  Alert,
-  Snackbar,
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -19,18 +17,24 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-//react
-import React, { useState, useEffect } from 'react';
+// react
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
-//others
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
+
+// others
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
 
-//internal
+//constants
 import { API_SERVER } from '../constants';
+
+
+// ----------------------------------------------------------------------
 
 
 const StyledContent = styled('div')(({ theme }) => ({
@@ -65,8 +69,7 @@ const validationSchema = yup.object({
 export default function VideoEditPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [uploadResponse, setUploadResponse] = useState(null);
-  const [alertType, setAlertType] = useState('success');
+  const setAlertContext = useContext(SetAlertContext);
   const [initialValues, setInitialValues] = useState({
     title: '',
     description: '',
@@ -81,15 +84,27 @@ export default function VideoEditPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await axios.get(`${API_SERVER}/api/videos/detail/${id}`);
-      setInitialValues(response.data)
+      await axios.get(
+        `${API_SERVER}/api/videos/detail/${id}`,
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        setInitialValues(response.data)
+      })
+      .catch(function (error){
+        setAlertContext({type:'error', message: error.response.data.message});
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      });
     };
     
     if(id){
       fetchData();
     }else{
-        setAlertType('error');
-        setUploadResponse("Undefined Id");
+      setAlertContext({type:'error', message: 'Undefined Id'});
     }
     
   }, [id]);
@@ -106,21 +121,29 @@ export default function VideoEditPage() {
     formData.append('recordingDate', videoInfo.recordingDate);
     // formData.append("language", videoInfo.language);
 
-    try {
-      const response = await axios.put(`${API_SERVER}/api/videos/update/${id}`, formData, {
+    await axios.put(
+      `${API_SERVER}/api/videos/update/${id}`,
+      formData,
+      {
+        withCredentials: true,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
           Accept: '*/*',
-        },
-      });
+        }
+      }
+    )
+    .then(function (response){
+      setAlertContext({type:'success', message: 'Video edit successfull'});
+      setTimeout(() => navigate('/videos'), 3000);
+    })
+    .catch(function (error){
+      setAlertContext({type:'error', message: error.response.data.message});
+      if(error.response.status===401){
+        setTimeout(() => navigate('/login', { replace: true }), 3000);
+      }
 
-      setAlertType('success');
-      setUploadResponse(response.data.message);
-      setTimeout(() => navigate('/videos'), 1500);
-    } catch (error) {
-      setAlertType('error');
-      setUploadResponse(error.response.data.error.message);
-    }
+    });
+
   };
 
   const formik = useFormik({
@@ -199,21 +222,7 @@ export default function VideoEditPage() {
                     <MenuItem value={'Unlisted'}>Unlisted</MenuItem>
                   </Select>
                 </FormControl>
-                {/* <TextField
-                                    id="thumbnailUrl"
-                                    name="thumbnailUrl"
-                                    label="Thumbnail URL"
-                                    value={formik.values.thumbnailUrl}
-                                    onChange={formik.handleChange}
-                                    error={
-                                        formik.touched.thumbnailUrl &&
-                                        Boolean(formik.errors.thumbnailUrl)
-                                    }
-                                    helperText={
-                                        formik.touched.thumbnailUrl &&
-                                        formik.errors.thumbnailUrl
-                                    }
-                                /> */}
+
                 <FormControl fullWidth>
                   <InputLabel id='language-select-label'>Language</InputLabel>
                   <Select
@@ -271,28 +280,6 @@ export default function VideoEditPage() {
                 </LoadingButton>
               </Stack>
             </form>
-            <Stack>
-              <Snackbar
-                open={uploadResponse}
-                autoHideDuration={5000}
-                onClose={() => {
-                  setUploadResponse(null);
-                }}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-              >
-                <Alert
-                  onClose={() => {
-                    setUploadResponse(null);
-                  }}
-                  severity={alertType}
-                >
-                  {uploadResponse}
-                </Alert>
-              </Snackbar>
-            </Stack>
           </StyledContent>
         </Container>
       </>

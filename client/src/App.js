@@ -1,10 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 
-import {
-  Stack,
-  Alert,
-  Snackbar,
-} from "@mui/material";
 
 // routes
 import Router from "./routes";
@@ -13,19 +8,25 @@ import ThemeProvider from "./theme";
 // components
 import ScrollToTop from "./components/scroll-to-top";
 import { StyledChart } from "./components/chart";
+import  ShowAlert  from "./components/alert";
+
 
 import { useSocket } from "./contexts/SocketContext";
+import { SetAlertContext } from "./contexts/AlertContext";
+
+
 
 export default function App() {
   const socket = useSocket();
-  const [wsResponse, setWsResponse] = useState(null);
+  const setAlertContext = useContext(SetAlertContext);
 
   useEffect(() => {
     socket.on("hello", (msg) => {
       console.log("hello", msg);
-      setWsResponse(
-        `Video ${msg.title} HLS conversion completed as ${msg.originalname}`
-      );
+      setAlertContext({
+        type:'success',
+        message: `Video ${msg.title} HLS conversion completed as ${msg.originalname}`
+      });
     });
   }, [socket]);
 
@@ -34,25 +35,7 @@ export default function App() {
       <ScrollToTop />
       <StyledChart />
       <Router />
-      <Stack>
-        <Snackbar
-          open={wsResponse}
-          autoHideDuration={5000}
-          onClose={() => {
-            setWsResponse(null);
-          }}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => {
-              setWsResponse(null);
-            }}
-            severity={"success"}
-          >
-            {wsResponse}
-          </Alert>
-        </Snackbar>
-      </Stack>
+      <ShowAlert />
     </ThemeProvider>
   );
 }

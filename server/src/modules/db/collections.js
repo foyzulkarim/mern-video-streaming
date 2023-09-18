@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb');
 const { MongoManager } = require('./mongo');
 const { baseDefaults } = require('./schemas/common');
+const { collectionName:userCollectionName } =  require('./schemas/user')
 
 const insertItem = async (collection, item) => {
   try {
@@ -55,15 +56,6 @@ const search = async (
   { filter, projection, sort, pageNumber = 1, limit = 10 }
 ) => {
   const skip = (pageNumber - 1) * limit;
-  console.log(
-    'search filter, projection, sort, pageNumber',
-    collectionName,
-    filter,
-    projection,
-    sort,
-    pageNumber,
-    limit
-  );
 
   const cursor = await MongoManager.Instance.collection(collectionName).find(
     filter,
@@ -78,7 +70,7 @@ const count = async (collectionName, { filter }) => {
   const countDocuments = filter
     ? await cursor.countDocuments(filter)
     : await cursor.estimatedDocumentCount();
-  console.log('count:', collectionName, filter, countDocuments);
+
   return countDocuments;
 };
 
@@ -117,4 +109,5 @@ const createCollectionObject = (collectionName) =>
 module.exports = {
   Video: createCollectionObject('videos'),
   Role: createCollectionObject('roles'),
+  User: createCollectionObject(userCollectionName),
 };

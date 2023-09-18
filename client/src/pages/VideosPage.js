@@ -1,10 +1,11 @@
+// react
 import { Helmet } from 'react-helmet-async';
-import { useState, useEffect } from 'react';
-
-import axios from 'axios';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // @mui
 import { Container, Stack, Typography } from '@mui/material';
+
 // components
 import {
   VideoSort,
@@ -12,20 +13,48 @@ import {
   ProductCartWidget,
   ProductFilterSidebar,
 } from '../sections/@dashboard/products';
+
+// other
+import axios from 'axios';
+
+// Context
+import { SetAlertContext } from "../contexts/AlertContext";
+
+// constants
 import { API_SERVER } from '../constants';
 
+
 // ----------------------------------------------------------------------
+
 
 export default function ProductsPage() {
   const [openFilter, setOpenFilter] = useState(false);
   const [videos, setVideos] = useState([]);
+  const setAlertContext = useContext(SetAlertContext);
+
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.post(`${API_SERVER}/api/videos/search`, {});
-      console.log('getData', response.data);
-      response.data.sort((a, b) => b.viewCount - a.viewCount===0 ? new Date(b.recordingDate) - new Date(a.recordingDate) : b.viewCount - a.viewCount);
-      setVideos(response.data);
+      await axios.post(
+        `${API_SERVER}/api/videos/search`,
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .then(function (response){
+        response.data.sort((a, b) => b.viewCount - a.viewCount===0 ? new Date(b.recordingDate) - new Date(a.recordingDate) : b.viewCount - a.viewCount);
+        setVideos(response.data);
+      })
+      .catch(function (error){
+        setAlertContext({type:'error', message: error.response.data.message});
+        if(error.response.status===401){
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      });
+
     };
 
     getData();
@@ -42,12 +71,12 @@ export default function ProductsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Products | Minimal UI </title>
+        <title> Dashboard: Videos </title>
       </Helmet>
 
       <Container>
         <Typography variant='h4' sx={{ mb: 5 }}>
-          Products
+          Videos
         </Typography>
 
         <Stack
