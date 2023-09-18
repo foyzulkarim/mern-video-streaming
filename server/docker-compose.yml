@@ -30,7 +30,6 @@ services:
       - MONGODB_URL=mongodb://mongo:27017
       - REDIS_SERVER=redis
       - SERVER_URL=http://localhost:4000
-      - JWT_SECRET=1d62283052acd0313dc4349ce053e8fd99cd1c76ed92b5482b5707e1fee719d1
 networks:
   backend:
     driver: bridge
