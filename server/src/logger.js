@@ -41,18 +41,20 @@ class LogManager {
       );
     }
 
-    if (process.env.ENABLE_WINSTON_LOGGLY) {
+    if (process.env.ENABLE_WINSTON_LOGGLY === 'true') {
       this.logger.add(
         new Loggly({
           token: process.env.LOGGLY_TOKEN,
           subdomain: os.hostname().toString(),
-          tags: ['Winston-NodeJS'],
+          tags: [process.env.npm_lifecycle_event],
           json: true,
         })
       );
     }
 
-    this.logger.info(`Vidiginie system up and running!`);
+    this.logger.info(`Vidiginie system up and running!`, {
+      ENABLE_WINSTON_LOGGLY: process.env.ENABLE_WINSTON_LOGGLY,
+    });
   }
 
   getLogger() {

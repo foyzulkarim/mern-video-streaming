@@ -41,14 +41,14 @@ class MongoManager {
     console.log('connecting to MongoDB');
     await client.connect();
     const db = client.db('videodb');
-    if (process.env.ENABLE_WINSTON_MONGODB) {
+    if (process.env.ENABLE_WINSTON_MONGODB === 'true') {
       try {
         logger.add(
           new winston.transports.MongoDB({
             db,
             collection: 'logs',
             storeHost: true,
-            level:'info'
+            level: 'info',
           })
         );
       } catch (error) {
