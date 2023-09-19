@@ -32,6 +32,7 @@
     "cors": "^2.8.5",
     "cron": "^2.2.0",
     "dotenv": "^16.3.1",
+    "elastic-apm-node": "^4.0.0",
     "express": "^4.18.2",
     "express-pino-logger": "^7.0.0",
     "express-rate-limit": "^6.7.0",

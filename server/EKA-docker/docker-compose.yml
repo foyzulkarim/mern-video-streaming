@@ -1,0 +1,125 @@
+version: '3.8'
+
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - path.logs=/var/log/
+      - cluster.name=elasticsearch
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTIC_PASSWORD=change_me
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.authc.api_key.enabled=true
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data  
+    ports:
+      - 9200:9200
+    healthcheck:
+        test: 
+          [
+            "CMD-SHELL", 
+            "curl -s -I http://localhost:9200/_cluster/health || exit 1"
+          ]
+        interval: 10s
+        timeout: 10s
+        retries: 120
+
+  elasticsearch-setup:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/config/certs
+    user: "0"
+    command: >
+      bash -c '
+        echo "Waiting for Elasticsearch availability";
+        until curl -s http://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+        echo "Setting kibana_system password";
+        until curl -s -X POST  -u "elastic:change_me" -H "Content-Type: application/json" http://elasticsearch:9200/_security/user/kibana_system/_password -d "{\"password\":\"change_me\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "All done!";
+      '
+      # curl -s -X GET  -u "elastic:change_me" -H "Content-Type: application/json" http://elasticsearch:9200/_security/user?pretty
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+  # Kibana to display monitoring data
+  kibana:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:8.7.1
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=change_me
+
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    # networks:
+    #   - es-net
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  # Kibana to display monitoring data
+  apm-server:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    image: docker.elastic.co/apm/apm-server:8.7.1
+    container_name: apm-server
+    ports:
+      - 8200:8200
+    command: >
+       apm-server -e
+         -E apm-server.rum.enabled=true
+         -E setup.kibana.host=kibana:5601
+         -E setup.template.settings.index.number_of_replicas=0
+         -E output.elasticsearch.hosts=["http://elasticsearch:9200"]
+         -E output.elasticsearch.username=elastic
+         -E output.elasticsearch.password=change_me
+
+    # networks:
+    #   - es-net
+    healthcheck:
+      interval: 10s
+      retries: 120
+      test: curl -I --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null https://localhost:8200/
+
+volumes:
+  elasticsearch-data:
+    driver: local
+
+# networks:
+#   es-net:
+#     driver: bridge
+
+
+        #  -E apm-server.kibana.username=elastic
+        #  -E apm-server.kibana.password=change_me
+        #  -E apm-server.kibana.enabled=true
+        #  -E apm-server.kibana.host=kibana:5601
+        #  -E apm-server.kibana.protocol=http
