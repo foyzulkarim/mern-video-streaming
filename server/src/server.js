@@ -1,4 +1,5 @@
 const app = require('./app');
+const logger = require('./logger');
 const { MongoManager } = require('./modules/db/mongo');
 const { NOTIFY_EVENTS } = require('./modules/queues/constants');
 const eventEmitter = require('./event-manager').getInstance();
@@ -18,7 +19,7 @@ const setup = async () => {
   listenQueueEvent(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED);
 
   eventEmitter.on(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED, (data) => {
-    console.log('NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED Event handler', data);
+    logger.info('NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED Event handler', data);
     io.emit('hello', data);
   });
 };
@@ -29,8 +30,8 @@ const { Server } = require('socket.io');
 const io = new Server(server, { cors: { origin: '*' } });
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
-  console.dir(socket.id);
+  logger.info('a user connected');
+  logger.info(socket.id);
 
   // setInterval(() => {
   //   console.log("sending", new Date().toTimeString());
@@ -39,17 +40,17 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, async () => {
-  console.log(`listening on port ${PORT}`);
+  logger.info(`listening on port ${PORT}`);
   await MongoManager.connect();
   await setup();
-  console.log('application setup completed');
+  logger.info('application setup completed');
   // which request, what handler
   app.use('/', (req, res) => {
-    console.log(`request received at ${new Date()}`);
-    console.log('req', req.body);
+    logger.info(`request received at ${new Date()}`);
+    logger.info('req', req.body);
     //console.dir(res);
     res.send(`request received at ${new Date()}`);
   });
 
-  console.log('application started', new Date().toTimeString());
+  logger.info('application started', new Date().toTimeString());
 });

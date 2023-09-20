@@ -12,7 +12,7 @@ const logger = require('../../logger');
 class MongoManager {
   static async setInstance(instance) {
     if (!MongoManager.instance) {
-      console.log('setting instance');
+      logger.info('setting instance');
       MongoManager.instance = instance;
     }
   }
@@ -38,7 +38,7 @@ class MongoManager {
     const client = new MongoClient(mongoUrl, {
       useNewUrlParser: true,
     });
-    console.log('connecting to MongoDB');
+    logger.info('connecting to MongoDB');
     await client.connect();
     const db = client.db('videodb');
     if (process.env.ENABLE_WINSTON_MONGODB === 'true') {

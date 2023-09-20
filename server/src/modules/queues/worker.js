@@ -1,6 +1,7 @@
 const { Worker, QueueEvents } = require('bullmq');
 const { VIDEO_QUEUE_EVENTS } = require('./constants');
 const { QUEUE_EVENT_HANDLERS } = require('./handlers');
+const logger = require('../../logger');
 
 const redisConnection = {
   host: process.env.REDIS_SERVER || 'localhost',
@@ -28,7 +29,7 @@ const listenQueueEvent = (queueName) => {
   // });
 
   queueEvents.on('failed', ({ jobId, failedReason }) => {
-    console.log(`${jobId} has failed with reason ${failedReason}`);
+    logger.info(`${jobId} has failed with reason ${failedReason}`);
   });
 
   const worker = new Worker(
@@ -44,14 +45,14 @@ const listenQueueEvent = (queueName) => {
   );
 
   worker.on('completed', (job) => {
-    console.log(`${job.id} has completed!`);
+    logger.info(`${job.id} has completed!`);
   });
 
   worker.on('failed', (job, err) => {
-    console.log(`${job.id} has failed with ${err.message}`);
+    logger.info(`${job.id} has failed with ${err.message}`);
   });
 
-  console.log(queueName, ' worker started', new Date().toTimeString());
+  logger.info(queueName, ' worker started', new Date().toTimeString());
 };
 
 const setupAllQueueEvents = () => {

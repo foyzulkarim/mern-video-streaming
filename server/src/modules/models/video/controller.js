@@ -13,15 +13,16 @@ const { addQueueItem } = require('../../queues/queue');
 const {
   getVideoDurationAndResolution,
 } = require('../../queues/video-processor');
+const logger = require('../../../logger');
 
 const BASE_URL = `/api/videos`;
 
 const setupRoutes = (app) => {
-  console.log(`Setting up routes for ${BASE_URL}`);
+  logger.info(`Setting up routes for ${BASE_URL}`);
 
   // return empty response with success message for the base route
   app.get(`${BASE_URL}/`, async (req, res) => {
-    console.log(`GET`, req.params);
+    logger.info(`GET`, req.params);
     const data = await search({});
     res.send({
       status: 'success',
@@ -32,7 +33,7 @@ const setupRoutes = (app) => {
   });
 
   app.get(`${BASE_URL}/detail/:id`, async (req, res) => {
-    console.log(`GET`, req.params);
+    logger.info(`GET`, req.params);
     const video = await updateViewCount(req.params.id);
     if (video instanceof Error) {
       return res.status(400).json(JSON.parse(video.message));
@@ -42,13 +43,13 @@ const setupRoutes = (app) => {
 
   // TODO: Proper searching with paging and ordering
   app.post(`${BASE_URL}/search`, async (req, res) => {
-    console.log('POST search', req.body);
+    logger.info('POST search', req.body);
     const result = await search(req.body);
     res.send(result);
   });
 
   app.post(`${BASE_URL}/count`, async (req, res) => {
-    console.log('POST count', req.body);
+    logger.info('POST count', req.body);
     const result = await count(req.body);
     res.send({count: result});
   });
@@ -84,7 +85,7 @@ const setupRoutes = (app) => {
   });
 
   app.delete(`${BASE_URL}/delete/:id`, async (req, res) => {
-    console.log('DELETE', req.params.id);
+    logger.info('DELETE', req.params.id);
     if (req.params.id) {
       const result = await deleteById(req.params.id);
       if (result instanceof Error) {
@@ -110,10 +111,10 @@ const setupRoutes = (app) => {
 
   const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'video/mp4' || file.mimetype === 'video/webm') {
-      console.log('file type supported', file);
+      logger.info('file type supported', file);
       cb(null, true);
     } else {
-      console.log('file type not supported', file);
+      logger.info('file type not supported', file);
       cb(new multer.MulterError('File type not supported'), false);
     }
   };
@@ -132,7 +133,7 @@ const setupRoutes = (app) => {
         res.status(400).json({ status: 'error', error: err });
         return;
       } else {
-        console.log('upload success', req.file);
+        logger.info('upload success', req.file);
         // res.status(200).json({ status: "success", message: "upload success" });
         next();
       }
@@ -155,10 +156,10 @@ const setupRoutes = (app) => {
         viewCount: 0,
         duration: 0,
       };
-      console.log('dbPayload', dbPayload);
+      logger.info('dbPayload', dbPayload);
       // TODO: save the file info and get the id from the database
       const result = await insert(dbPayload);
-      console.log('result', result);
+      logger.info('result', result);
       await addQueueItem(QUEUE_EVENTS.VIDEO_UPLOADED, {
         id: result.insertedId.toString(),
         ...req.body,
@@ -172,7 +173,7 @@ const setupRoutes = (app) => {
       });
       return;
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       res.send(error);
     }
   });

@@ -1,10 +1,11 @@
 const { faker } = require('@faker-js/faker');
 const { MongoManager } = require('../../src/modules/db/mongo');
 const { VIDEO_STATUS, VIDEO_VISIBILITIES } = require('../../src/modules/db/constant');
+const logger = require('../../src/logger');
 
 const getFakeVideosData = (x) => {
   const videos = [];
-  console.log('getting new batch', x);
+  logger.info('getting new batch', x);
   for (let i = 0; i < 1000; i++) {
     videos.push({
       title: faker.lorem.sentence(5),
@@ -44,7 +45,7 @@ const seedData = async () => {
     let i = 0;
     for await (const video of videos) {
       const result = await insert(video);
-      console.log(`${index} - ${i++}`, '\t', result.insertedId);
+      logger.info(`${index} - ${i++}`, '\t', result.insertedId);
     }
   }
 };

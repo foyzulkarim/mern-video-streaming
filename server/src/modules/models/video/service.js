@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb');
 const { Video } = require('../../db/collections');
 const { VIDEO_STATUS } = require('../../db/constant');
+const logger = require('../../../logger');
 
 const insert = async (document) => {
   try {
@@ -19,7 +20,7 @@ const update = async (document) => {
 };
 
 const search = async (searchObject) => {
-  console.log('searchObject', searchObject);
+  logger.info('searchObject', searchObject);
   const filter = searchObject.filterKey
     ? {
         [searchObject.filterKey]: new RegExp(searchObject.filterValue, 'i'),
@@ -59,7 +60,7 @@ const search = async (searchObject) => {
 };
 
 const count = async (searchObject) => {
-  console.log('searchObject', searchObject);
+  logger.info('searchObject', searchObject);
   const filter = searchObject.filterKey
     ? {
         [searchObject.filterKey]: new RegExp(searchObject.filterValue, 'i'),
@@ -82,7 +83,7 @@ const updateHistory = async (id, { history, ...rest }) => {
     );
     return updatedDoc;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 };
