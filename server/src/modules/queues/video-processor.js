@@ -11,6 +11,7 @@ configureFFMPEG();
 const path = require('path');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('./constants');
 const { addQueueItem } = require('./queue');
+const logger = require('../../logger');
 
 const processRawFileToMp4 = async (filePath, outputFolder, jobData) => {
   const fileExt = path.extname(filePath);
@@ -21,15 +22,15 @@ const processRawFileToMp4 = async (filePath, outputFolder, jobData) => {
   ffmpeg(filePath)
     .output(outputFileName)
     .on('start', function (commandLine) {
-      console.log('Spawned Ffmpeg with command: ' + commandLine);
+      logger.info('Spawned Ffmpeg with command: ' + commandLine);
     })
     .on('progress', function (progress) {
       if (parseInt(progress.percent) % 20 === 0) {
-        console.log('Processing: ' + progress.percent + '% done');
+        logger.info('Processing: ' + progress.percent + '% done');
       }
     })
     .on('end', async function () {
-      console.log('Finished processing', outputFileName);
+      logger.info('Finished processing', outputFileName);
       await addQueueItem(QUEUE_EVENTS.VIDEO_PROCESSED, {
         ...jobData,
         completed: true,
@@ -37,7 +38,7 @@ const processRawFileToMp4 = async (filePath, outputFolder, jobData) => {
       });
     })
     .on('error', function (err) {
-      console.log('An error occurred: ' + err.message);
+      logger.info('An error occurred: ' + err.message);
     })
     .run();
 
@@ -76,7 +77,7 @@ const processMp4ToHls = async (filePath, outputFolder, jobData) => {
   const outputFileName = `${outputFolder}/${fileNameWithoutExt}.m3u8`;
 
   ffmpeg.ffprobe(filePath, function (err, metadata) {
-    console.log('metadata', err, metadata);
+    logger.info('metadata', err, metadata);
   });
 
   ffmpeg(filePath)
@@ -89,22 +90,22 @@ const processMp4ToHls = async (filePath, outputFolder, jobData) => {
       `${outputFolder}/${fileNameWithoutExt}_%03d.ts`,
     ])
     .on('start', function (commandLine) {
-      console.log('Spawned Ffmpeg with command: ' + commandLine);
+      logger.info('Spawned Ffmpeg with command: ' + commandLine);
     })
     .on('progress', function (progress) {
       if (parseInt(progress.percent) % 20 === 0) {
-        console.log('Processing: ' + progress.percent + '% done');
+        logger.info('Processing: ' + progress.percent + '% done');
       }
     })
     .on('end', function (x) {
-      console.log('Finished processing', outputFileName, x);
+      logger.info('Finished processing', outputFileName, x);
       addQueueItem(QUEUE_EVENTS.VIDEO_HLS_CONVERTED, {
         ...jobData,
         path: outputFileName,
       });
     })
     .on('error', function (err) {
-      console.log('An error occurred: ' + err.message);
+      logger.info('An error occurred: ' + err.message);
     })
     .run();
 
@@ -133,7 +134,7 @@ const getVideoDurationAndResolution = async (filePath) => {
         });
         return;
       }
-      console.error(err);
+      logger.error(err);
       reject(err);
     });
   });

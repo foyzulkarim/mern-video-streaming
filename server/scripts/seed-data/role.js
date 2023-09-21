@@ -1,5 +1,6 @@
 const { faker } = require('@faker-js/faker');
 const { MongoManager } = require('../../src/modules/db/mongo');
+const logger = require('../../src/logger');
 
 const getFakeRolesData = (x) => {
   const roles = []
@@ -27,7 +28,7 @@ const seedData = async () => {
     let i = 0;
     for await (const role of roles) {
       const result = await insert(role);
-      console.log(`${index} - ${i++}`, '\t', result.insertedId);
+      logger.info(`${index} - ${i++}`, '\t', result.insertedId);
     }
   }
 };
