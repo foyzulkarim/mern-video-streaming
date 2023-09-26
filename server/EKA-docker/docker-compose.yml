@@ -82,12 +82,10 @@ services:
       timeout: 10s
       retries: 120
 
-  # Kibana to display monitoring data
+  # APM for mesuring performance
   apm-server:
     depends_on:
       elasticsearch:
-        condition: service_healthy
-      kibana:
         condition: service_healthy
     image: docker.elastic.co/apm/apm-server:8.7.1
     container_name: apm-server
@@ -108,18 +106,32 @@ services:
       interval: 10s
       retries: 120
       test: curl -I --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null https://localhost:8200/
+  
+  # Filebeat for sending logs to elasticsearch
+  filebeat:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/beats/filebeat:8.7.1
+    container_name: filebeat
+    # command: >
+    #   bash -c '
+    #     chmod go-w /usr/share/filebeat/filebeat.yml;
+    #   '
+    volumes:
+      - ../logs:/var/log/server
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST:-elasticsearch}
+      - KIBANA_HOST=${KIBANA_HOST:-kibana}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME:-elastic}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD:-change_me}
+    labels:
+      co.elastic.logs/json.overwrite_keys: true 
+      co.elastic.logs/json.add_error_key: true 
+      co.elastic.logs/json.expand_keys: true 
 
 volumes:
   elasticsearch-data:
     driver: local
-
-# networks:
-#   es-net:
-#     driver: bridge
-
-
-        #  -E apm-server.kibana.username=elastic
-        #  -E apm-server.kibana.password=change_me
-        #  -E apm-server.kibana.enabled=true
-        #  -E apm-server.kibana.host=kibana:5601
-        #  -E apm-server.kibana.protocol=http
