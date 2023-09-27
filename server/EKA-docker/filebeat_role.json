@@ -1,0 +1,22 @@
+{
+    "cluster": [
+      "manage",
+      "monitor",
+      "read_pipeline",
+      "read_ilm"
+    ],
+    "indices": [
+      {
+        "names": [
+          "filebeat-*",
+          ".ds-filebeat-*"
+        ],
+        "privileges": [
+          "manage",
+          "create_doc",
+          "view_index_metadata",
+          "create_index"
+        ]
+      }
+    ]
+  }

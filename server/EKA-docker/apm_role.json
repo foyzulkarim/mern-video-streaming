@@ -1,0 +1,23 @@
+{
+    "indices": [
+      {
+        "names": [
+          "apm-*",
+          ".apm-*source-map",
+          "apm-*sourcemap*",
+          "traces-apm*",
+          "logs-apm*",
+          "metrics-apm*",
+          "monitoring-beats-*"
+        ],
+        "privileges": [
+          "manage",
+          "create_doc",
+          "create_index",
+          "read",
+          "all",
+          "auto_configure"
+        ]
+      }
+    ]
+  }
