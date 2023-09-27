@@ -127,10 +127,6 @@ services:
       - KIBANA_HOST=${KIBANA_HOST:-kibana}
       - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME:-elastic}
       - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD:-change_me}
-    labels:
-      co.elastic.logs/json.overwrite_keys: true 
-      co.elastic.logs/json.add_error_key: true 
-      co.elastic.logs/json.expand_keys: true 
 
 volumes:
   elasticsearch-data:
