@@ -2,13 +2,14 @@ require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const logger = require('./logger');
 
 const port = 4001;
 const publicDirectory = './uploads/hls';
 
 const requestHandler = (req, res) => {
   const filePath = path.join(publicDirectory, req.url);
-  console.log('filePath', filePath);
+  logger.info('filePath', filePath);
   fs.exists(filePath, (exists) => {
     if (!exists) {
       res.statusCode = 404;
@@ -34,9 +35,9 @@ const server = http.createServer(requestHandler);
 
 server.listen(port, (err) => {
   if (err) {
-    console.error(`Error starting server: ${err}`);
+    logger.error(`Error starting server: ${err}`);
     return;
   }
 
-  console.log(`Video server started on port ${port}`);
+  logger.info(`Video server started on port ${port}`);
 });

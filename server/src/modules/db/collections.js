@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb');
 const { MongoManager } = require('./mongo');
 const { baseDefaults } = require('./schemas/common');
+const logger = require('../../logger');
 
 const insertItem = async (collection, item) => {
   try {
@@ -9,10 +10,10 @@ const insertItem = async (collection, item) => {
       ...item,
     });
   } catch (error) {
-    console.error(error.errInfo?.details);
+    logger.error(error.errInfo?.details);
     if (error.code.toString() === '121') {
       // MongoServerError: Document failed validation
-      console.log('schemaErrors', JSON.stringify(error.errInfo?.details));
+      logger.info('schemaErrors', JSON.stringify(error.errInfo?.details));
     }
     return error;
   }
@@ -31,7 +32,7 @@ const updateItem = async (collection, item) => {
       }
     );
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return null;
   }
 };
@@ -45,7 +46,7 @@ const getObjectById = async (collectionName, id) => {
     );
     return item;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 };
@@ -55,7 +56,7 @@ const search = async (
   { filter, projection, sort, pageNumber = 1, limit = 10 }
 ) => {
   const skip = (pageNumber - 1) * limit;
-  console.log(
+  logger.info(
     'search filter, projection, sort, pageNumber',
     collectionName,
     filter,
@@ -78,7 +79,7 @@ const count = async (collectionName, { filter }) => {
   const countDocuments = filter
     ? await cursor.countDocuments(filter)
     : await cursor.estimatedDocumentCount();
-  console.log('count:', collectionName, filter, countDocuments);
+  logger.info('count:', collectionName, filter, countDocuments);
   return countDocuments;
 };
 
@@ -92,7 +93,7 @@ const deleteObjectById = async (collectionName, id) => {
 
     return result;
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 };

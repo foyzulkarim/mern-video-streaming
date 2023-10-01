@@ -8,10 +8,11 @@ const {
   generateThumbnail,
 } = require('./video-processor');
 const { addQueueItem } = require('./queue');
+const logger = require('../../logger');
 const eventEmitter = require('../../event-manager').getInstance();
 
 const uploadedHandler = async (job) => {
-  console.log('uploaded handler!', job.data.title);
+  logger.info('uploaded handler!', job.data.title);
   await addQueueItem(QUEUE_EVENTS.VIDEO_PROCESSING, {
     ...job.data,
     completed: true,
@@ -20,7 +21,7 @@ const uploadedHandler = async (job) => {
 };
 
 const processingHandler = async (job) => {
-  console.log('processing handler!', job.data.path);
+  logger.info('processing handler!', job.data.path);
   await processRawFileToMp4(`./${job.data.path}`, `./uploads/processed`, {
     ...job.data,
     completed: true,
@@ -30,7 +31,7 @@ const processingHandler = async (job) => {
 };
 
 const processedHandler = async (job) => {
-  console.log('processed handler!', job.data.path);
+  logger.info('processed handler!', job.data.path);
   await addQueueItem(QUEUE_EVENTS.VIDEO_HLS_CONVERTING, {
     ...job.data,
     completed: true,
@@ -40,7 +41,7 @@ const processedHandler = async (job) => {
 };
 
 const hlsConvertingHandler = async (job) => {
-  console.log('HLS converting handler!', job.data.path);
+  logger.info('HLS converting handler!', job.data.path);
   const hlsConverted = await processMp4ToHls(
     `./${job.data.path}`,
     `./uploads/hls`,
@@ -50,12 +51,12 @@ const hlsConvertingHandler = async (job) => {
       next: QUEUE_EVENTS.VIDEO_HLS_CONVERTED,
     }
   );
-  console.log('hlsConverted', hlsConverted);
+  logger.info('hlsConverted', hlsConverted);
   return;
 };
 
 const hlsConvertedHandler = async (job) => {
-  console.log('hls converted handler!', job.data.filename);
+  logger.info('hls converted handler!', job.data.filename);
   await addQueueItem(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED, {
     ...job.data,
     completed: true,
@@ -65,7 +66,7 @@ const hlsConvertedHandler = async (job) => {
 };
 
 const notifyVideoHlsConvertedHandler = async (job) => {
-  console.log('notifyVideoHlsConvertedHandler handler!', job.data);
+  logger.info('notifyVideoHlsConvertedHandler handler!', job.data);
   eventEmitter.emit(`${NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED}`, job.data);
   return { ...job.data, completed: true, next: null };
 };

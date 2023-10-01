@@ -1,4 +1,5 @@
 const { ObjectId } = require('mongodb');
+const logger = require('../../../logger');
 
 /**
  * Common properties for all of the collections
@@ -51,10 +52,10 @@ const baseDefaults = () => ({
 const ensureCollection = async ({ db, name, validator, indexes }) => {
   const collections = await db.listCollections({ name }).toArray();
   if (collections.length === 0) {
-    console.log(`creating collection ${name}`);
+    logger.info(`creating collection ${name}`);
     await db.createCollection(name, { validator });
   } else {
-    console.log(`updating collection ${name}`);
+    logger.info(`updating collection ${name}`);
     await db.command({
       collMod: name,
       validator,
