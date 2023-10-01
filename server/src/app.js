@@ -4,11 +4,12 @@ const cors = require('cors');
 require('dotenv').config();
 
 
-var apm = require('elastic-apm-node').start({
+require('elastic-apm-node').start({
   serviceName: 'mern-video-streaming',
   // secretToken: '',
-  serverUrl: 'http://localhost:8200',
-  environment: 'development'
+  serverUrl: process.env.APM_SERVER_URL,
+  environment: process.env.NODE_ENV,
+  active: process.env.NODE_ENV === "production" || process.env.IS_APM_ACTIVE
 })
 
 
