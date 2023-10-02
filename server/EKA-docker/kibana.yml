@@ -5,6 +5,6 @@ telemetry.enabled: false
 xpack.security.encryptionKey: fhjskloppd678ehkdfdlliverpoolfcr
 xpack.encryptedSavedObjects.encryptionKey: fhjskloppd678ehkdfdlliverpoolfcr
 
-# xpack.fleet.packages:
-#   - name: apm
-#     version: latest
+xpack.fleet.packages:
+  - name: apm
+    version: latest
