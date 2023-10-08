@@ -179,14 +179,14 @@ const setupRoutes = (app) => {
 
       const dbPayload = {
         ...req.body,
-        fileName: req.file.filename,
+        fileName: req.file.originalname,
         originalName: req.file.originalname,
         recordingDate: new Date(),
-        videoLink: req.file.path,
+        videoLink: req.file.location,
         viewCount: 0,
         duration: 0,
       };
-      logger.info('dbPayload', dbPayload);
+      logger.info('dbPayload', { dbPayload });
       // TODO: save the file info and get the id from the database
       const result = await insert(dbPayload);
       logger.info('result', result);
