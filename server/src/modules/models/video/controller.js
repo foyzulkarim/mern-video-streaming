@@ -12,6 +12,7 @@ const {
 } = require('./service');
 const { validate } = require('./request');
 const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
+const { VIDEO_STATUS } = require('../../db/constant');
 const { addQueueItem } = require('../../queues/queue');
 const {
   getVideoDurationAndResolution,
@@ -185,16 +186,17 @@ const setupRoutes = (app) => {
         videoLink: req.file.location,
         viewCount: 0,
         duration: 0,
+        status: VIDEO_STATUS.PUBLISHED
       };
       logger.info('dbPayload', { dbPayload });
       // TODO: save the file info and get the id from the database
       const result = await insert(dbPayload);
       logger.info('result', result);
-      await addQueueItem(QUEUE_EVENTS.VIDEO_UPLOADED, {
-        id: result.insertedId.toString(),
-        ...req.body,
-        ...req.file,
-      });
+      // await addQueueItem(QUEUE_EVENTS.VIDEO_UPLOADED, {
+      //   id: result.insertedId.toString(),
+      //   ...req.body,
+      //   ...req.file,
+      // });
       res.status(200).json({
         status: 'success',
         message: 'Upload success',
