@@ -20,7 +20,8 @@
     "init-directories": "zx scripts/shell-script.mjs",
     "docker-build-and-run": "docker-compose up --build",
     "docker-build": "docker-compose build",
-    "docker": "docker-compose up"
+    "docker": "docker-compose up",
+    "es": "docker-compose -f ./EKA-docker/docker-compose.yml up"
   },
   "keywords": [],
   "author": "",

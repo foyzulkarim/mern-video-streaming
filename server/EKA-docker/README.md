@@ -7,15 +7,16 @@
 
 ## Installation
 
-* create `.env` file and populate all the required environment variable (see `.ent.template` for reference)
+* create `.env` file in `EKA-docker` directory and populate all the required environment variable (see [`.ent.template`](.env.template) for reference)
 
 * build the container 
 
   ```bash
-  docker-compose up --build
+  docker-compose up
   ```
 
 if everything went well, you will find `kibana` running at `http://localhost:5601/`. 
+
 To log into `kibana dashboard` use values of `ELASTICSEARCH_USERNAME` & `ELASTICSEARCH_PASSWORD` of your env variable.
 
 

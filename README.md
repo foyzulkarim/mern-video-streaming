@@ -47,6 +47,16 @@ The client app is based on create-react-app and MUI library. It uses
 socket.io-client and React Context to communicate with the API server and
 display the video content.
 
+### Elastic Stack
+
+Elastic stack is used for monitoring log and api performance. Backend system is not 
+dependent on Elastic Stack meaning `Backend system` can run without `Elastic Stack`.
+
+see `Elastic Stack` documentation [here](server/EKA-docker/README.md)
+
+
+
+
 ## Prerequisites
 
 To get started with MERN Video Streaming, you will need to have the following
