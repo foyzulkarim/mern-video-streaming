@@ -1,4 +1,7 @@
 const multer = require('multer');
+const multerS3 = require('multer-s3');
+const { S3Client } = require('@aws-sdk/client-s3');
+
 const {
   insert,
   search,
@@ -51,7 +54,7 @@ const setupRoutes = (app) => {
   app.post(`${BASE_URL}/count`, async (req, res) => {
     logger.info('POST count', req.body);
     const result = await count(req.body);
-    res.send({count: result});
+    res.send({ count: result });
   });
 
   // app.post(`${BASE_URL}/create`, async (req, res) => {
@@ -73,7 +76,10 @@ const setupRoutes = (app) => {
   app.put(`${BASE_URL}/update/:id`, async (req, res) => {
     const validationResult = validate(req.body);
     if (req.params.id && !validationResult.error) {
-      const result = await update({_id:req.params.id, ...validationResult.value});
+      const result = await update({
+        _id: req.params.id,
+        ...validationResult.value,
+      });
       if (result instanceof Error) {
         return res.status(400).json(JSON.parse(result.message));
       }
@@ -119,11 +125,35 @@ const setupRoutes = (app) => {
     }
   };
 
+  const s3Client = new S3Client({
+    endpoint: process.env.ENDPOINT, // Find your endpoint in the control panel, under Settings. Prepend "https://".
+    forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+    region: process.env.REGION, // Must be "us-east-1" when creating new Spaces. Otherwise, use the region in your endpoint (e.g. nyc3).
+    credentials: {
+      accessKeyId: process.env.ACCESS_KEY, // Access key pair. You can create access key pairs using the control panel or API.
+      secretAccessKey: process.env.ACCESS_TOKEN, // Secret access key defined through an environment variable.
+    },
+  });
+
+  const s3Storage = multerS3({
+    s3: s3Client, // s3 instance
+    bucket: process.env.BUCKET_NAME, // change it as per your project requirement
+    acl: 'private', // storage access type
+    // metadata: (req, file, cb) => {
+    //   cb(null, { fieldname: file.fieldname });
+    // },
+    // key: (req, file, cb) => {
+    //   const fileName =
+    //     Date.now() + '_' + file.fieldname + '_' + file.originalname;
+    //   cb(null, fileName);
+    // },
+  });
+
   const upload = multer({
-    dest: 'uploads/videos',
+    // dest: 'uploads/videos',
     fileFilter: fileFilter,
     limits: { fileSize: 50000000 },
-    storage: storage,
+    storage: s3Storage,
   }).single('video');
 
   const uploadProcessor = (req, res, next) => {
