@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "web-server": "nodemon ./src/server.js",
     "video-processor": "nodemon ./src/queue.js",
     "video-server": "nodemon ./src/video-server.js",
@@ -60,6 +60,11 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "verbose": true
   }
 }
