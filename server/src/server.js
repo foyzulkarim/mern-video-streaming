@@ -44,13 +44,5 @@ server.listen(PORT, async () => {
   await MongoManager.connect();
   await setup();
   logger.info('application setup completed');
-  // which request, what handler
-  app.use('/', (req, res) => {
-    logger.info(`request received at ${new Date()}`);
-    logger.info('req', req.body);
-    //console.dir(res);
-    res.send(`request received at ${new Date()}`);
-  });
-
   logger.info('application started', new Date().toTimeString());
 });

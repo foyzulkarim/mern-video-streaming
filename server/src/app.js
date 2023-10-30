@@ -24,4 +24,11 @@ app.use(morganMiddleware);
 
 app.use('/thumbnails', express.static('./uploads/thumbnails'));
 
+app.get('/', (req, res) => {
+  logger.info(`request received at ${new Date()}`);
+  logger.info('req', req.body);
+  //console.dir(res);
+  res.send(`request received at ${new Date()}`);
+});
+
 module.exports = app;
