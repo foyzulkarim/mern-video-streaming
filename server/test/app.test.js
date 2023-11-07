@@ -1,6 +1,18 @@
 // test unknown endpoints
 const request = require('supertest');
-const app = require('../src/app');
+
+let app = null;
+beforeAll(async () => {
+  console.log('1 - beforeAll');
+  app = require('../src/app');
+  app.setupRoutes();
+});
+afterAll(async () => {
+  console.log('1 - afterAll');
+  app = null;
+});
+beforeEach(async () => console.log('1 - beforeEach'));
+afterEach(async () => console.log('1 - afterEach'));
 
 // Test App module
 // Test API up and running

@@ -24,11 +24,14 @@ app.use(morganMiddleware);
 
 app.use('/thumbnails', express.static('./uploads/thumbnails'));
 
-app.get('/', (req, res) => {
-  logger.info(`request received at ${new Date()}`);
-  logger.info('req', req.body);
-  //console.dir(res);
-  res.send(`request received at ${new Date()}`);
-});
+app.setupRoutes = () => {
+  const { setup } = require('./modules/models');
+  setup(app);
+  app.get('/', (req, res) => {
+    logger.info(`request received at ${new Date()}`);
+    logger.info('req', req.body);
+    res.send(`request received at ${new Date()}`);
+  });
+};
 
 module.exports = app;

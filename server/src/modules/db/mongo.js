@@ -10,6 +10,8 @@ const logger = require('../../logger');
 
 // Singleton design pattern
 class MongoManager {
+  static instance;
+
   static async setInstance(instance) {
     if (!MongoManager.instance) {
       logger.info('setting instance');
@@ -18,6 +20,9 @@ class MongoManager {
   }
 
   static get Instance() {
+    if (!MongoManager.instance) {
+      throw new Error('Instance not set');
+    }
     return MongoManager.instance;
   }
 
@@ -32,14 +37,13 @@ class MongoManager {
   };
 
   static connect = async () => {
-    if (MongoManager.instance) return MongoManager.instance;
+    if (MongoManager.instance) return Promise.resolve(MongoManager.instance);
 
     const mongoUrl = process.env.MONGODB_URL ?? 'mongodb://localhost:27017';
     const client = new MongoClient(mongoUrl, {
       useNewUrlParser: true,
     });
-    logger.info('connecting to MongoDB');
-    await client.connect();
+    logger.info('connecting to MongoDB', { mongoUrl });
     const db = client.db('videodb');
     if (process.env.ENABLE_WINSTON_MONGODB === 'true') {
       try {

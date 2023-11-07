@@ -6,15 +6,8 @@ const eventEmitter = require('./event-manager').getInstance();
 
 const PORT = 4000;
 
-const setup = async () => {  
-  const { setup: setupVideoModule } =
-    await require('./modules/models/video/controller');
-  setupVideoModule(app);
-
-  const { setup: setupRoleModule } =
-    await require('./modules/models/role/controller');
-    setupRoleModule(app);
-
+const setup = async () => {
+  app.setupRoutes();
   const { listenQueueEvent } = await require('./modules/queues/worker');
   listenQueueEvent(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED);
 
