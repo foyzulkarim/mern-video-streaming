@@ -5,7 +5,7 @@ const logger = require('../../../logger');
 
 const insert = async (document) => {
   try {
-    return await Video.insert({ status: VIDEO_STATUS.PENDING, ...document }); 
+    return await Video.insert({ status: VIDEO_STATUS.PENDING, ...document });
   } catch (error) {
     return error;
   }
@@ -96,7 +96,14 @@ const updateViewCount = async (id) => {
     );
     return updatedDoc.value;
   } catch (error) {
-    return error;
+    if (error.code || error.name === 'BSONError') {
+      // Log the error and return a generic error object
+      logger.error(error);
+      return new Error('An unexpected error occurred');
+    } else {
+      // Rethrow the error
+      return error;
+    }
   }
 };
 

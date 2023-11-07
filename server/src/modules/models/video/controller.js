@@ -37,9 +37,13 @@ const setupRoutes = (app) => {
     logger.info(`GET`, req.params);
     const video = await updateViewCount(req.params.id);
     if (video instanceof Error) {
-      return res.status(400).json(JSON.parse(video.message));
+      return res.status(400).json({ error: video.toString() });
     }
-    res.send(video);
+    if (video === null) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+
+    return res.status(200).json(video);
   });
 
   // TODO: Proper searching with paging and ordering
