@@ -1,0 +1,24 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  paths:
+  - "/var/log/server/*.log"
+  parsers:
+    - ndjson:
+      overwrite_keys: true 
+      add_error_key: true 
+      expand_keys: true 
+
+processors: 
+  - add_host_metadata: ~
+  # - add_cloud_metadata: ~
+  # - add_docker_metadata: ~
+  # - add_kubernetes_metadata: ~
+
+output.elasticsearch:
+  hosts: ["${ELASTICSEARCH_HOST}:9200"]
+  username: ${ELASTICSEARCH_USERNAME}
+  password: ${ELASTICSEARCH_PASSWORD}
+  
+# output.console:
+#     pretty: true

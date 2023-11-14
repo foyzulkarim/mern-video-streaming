@@ -1,0 +1,144 @@
+version: '3.8'
+
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - path.logs=/var/log/
+      - cluster.name=elasticsearch
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME:-elastic}
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PASSWORD:-change_me}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.authc.api_key.enabled=true
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data  
+    ports:
+      - 9200:9200
+    healthcheck:
+        test: 
+          [
+            "CMD-SHELL", 
+            "curl -s -I http://localhost:9200/_cluster/health || exit 1"
+          ]
+        interval: 10s
+        timeout: 10s
+        retries: 120
+
+
+  elasticsearch-setup:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/config/certs
+      - ./filebeat_role.json:/usr/share/elasticsearch/role/filebeat_role.json
+      - ./apm_role.json:/usr/share/elasticsearch/role/apm_role.json
+    user: "0"
+    command: >
+      bash -c '
+        echo "Waiting for Elasticsearch availability";
+        until curl -s http://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+
+        echo "Setting kibana_system password";
+        until curl -s -X POST  -u "${ELASTICSEARCH_USERNAME:-elastic}:${ELASTICSEARCH_PASSWORD:-change_me}" -H "Content-Type: application/json" http://elasticsearch:9200/_security/user/${KIBANA_USERNAME:-kibana_system}/_password -d "{\"password\":\"${KIBANA_PASSWORD:-change_me}\"}" | grep -q "^{}"; do sleep 10; done;
+
+        echo "Adding apm writer role";
+        until curl -s -X PUT  -u "${ELASTICSEARCH_USERNAME:-elastic}:${ELASTICSEARCH_PASSWORD:-change_me}" -H "Content-Type: application/json" http://elasticsearch:9200/_security/role/${APM_ROLE_NAME:-apm_setup}/ -d @/usr/share/elasticsearch/role/apm_role.json | grep -q "created"; do sleep 10; done;
+                
+        echo "Creating apm writer user";
+        until curl -s -X PUT  -u "${ELASTICSEARCH_USERNAME:-elastic}:${ELASTICSEARCH_PASSWORD:-change_me}" -H "Content-Type: application/json" http://elasticsearch:9200/_security/user/${APM_USERNAME:-apm_writer}/ -d "{\"password\":\"${APM_PASSWORD:-change_me}\", \"roles\": [\"${APM_ROLE_NAME:-apm_setup}\",\"apm_system\"]}" | grep -q "created"; do sleep 10; done;
+       
+        echo "Adding filebeat writer role";
+        until curl -s -X PUT  -u "${ELASTICSEARCH_USERNAME:-elastic}:${ELASTICSEARCH_PASSWORD:-change_me}" -H "Content-Type: application/json" http://elasticsearch:9200/_security/role/${FILEBEAT_ROLE_NAME:-filebeat_setup}/ -d @/usr/share/elasticsearch/role/filebeat_role.json | grep -q "created"; do sleep 10; done;
+                
+        echo "Creating filebeat writer user";
+        until curl -s -X PUT  -u "${ELASTICSEARCH_USERNAME:-elastic}:${ELASTICSEARCH_PASSWORD:-change_me}" -H "Content-Type: application/json" http://elasticsearch:9200/_security/user/${FILEBEAT_USERNAME:-filebeat_writer}/ -d "{\"password\":\"${FILEBEAT_PASSWORD:-change_me}\", \"roles\": [\"${FILEBEAT_ROLE_NAME:-filebeat_setup}\"]}" | grep -q "created"; do sleep 10; done;
+        
+        echo "All done!";
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+
+  # Kibana to display monitoring data
+  kibana:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:8.7.1
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=${KIBANA_USERNAME:-kibana_system}
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD:-change_me}
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+
+  # APM for mesuring performance
+  apm-server:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/apm/apm-server:8.7.1
+    container_name: apm-server
+    ports:
+      - 8200:8200
+    command: >
+       apm-server -e
+         -E apm-server.rum.enabled=true
+         -E setup.kibana.host=kibana:5601
+         -E setup.template.settings.index.number_of_replicas=0
+         -E output.elasticsearch.hosts=http://elasticsearch:9200
+         -E output.elasticsearch.username=${APM_USERNAME:-apm_writer}
+         -E output.elasticsearch.password=${APM_PASSWORD:-change_me}
+    healthcheck:
+      interval: 10s
+      retries: 120
+      test: curl -I --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null https://localhost:8200/
+  
+
+  # # Filebeat for sending logs to elasticsearch
+  filebeat:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/beats/filebeat:8.7.1
+    container_name: filebeat
+    # command: >
+    #   bash -c '
+    #     chmod go-w /usr/share/filebeat/filebeat.yml;
+    #   '
+    volumes:
+      - ../logs:/var/log/server
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_USERNAME=${FILEBEAT_USERNAME:-filebeat_writer}
+      - ELASTICSEARCH_PASSWORD=${FILEBEAT_PASSWORD:-change_me}
+
+volumes:
+  elasticsearch-data:
+    driver: local
