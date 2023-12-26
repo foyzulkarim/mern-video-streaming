@@ -49,7 +49,7 @@ describe('Videos', () => {
       expect(response.error.text).toContain('Video not found');
     });
 
-    test('should video object and increase viewCount for "/detail/:id" when id is valid', async () => {
+    test('should return video object and increase viewCount for "/detail/:id" when id is valid', async () => {
       const video = await factory.createVideo();
       const response = await request(app).get(
         `${BASE_URL}/detail/${video._id.toString()}`
