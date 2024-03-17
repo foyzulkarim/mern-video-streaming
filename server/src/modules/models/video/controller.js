@@ -39,7 +39,7 @@ const setupRoutes = (app) => {
     if (video instanceof Error) {
       return res.status(400).json({ error: video.toString() });
     }
-    if (video === null) {
+    if (!video) {
       return res.status(404).json({ error: 'Video not found' });
     }
 
