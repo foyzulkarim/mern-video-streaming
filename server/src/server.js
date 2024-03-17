@@ -6,15 +6,8 @@ const eventEmitter = require('./event-manager').getInstance();
 
 const PORT = 4000;
 
-const setup = async () => {  
-  const { setup: setupVideoModule } =
-    await require('./modules/models/video/controller');
-  setupVideoModule(app);
-
-  const { setup: setupRoleModule } =
-    await require('./modules/models/role/controller');
-    setupRoleModule(app);
-
+const setup = async () => {
+  app.setupRoutes();
   const { listenQueueEvent } = await require('./modules/queues/worker');
   listenQueueEvent(NOTIFY_EVENTS.NOTIFY_VIDEO_HLS_CONVERTED);
 
@@ -44,13 +37,5 @@ server.listen(PORT, async () => {
   await MongoManager.connect();
   await setup();
   logger.info('application setup completed');
-  // which request, what handler
-  app.use('/', (req, res) => {
-    logger.info(`request received at ${new Date()}`);
-    logger.info('req', req.body);
-    //console.dir(res);
-    res.send(`request received at ${new Date()}`);
-  });
-
   logger.info('application started', new Date().toTimeString());
 });

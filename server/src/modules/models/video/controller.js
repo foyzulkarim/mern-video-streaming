@@ -11,12 +11,9 @@ const {
   count,
 } = require('./service');
 const { validate } = require('./request');
-const { VIDEO_QUEUE_EVENTS: QUEUE_EVENTS } = require('../../queues/constants');
+
 const { VIDEO_STATUS } = require('../../db/constant');
-const { addQueueItem } = require('../../queues/queue');
-const {
-  getVideoDurationAndResolution,
-} = require('../../queues/video-processor');
+
 const logger = require('../../../logger');
 
 const BASE_URL = `/api/videos`;
@@ -40,9 +37,13 @@ const setupRoutes = (app) => {
     logger.info(`GET`, req.params);
     const video = await updateViewCount(req.params.id);
     if (video instanceof Error) {
-      return res.status(400).json(JSON.parse(video.message));
+      return res.status(400).json({ error: video.toString() });
     }
-    res.send(video);
+    if (!video) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+
+    return res.status(200).json(video);
   });
 
   // TODO: Proper searching with paging and ordering
@@ -57,22 +58,6 @@ const setupRoutes = (app) => {
     const result = await count(req.body);
     res.send({ count: result });
   });
-
-  // app.post(`${BASE_URL}/create`, async (req, res) => {
-  //   console.log('POST create', req.body);
-  //   const validationResult = validate(req.body);
-  //   if (!validationResult.error) {
-  //     const result = await insert(req.body);
-  //     if (result instanceof Error) {
-  //       res.status(400).json(JSON.parse(result.message));
-  //       return;
-  //     }
-  //     return res.json(result);
-  //   }
-  //   return res
-  //     .status(400)
-  //     .json({ status: 'error', message: validationResult.error });
-  // });
 
   app.put(`${BASE_URL}/update/:id`, async (req, res) => {
     const validationResult = validate(req.body);
@@ -105,16 +90,6 @@ const setupRoutes = (app) => {
   });
 
   // upload videos handler using multer package routes below.
-
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'uploads/videos');
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + '-' + uniqueSuffix);
-    },
-  });
 
   const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'video/mp4' || file.mimetype === 'video/webm') {
@@ -186,7 +161,7 @@ const setupRoutes = (app) => {
         videoLink: req.file.location,
         viewCount: 0,
         duration: 0,
-        status: VIDEO_STATUS.PUBLISHED
+        status: VIDEO_STATUS.PUBLISHED,
       };
       logger.info('dbPayload', { dbPayload });
       // TODO: save the file info and get the id from the database

@@ -24,4 +24,32 @@ app.use(morganMiddleware);
 
 app.use('/thumbnails', express.static('./uploads/thumbnails'));
 
+app.setupRoutes = () => {
+  const { setup } = require('./modules/models');
+  setup(app);
+  app.get('/', (req, res) => {
+    logger.info(`request received at ${new Date()}`);
+    logger.info('req', req.body);
+    res.send(`request received at ${new Date()}`);
+  });
+
+  // Catch 404 Not Found errors and forward to error handler
+  app.use((req, res, next) => {
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
+  });
+
+  // Error handler middleware function
+  app.use((err, req, res, next) => {
+    // Set status code and error message based on error object
+    res.status(err.status || 500);
+    res.send({
+      error: {
+        message: err.message,
+      },
+    });
+  });
+};
+
 module.exports = app;
